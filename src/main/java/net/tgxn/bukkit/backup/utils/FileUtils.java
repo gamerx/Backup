@@ -285,6 +285,9 @@ public class FileUtils {
         if (destFile.exists() && destFile.isDirectory()) {
             throw new IOException("Destination '" + destFile + "' exists but is a directory");
         }
+		if(!srcFile.exists()){
+			throw new IOException("Source file '"+srcFile+"' does not exist");
+		}
 
         FileInputStream fis = null;
         FileOutputStream fos = null;
