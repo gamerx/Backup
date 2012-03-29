@@ -488,6 +488,14 @@ public class FileUtils {
         if (!zipName.endsWith(".zip")) {
             zipName += ".zip";
         }
+        try{
+            File zipFile = new File(directory, zipName);
+            if(!zipFile.exists()){
+                zipFile.createNewFile();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipName));
         zipDir(directory, zos, "");
         // close the stream
