@@ -8,6 +8,7 @@ import com.bukkitbackup.full.events.EventListener;
 import com.bukkitbackup.full.threading.PrepareBackup;
 import com.bukkitbackup.full.threading.SyncSaveAll;
 import com.bukkitbackup.full.utils.LogUtils;
+import com.bukkitbackup.full.utils.MetricUtils;
 import com.bukkitbackup.full.utils.SharedUtils;
 import java.io.File;
 import java.io.IOException;
@@ -55,7 +56,7 @@ public class BackupFull extends JavaPlugin {
         }
 
         try {
-            com.bukkitbackup.lite.utils.MetricUtils metricUtils = new com.bukkitbackup.lite.utils.MetricUtils(this);
+            MetricUtils metricUtils = new MetricUtils(this);
             metricUtils.start();
             clientID = metricUtils.guid;
         } catch (IOException ex) {
