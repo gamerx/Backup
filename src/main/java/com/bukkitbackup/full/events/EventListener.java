@@ -1,9 +1,9 @@
-package com.bukkitbackup.plugin.events;
+package com.bukkitbackup.full.events;
 
-import com.bukkitbackup.plugin.config.Settings;
-import com.bukkitbackup.plugin.config.Strings;
-import com.bukkitbackup.plugin.threading.PrepareBackup;
-import com.bukkitbackup.plugin.utils.LogUtils;
+import com.bukkitbackup.full.config.Settings;
+import com.bukkitbackup.full.config.Strings;
+import com.bukkitbackup.full.threading.PrepareBackup;
+import com.bukkitbackup.full.utils.LogUtils;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;

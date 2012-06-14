@@ -1,8 +1,8 @@
-package com.bukkitbackup.plugin.config;
+package com.bukkitbackup.full.config;
 
 import java.io.*;
 import java.util.logging.Level;
-import com.bukkitbackup.plugin.utils.LogUtils;
+import com.bukkitbackup.full.utils.LogUtils;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;

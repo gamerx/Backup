@@ -1,17 +1,18 @@
-package com.bukkitbackup.plugin.config;
+package com.bukkitbackup.full.config;
 
-import com.bukkitbackup.plugin.utils.LogUtils;
+import com.bukkitbackup.full.utils.LogUtils;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import org.bukkit.plugin.PluginDescriptionFile;
 
 public class UpdateChecker implements Runnable {
 
-    private String thisVersion;
     private Strings strings;
-    private URL updateURL;
+    private PluginDescriptionFile descriptionFile;
+    private String clientID;
 
 
     /**
@@ -21,8 +22,9 @@ public class UpdateChecker implements Runnable {
      * @param thisVersion The version of the currently loaded plugin.
      * @param strings Instance of the strings loader.
      */
-    public UpdateChecker(String thisVersion, Strings strings) {
-        this.thisVersion = thisVersion;
+        public UpdateChecker(PluginDescriptionFile descriptionFile, Strings strings, String clientID) {
+        this.descriptionFile = descriptionFile;
+        this.clientID = clientID;
         this.strings = strings;
     }
 
@@ -38,10 +40,10 @@ public class UpdateChecker implements Runnable {
             LogUtils.sendLog("Failed to retrieve latest version information.");
         } else {
             // Check versions and output log to the user.
-            if (!webVersion.equals(thisVersion)) {
-                LogUtils.sendLog(strings.getString("pluginoutdate", thisVersion, webVersion));
+            if (!webVersion.equals(descriptionFile.getVersion())) {
+                LogUtils.sendLog(strings.getString("pluginoutdate", descriptionFile.getVersion(), webVersion));
             } else {
-                LogUtils.sendLog(strings.getString("pluginupdate", thisVersion));
+                LogUtils.sendLog(strings.getString("pluginupdate", descriptionFile.getVersion()));
             }
         }
     }
@@ -57,7 +59,7 @@ public class UpdateChecker implements Runnable {
         try {
 
             // Configure the URL to pull updated from.
-            updateURL = new URL("http://checkin.bukkitbackup.com/?ver=" + thisVersion + "&fromplugin");
+            URL updateURL = new URL("http://checkin.bukkitbackup.com/?ver=" + descriptionFile.getVersion() + "&guid="+clientID+"&name="+descriptionFile.getName()+"&fromplugin");
 
             // Read from the URL into a BufferedReader.
             BufferedReader bReader = new BufferedReader(new InputStreamReader(updateURL.openStream()));

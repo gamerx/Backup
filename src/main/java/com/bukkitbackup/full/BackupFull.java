@@ -1,20 +1,21 @@
-package com.bukkitbackup.plugin;
+package com.bukkitbackup.full;
 
-import com.bukkitbackup.plugin.config.Settings;
-import com.bukkitbackup.plugin.config.Strings;
-import com.bukkitbackup.plugin.config.UpdateChecker;
-import com.bukkitbackup.plugin.events.CommandHandler;
-import com.bukkitbackup.plugin.events.EventListener;
-import com.bukkitbackup.plugin.threading.PrepareBackup;
-import com.bukkitbackup.plugin.threading.SyncSaveAll;
-import com.bukkitbackup.plugin.utils.LogUtils;
-import com.bukkitbackup.plugin.utils.SharedUtils;
+import com.bukkitbackup.full.config.Settings;
+import com.bukkitbackup.full.config.Strings;
+import com.bukkitbackup.full.config.UpdateChecker;
+import com.bukkitbackup.full.events.CommandHandler;
+import com.bukkitbackup.full.events.EventListener;
+import com.bukkitbackup.full.threading.PrepareBackup;
+import com.bukkitbackup.full.threading.SyncSaveAll;
+import com.bukkitbackup.full.utils.LogUtils;
+import com.bukkitbackup.full.utils.SharedUtils;
 import java.io.File;
+import java.io.IOException;
 import org.bukkit.Server;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class BackupMain extends JavaPlugin {
+public class BackupFull extends JavaPlugin {
 
     public int mainBackupTaskID = -2;
     public int saveAllTaskID = -2;
@@ -24,6 +25,7 @@ public class BackupMain extends JavaPlugin {
     private PrepareBackup prepareBackup;
     private SyncSaveAll syncSaveAllUtil;
     private UpdateChecker updateChecker;
+    private String clientID;
 
     @Override
     public void onLoad() {
@@ -52,6 +54,14 @@ public class BackupMain extends JavaPlugin {
             LogUtils.sendLog(strings.getString("createbudir"));
         }
 
+        try {
+            com.bukkitbackup.lite.utils.MetricUtils metricUtils = new com.bukkitbackup.lite.utils.MetricUtils(this);
+            metricUtils.start();
+            clientID = metricUtils.guid;
+        } catch (IOException ex) {
+            LogUtils.exceptionLog(ex, "Exception loading metrics.");
+        }
+
     }
 
     @Override
@@ -65,7 +75,7 @@ public class BackupMain extends JavaPlugin {
         prepareBackup = new PrepareBackup(pluginServer, settings, strings);
 
         // Initalize the update checker code.
-        updateChecker = new UpdateChecker(this.getDescription().getVersion(), strings);
+        updateChecker = new UpdateChecker(this.getDescription(), strings, clientID);
 
         // Initalize Command Listener.
         getCommand("backup").setExecutor(new CommandHandler(prepareBackup, this, settings, strings, updateChecker));

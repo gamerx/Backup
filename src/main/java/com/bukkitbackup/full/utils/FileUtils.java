@@ -16,7 +16,7 @@
  *
  * (modified version)
  */
-package com.bukkitbackup.plugin.utils;
+package com.bukkitbackup.full.utils;
 
 import java.io.*;
 import java.nio.channels.FileChannel;
@@ -58,6 +58,9 @@ public class FileUtils {
     public FileUtils() {
         super();
     }
+
+    public static int BUFFER_SIZE = 10240;
+
     /**
      * The number of bytes in a kilobyte.
      */

@@ -1,4 +1,4 @@
-package com.bukkitbackup.plugin.threading;
+package com.bukkitbackup.full.threading;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -7,12 +7,13 @@ import java.io.IOException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import com.bukkitbackup.plugin.config.Settings;
-import com.bukkitbackup.plugin.config.Strings;
-import com.bukkitbackup.plugin.utils.FileUtils;
-import static com.bukkitbackup.plugin.utils.FileUtils.FILE_SEPARATOR;
-import com.bukkitbackup.plugin.utils.LogUtils;
-import com.bukkitbackup.plugin.utils.SharedUtils;
+import com.bukkitbackup.full.config.Settings;
+import com.bukkitbackup.full.config.Strings;
+import com.bukkitbackup.full.ftp.FTPUploader;
+import com.bukkitbackup.full.utils.FileUtils;
+import static com.bukkitbackup.full.utils.FileUtils.FILE_SEPARATOR;
+import com.bukkitbackup.full.utils.LogUtils;
+import com.bukkitbackup.full.utils.SharedUtils;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -557,6 +558,9 @@ public class BackupTask implements Runnable {
      */
     private void finishBackup() {
 
+        // Do the FTP upload if required.
+        doFTPUpload(thisFinalDestination);
+
         // Create new Runnable instance.
         Runnable run = new Runnable() {
 
@@ -602,5 +606,13 @@ public class BackupTask implements Runnable {
             }
         };
         server.getScheduler().scheduleSyncDelayedTask(plugin, run);
+    }
+
+    private void doFTPUpload(String ZIPFile) {
+
+        // This runs in another thread to ensure it does nto affect server performance.
+        if (settings.getBooleanProperty("ftpuploadenable") && settings.getBooleanProperty("zipbackup")) {
+            server.getScheduler().scheduleAsyncDelayedTask(plugin, new FTPUploader(server, settings, strings, ZIPFile));
+        }
     }
 }

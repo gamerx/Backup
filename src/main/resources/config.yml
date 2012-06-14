@@ -81,6 +81,32 @@ splitbackup: false
 dateformat: '%1$tY%1$tm%1$td-%1$tH%1$tM%1$tS'
 
 
+#======== FTP Server Settings ==========#
+
+## Should we enable FTP uploads? (Default: false)
+# If enabled, following options must be set.
+# zipbackup must be true for this to take effect.
+ftpuploadenable: false
+
+## The FTP server address to connect to. (Default: none)
+# Can be an IP address or a hostname.
+ftpserveraddress:
+
+## What port should we connect to on the server? (Default: 22)
+# The FTP default port is 21, if you're unsure, don't change this.
+ftpserverport: 21
+
+## The username to login to the FTP server with. (Default: none)
+ftpusername:
+
+## The password to login to the FTP server with. (Default: none)
+ftppassword:
+
+## The directory on the FTP server you would like backups stored in.  (Default: backups)
+# Please leave blank for the root directory.
+ftpdirectory: backups
+
+
 #======== Content Settings ==========#
 
 ## What to backup. (Default: true, true)
@@ -126,5 +152,5 @@ enableversioncheck: true
 ##   Internal Settings (Read: DO NOT EDIT)   ##
 ###############################################
 
-requiredstrings: str-61-3
+requiredstrings: str-61-4
 version: 2.0-dev
