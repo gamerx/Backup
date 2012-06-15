@@ -1,12 +1,5 @@
 package com.bukkitbackup.full.threading;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import com.bukkitbackup.full.config.Settings;
 import com.bukkitbackup.full.config.Strings;
 import com.bukkitbackup.full.ftp.FTPUploader;
@@ -14,6 +7,13 @@ import com.bukkitbackup.full.utils.FileUtils;
 import static com.bukkitbackup.full.utils.FileUtils.FILE_SEPARATOR;
 import com.bukkitbackup.full.utils.LogUtils;
 import com.bukkitbackup.full.utils.SharedUtils;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
