@@ -6,7 +6,6 @@ import com.bukkitbackup.full.ftp.FTPUploader;
 import com.bukkitbackup.full.utils.FileUtils;
 import static com.bukkitbackup.full.utils.FileUtils.FILE_SEPARATOR;
 import com.bukkitbackup.full.utils.LogUtils;
-import com.bukkitbackup.full.utils.SharedUtils;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileNotFoundException;
@@ -87,7 +86,7 @@ public class BackupTask implements Runnable {
 
         rootTempPath = rootBackupPath.concat(settings.getStringProperty("tempfoldername")).concat(FILE_SEPARATOR);
         if (useTempFolder) {
-            SharedUtils.checkFolderAndCreate(new File(rootTempPath));
+            FileUtils.checkFolderAndCreate(new File(rootTempPath));
         }
 
         // Set up destinations for temp and full backups.
@@ -97,7 +96,7 @@ public class BackupTask implements Runnable {
             thisTempDestination = rootBackupPath.concat(backupName);
         }
         if (!splitBackup && (useTempFolder || shouldZIP)) {
-            SharedUtils.checkFolderAndCreate(new File(thisTempDestination));
+            FileUtils.checkFolderAndCreate(new File(thisTempDestination));
         }
 
         thisFinalDestination = rootBackupPath.concat(backupName);
@@ -214,7 +213,7 @@ public class BackupTask implements Runnable {
 
                 // Check this worlds folder exists.
                 File worldBackupFolder = new File(worldRootBackupPath.concat(currentWorldName));
-                SharedUtils.checkFolderAndCreate(worldBackupFolder);
+                FileUtils.checkFolderAndCreate(worldBackupFolder);
 
                 // This worlds backup folder.
 
@@ -321,14 +320,14 @@ public class BackupTask implements Runnable {
 
             finalPluginsPath = rootBackupPath.concat("plugins").concat(FILE_SEPARATOR).concat(backupName);
 
-            SharedUtils.checkFolderAndCreate(new File(rootBackupPath.concat("plugins")));
+            FileUtils.checkFolderAndCreate(new File(rootBackupPath.concat("plugins")));
         } else {
             pluginsBackupPath = thisTempDestination.concat(FILE_SEPARATOR).concat("plugins");
             finalPluginsPath = null;
         }
 
         // Create if needed.
-        SharedUtils.checkFolderAndCreate(new File(pluginsBackupPath));
+        FileUtils.checkFolderAndCreate(new File(pluginsBackupPath));
 
         // Perform plugin backup.
         try {
@@ -531,25 +530,12 @@ public class BackupTask implements Runnable {
 
                 // Finally delete the backups.
                 for (File backupToDelete : backupList) {
-                    deleteDir(backupToDelete);
+                    FileUtils.deleteDir(backupToDelete);
                 }
             }
         } catch (SecurityException se) {
             LogUtils.exceptionLog(se, "Failed to clean old backups: Security Exception.");
         }
-    }
-
-    public boolean deleteDir(File dir) {
-        if (dir.isDirectory()) {
-            String[] children = dir.list();
-            for (int i = 0; i < children.length; i++) {
-                boolean success = deleteDir(new File(dir, children[i]));
-                if (!success) {
-                    return false;
-                }
-            }
-        }
-        return dir.delete();
     }
 
     /**
@@ -575,7 +561,7 @@ public class BackupTask implements Runnable {
 
                 // Delete the temp directory.
                 File tempFile = new File(rootTempPath);
-                deleteDir(tempFile);
+                FileUtils.deleteDir(tempFile);
 
                 // Notify that it has completed.
                 notifyCompleted();

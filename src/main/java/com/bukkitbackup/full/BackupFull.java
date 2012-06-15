@@ -7,9 +7,9 @@ import com.bukkitbackup.full.events.CommandHandler;
 import com.bukkitbackup.full.events.EventListener;
 import com.bukkitbackup.full.threading.PrepareBackup;
 import com.bukkitbackup.full.threading.SyncSaveAll;
+import com.bukkitbackup.full.utils.FileUtils;
 import com.bukkitbackup.full.utils.LogUtils;
 import com.bukkitbackup.full.utils.MetricUtils;
-import com.bukkitbackup.full.utils.SharedUtils;
 import java.io.File;
 import java.io.IOException;
 import org.bukkit.Server;
@@ -38,7 +38,7 @@ public class BackupFull extends JavaPlugin {
         LogUtils.initLogUtils(this);
 
         // check and create main datafile.
-        SharedUtils.checkFolderAndCreate(mainDataFolder);
+        FileUtils.checkFolderAndCreate(mainDataFolder);
 
         // Load configuration files.
         strings = new Strings(new File(mainDataFolder, "strings.yml"));
@@ -51,7 +51,7 @@ public class BackupFull extends JavaPlugin {
         LogUtils.finishInitLogUtils(settings.getBooleanProperty("displaylog"));
 
         // Check backup path.
-        if (SharedUtils.checkFolderAndCreate(new File(settings.getStringProperty("backuppath")))) {
+        if (FileUtils.checkFolderAndCreate(new File(settings.getStringProperty("backuppath")))) {
             LogUtils.sendLog(strings.getString("createbudir"));
         }
 
