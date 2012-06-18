@@ -14,23 +14,12 @@ public class UpdateChecker implements Runnable {
     private PluginDescriptionFile descriptionFile;
     private String clientID;
 
-
-    /**
-     * This class checks the web site for updates.
-     * If one is found, it alerts the user.
-     *
-     * @param thisVersion The version of the currently loaded plugin.
-     * @param strings Instance of the strings loader.
-     */
-        public UpdateChecker(PluginDescriptionFile descriptionFile, Strings strings, String clientID) {
+    public UpdateChecker(PluginDescriptionFile descriptionFile, Strings strings, String clientID) {
         this.descriptionFile = descriptionFile;
         this.clientID = clientID;
         this.strings = strings;
     }
 
-    /**
-     * The run method checks the web site, and provides user feedback.
-     */
     public void run() {
         
         // Read the version.
@@ -48,12 +37,6 @@ public class UpdateChecker implements Runnable {
         }
     }
 
-    /**
-     * Opens a BufferedReader and attempts to retrieve the latest version.
-     * If this fails, it returns null.
-     *
-     * @return The latest version, or null if this fails.
-     */
     public String getVersion() {
         String webVersion;
         try {

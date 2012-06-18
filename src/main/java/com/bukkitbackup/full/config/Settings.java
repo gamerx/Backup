@@ -38,7 +38,7 @@ public final class Settings {
     private void checkAndCreate() {
         try {
             if (!configurationFile.exists()) {
-                LogUtils.sendLog(Level.WARNING, strings.getString("newconfigfile"));
+                LogUtils.sendLog(strings.getString("newconfigfile"));
                 createDefaultSettings();
             }
         } catch (NullPointerException npe) {
@@ -80,7 +80,7 @@ public final class Settings {
 
             // Check we got a version from the config file.
             if (configVersion == null) {
-                LogUtils.sendLog(strings.getString("failedtogetpropsver"), Level.SEVERE, true);
+                LogUtils.sendLog(strings.getString("failedtogetpropsver"));
                 needsUpgrade = true;
             }
 
@@ -91,7 +91,7 @@ public final class Settings {
 
             // After we have checked the versions, we have determined that we need to update.
             if (needsUpgrade && notify) {
-                LogUtils.sendLog(Level.SEVERE, strings.getString("configupdate"));
+                LogUtils.sendLog(strings.getString("configupdate"));
             }
         }
         return needsUpgrade;
@@ -101,12 +101,12 @@ public final class Settings {
      * Used to upgrade the configuration file.
      */
     public void doConfigurationUpgrade() {
-        LogUtils.sendLog(strings.getString("updatingconf"), true);
+        LogUtils.sendLog(strings.getString("updatingconf"));
         if (configurationFile.exists()) {
             configurationFile.delete();
         }
         createDefaultSettings();
-        LogUtils.sendLog(strings.getString("updatingconf"), true);
+        LogUtils.sendLog(strings.getString("updatingconf"));
     }
 
     /**

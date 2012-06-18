@@ -43,7 +43,7 @@ public class MetricUtils {
 
         // Do we need to create the file?
         if (configuration.get("guid", null) == null) {
-            configuration.options().header("BackupLite - http://mcstats.org").copyDefaults(true);
+            configuration.options().header("Backup - http://mcstats.org").copyDefaults(true);
             configuration.save(configurationFile);
         }
 

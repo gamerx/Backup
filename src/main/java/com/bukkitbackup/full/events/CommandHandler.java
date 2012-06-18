@@ -194,7 +194,7 @@ public class CommandHandler implements Listener, CommandExecutor {
                 sender.sendMessage(" ");
                 sender.sendMessage("Version Status: " + upToDate);
                 sender.sendMessage(" ");
-                sender.sendMessage("Loaded Version: " + plugin.getDescription().getVersion() + ".");
+                sender.sendMessage("Current Version: " + plugin.getDescription().getVersion() + ".");
                 sender.sendMessage("Latest Version: " + latestVersion + ".");
                 sender.sendMessage(" ");
             }
@@ -214,7 +214,7 @@ public class CommandHandler implements Listener, CommandExecutor {
         sender.sendMessage(" ");
         sender.sendMessage("Dev Info");
         sender.sendMessage("CI: ci.tgxn.net");
-        sender.sendMessage("BukktiDev: dev.bukkit.org/server-mods/backup");
+        sender.sendMessage("BukkitDev: dev.bukkit.org/server-mods/backup");
         sender.sendMessage(" ");
     }
 

@@ -53,7 +53,7 @@ backupeverything: false
 #======== File & Location Settings ==========#
 
 ## Directory to store backup in. (Default: backups)
-# Note: Path can be relative, or absolute. ('D:/Backups', '/var/backups', 'altbackups', and '~/backups' are all valid)
+# Note: Path can be relative, or absolute. ('D:\Backups', '/var/backups', 'altbackups', and '~/backups' are all valid)
 backuppath: backups
 
 ## Do we use the temp folder when doing backup? (Default: true)
@@ -61,6 +61,7 @@ usetemp: true
 
 ## Name for the temp folder. (Default: temp)
 # This stores tempoary files while backup is in progress.
+# Note: Path can be relative, or absolute. ('D:\temp', '/tmp', 'temp', and '~/backups/temp' are all valid)
 tempfoldername: temp
 
 ## Whether to ZIP Backups or not. (Default: true)
@@ -104,6 +105,7 @@ ftppassword:
 
 ## The directory on the FTP server you would like backups stored in.  (Default: backups)
 # Please leave blank for the root directory.
+# This folder MUST exist on the FTP server, and will NOT be created!
 ftpdirectory: backups
 
 

@@ -64,7 +64,7 @@ public class PrepareBackup implements Runnable {
                         prepareBackup();
                         isLastBackup = false;
                     } else {
-                        LogUtils.sendLog(strings.getString("abortedbackup", Integer.toString(settings.getIntervalInMinutes("backupinterval"))), Level.INFO, true);
+                        LogUtils.sendLog(strings.getString("abortedbackup", Integer.toString(settings.getIntervalInMinutes("backupinterval"))));
                     }
                 } else {
 
@@ -120,7 +120,7 @@ public class PrepareBackup implements Runnable {
         worldsToBackup = new LinkedList<String>();
         for (World world : server.getWorlds()) {
             if ((world.getName() != null) && !world.getName().isEmpty() && (!ignoredWorldNames.contains(world.getName()))) {
-                LogUtils.sendLog("Adding world '" + world.getName() + "' to backup list", Level.FINE, true);
+                LogUtils.sendLog("Adding world '" + world.getName() + "' to backup list");
                 worldsToBackup.add(world.getName());
             }
         }

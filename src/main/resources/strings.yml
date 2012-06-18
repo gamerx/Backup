@@ -56,10 +56,21 @@ unknowncommand       : Unknown command or incorrect syntax.
 unknownfailedversion : Unknown / Failed
 errorfolderempty     : Error listing directory, No entries!
 
+#========= FTP Strings ==========#
+
+ftpfailsettings      : 'FTP: Fail - Connection settings incorrect.'
+ftpfailnofile        : 'FTP: Fail - No file to upload.'
+ftpconnecting        : 'FTP: Connecting: %%ARG%%'
+ftpestablished       : 'FTP: Connection Estblished: %%ARG%%'
+ftphellomsg          : 'FTP: Hello Message: %%ARG%%'
+ftpchangedinto       : 'FTP: Changed into: %%ARG%%'
+ftpuploading         : 'FTP: Attempting to upload file...'
+ftpuploadcomplete    : 'FTP: Upload Complete.'
+
 ###############################################
 ##   Internal Settings (Read: DO NOT EDIT)   ##
 ###############################################
 
 stringnotfound       : 'String not found - '
 packagedwith         : 2.0-dev
-version              : str-61-4
+version              : str-62

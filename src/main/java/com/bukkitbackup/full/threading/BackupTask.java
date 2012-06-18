@@ -84,7 +84,7 @@ public class BackupTask implements Runnable {
 
         rootBackupPath = settings.getStringProperty("backuppath").concat(FILE_SEPARATOR);
 
-        rootTempPath = rootBackupPath.concat(settings.getStringProperty("tempfoldername")).concat(FILE_SEPARATOR);
+        rootTempPath = settings.getStringProperty("tempfoldername").concat(FILE_SEPARATOR);
         if (useTempFolder) {
             FileUtils.checkFolderAndCreate(new File(rootTempPath));
         }
@@ -112,14 +112,14 @@ public class BackupTask implements Runnable {
             if (settings.getBooleanProperty("backupworlds") && worldsToBackup != null) {
                 backupWorlds();
             } else {
-                LogUtils.sendLog(strings.getString("skipworlds"), Level.INFO, true);
+                LogUtils.sendLog(strings.getString("skipworlds"));
             }
 
             // Check plugin backup is enabled
             if (settings.getBooleanProperty("backupplugins")) {
                 backupPlugins();
             } else {
-                LogUtils.sendLog(strings.getString("skipplugins"), Level.INFO, true);
+                LogUtils.sendLog(strings.getString("skipplugins"));
             }
 
             // If this is a non-split backup, we need to ZIP the whole thing.
@@ -498,7 +498,7 @@ public class BackupTask implements Runnable {
             File[] filesList = backupDir.listFiles();
 
             if (filesList == null) {
-                LogUtils.sendLog(Level.SEVERE, "Failed to list backup directory.");
+                LogUtils.sendLog("Failed to list backup directory.");
                 return;
             }
 
@@ -545,7 +545,8 @@ public class BackupTask implements Runnable {
     private void finishBackup() {
 
         // Do the FTP upload if required.
-        doFTPUpload(thisFinalDestination);
+        if(shouldZIP)
+            doFTPUpload(thisFinalDestination+".zip");
 
         // Create new Runnable instance.
         Runnable run = new Runnable() {
@@ -597,8 +598,8 @@ public class BackupTask implements Runnable {
     private void doFTPUpload(String ZIPFile) {
 
         // This runs in another thread to ensure it does nto affect server performance.
-        if (settings.getBooleanProperty("ftpuploadenable") && settings.getBooleanProperty("zipbackup")) {
-            server.getScheduler().scheduleAsyncDelayedTask(plugin, new FTPUploader(server, settings, strings, ZIPFile));
+        if (settings.getBooleanProperty("ftpuploadenable")) {
+            server.getScheduler().scheduleAsyncDelayedTask(plugin, new FTPUploader(settings, strings, ZIPFile));
         }
     }
 }

@@ -7,58 +7,68 @@ import com.bukkitbackup.full.utils.LogUtils;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import org.bukkit.Server;
 import sun.net.ftp.FtpClient;
 
 public class FTPUploader extends FtpClient implements Runnable {
 
     private Settings settings;
     private Strings strings;
-
-    private static FtpClient ftpClient;
     private String fileToUpload;
+    private static FtpClient ftpClient;
 
-    public FTPUploader(Server server, Settings settings, Strings strings, String fileToUpload) {
+    public FTPUploader(Settings settings, Strings strings, String fileToUpload) {
         this.settings = settings;
         this.strings = strings;
         this.fileToUpload = fileToUpload;
     }
 
     public void run() {
-        FtpToServer(settings.getStringProperty("ftpserveraddress"), settings.getIntProperty("ftpserverport"), settings.getStringProperty("ftpusername"), settings.getStringProperty("ftppassword"), settings.getStringProperty("ftpdirectory"));
-    }
 
-    public void FtpToServer(String connAddress, int connPort, String connUser, String connPassword, String connTargetDIR) {
+        // Settings.
+        String connAddress = settings.getStringProperty("ftpserveraddress");
+        int connPort = settings.getIntProperty("ftpserverport");
+        String connUser = settings.getStringProperty("ftpusername");
+        String connPassword = settings.getStringProperty("ftppassword");
+        String connTargetDIR = settings.getStringProperty("ftpdirectory");
 
+
+        // Perform checking of settings.
         if (connAddress.equals("") || ((connPort < 0) && (connPort > 65535)) || connUser.equals("")) {
-            System.out.println("FTP: Fail - Connection settings incorrect.");
+            System.out.println(strings.getString("ftpfailsettings"));
             return;
         }
 
+        // Check the file.
         if (fileToUpload.isEmpty()) {
-            System.out.println("FTP: Fail - No file to upload.");
+            System.out.println(strings.getString("ftpfailnofile"));
             return;
         }
 
-        System.out.println(fileToUpload);
-
+        // Initalize the buffer for the upload.
         byte[] buffer = new byte[FileUtils.BUFFER_SIZE];
+
         try {
-            System.out.println("FTP: Connecting: " + connAddress+":"+connPort);
+
+            // Start the connection.
+            System.out.println(strings.getString("ftpconnecting", connAddress + ":" + connPort));
             ftpClient = new FtpClient(connAddress, connPort);
-            System.out.println("FTP: Connection Estblished: " + connAddress);
+            System.out.println(strings.getString("ftpestablished", connAddress));
 
+            // Atempt authentication.
             ftpClient.login(connUser, connPassword);
-            System.out.println("FTP: User " + connUser + " login OK");
-            System.out.println("FTP: Hello Message: " + ftpClient.welcomeMsg);
+            System.out.println(strings.getString("ftphellomsg", ftpClient.welcomeMsg));
 
-            System.out.println("FTP: Changing to: " + connTargetDIR);
-            ftpClient.cd(connTargetDIR);
-
-            System.out.println("FTP: Attempting to put file...");
+            // Switch to binary mode.
             ftpClient.binary();
 
-            System.out.println("Entering FTP");
+            // Change directory if required.
+            if(!connTargetDIR.equals("")) {
+                ftpClient.cd(connTargetDIR);
+                System.out.println(strings.getString("ftpchangedinto", connTargetDIR));
+            }
+
+            // Attempt the file upload.
+            System.out.println(strings.getString("ftpuploading"));
             FileInputStream in = new FileInputStream(fileToUpload.toString());
             OutputStream out = ftpClient.put(fileToUpload.substring(fileToUpload.lastIndexOf("\\") + 1));
             while (true) {
@@ -68,20 +78,22 @@ public class FTPUploader extends FtpClient implements Runnable {
                 }
                 out.write(buffer, 0, bytes);
             }
-            System.out.println("FTP Done");
+
+            // Notify complete, and close streams.
+            System.out.println(strings.getString("ftpuploadcomplete"));
             out.close();
             in.close();
 
-        } catch (IOException ex) {
-            LogUtils.exceptionLog(ex, "Exeption encountered!");
-            //Logger.getLogger(FTPUploader.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            LogUtils.exceptionLog(ex);
         }
-        
 
         if (ftpClient != null) {
             try {
+                // Close the ftp Client.
                 ftpClient.closeServer();
             } catch (IOException ex) {
+                LogUtils.exceptionLog(ex);
             }
             ftpClient = null;
         }

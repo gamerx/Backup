@@ -1,8 +1,7 @@
 package com.bukkitbackup.full.config;
 
-import java.io.*;
-import java.util.logging.Level;
 import com.bukkitbackup.full.utils.LogUtils;
+import java.io.*;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -63,14 +62,14 @@ public class Strings {
 
             // Check we got a version from the config file.
             if (stringVersion == null) {
-                LogUtils.sendLog("Failed to get strings file verison.", Level.SEVERE, true);
+                LogUtils.sendLog("Failed to get strings file verison.");
                 needsUpdate = true;
             } else if (!stringVersion.equals(requiredVersion)) {
                 needsUpdate = true;
             }
             // After we have checked the versions, we have determined that we need to update.
             if (needsUpdate) {
-                LogUtils.sendLog(Level.SEVERE, this.getString("stringsupdate"));
+                LogUtils.sendLog(this.getString("stringsupdate"));
             }
         }
     }

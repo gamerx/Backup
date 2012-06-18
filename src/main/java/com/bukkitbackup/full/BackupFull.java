@@ -124,7 +124,7 @@ public class BackupFull extends JavaPlugin {
         }
 
         // Notify loading complete.
-        LogUtils.sendLog(this.getDescription().getFullName() + " has completed loading!", false);
+        LogUtils.sendLog(this.getDescription().getFullName() + " has completed loading!");
     }
 
     @Override
@@ -134,6 +134,6 @@ public class BackupFull extends JavaPlugin {
         this.getServer().getScheduler().cancelTasks(this);
 
         // Shutdown complete.
-        LogUtils.sendLog(this.getDescription().getFullName() + " has completely un-loaded!", false);
+        LogUtils.sendLog(this.getDescription().getFullName() + " has completely un-loaded!");
     }
 }
