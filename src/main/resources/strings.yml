@@ -45,6 +45,9 @@ outofdate            : Out of Date
 pluginupdate         : 'Plugin is up to date, at version: %%ARG%%.'
 atlatestversion      : At latest version!
 skipbackupbypass     : Skipping backup because all players have bypass node.
+backupoff            : 'Backup is currently disabled, please use "/backup toggle" to re-enable.'
+backuptoggleoff      : 'Backup has been toggled off.'
+backuptoggleon       : 'Backup has been toggled on.'
 
 #========= Error Strings ==========#
 

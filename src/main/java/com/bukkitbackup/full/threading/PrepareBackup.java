@@ -1,12 +1,11 @@
 package com.bukkitbackup.full.threading;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.logging.Level;
 import com.bukkitbackup.full.config.Settings;
 import com.bukkitbackup.full.config.Strings;
 import com.bukkitbackup.full.utils.LogUtils;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -16,6 +15,7 @@ public class PrepareBackup implements Runnable {
 
     public boolean isLastBackup;
     public boolean isManualBackup;
+    public boolean backupEnabled;
     public LinkedList<String> worldsToBackup;
 
     private final Server server;
@@ -29,11 +29,15 @@ public class PrepareBackup implements Runnable {
         this.plugin = server.getPluginManager().getPlugin("Backup");
         this.strings = strings;
         isLastBackup = false;
+        backupEnabled = true;
     }
 
     @Override
     public void run() {
-        checkShouldDoBackup();
+        if(backupEnabled)
+            checkShouldDoBackup();
+        else
+            LogUtils.sendLog(strings.getString("backupoff"));
     }
 
     /**
@@ -120,7 +124,6 @@ public class PrepareBackup implements Runnable {
         worldsToBackup = new LinkedList<String>();
         for (World world : server.getWorlds()) {
             if ((world.getName() != null) && !world.getName().isEmpty() && (!ignoredWorldNames.contains(world.getName()))) {
-                LogUtils.sendLog("Adding world '" + world.getName() + "' to backup list");
                 worldsToBackup.add(world.getName());
             }
         }

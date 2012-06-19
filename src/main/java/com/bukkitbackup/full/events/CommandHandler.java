@@ -4,6 +4,7 @@ import com.bukkitbackup.full.config.Settings;
 import com.bukkitbackup.full.config.Strings;
 import com.bukkitbackup.full.config.UpdateChecker;
 import com.bukkitbackup.full.threading.PrepareBackup;
+import com.bukkitbackup.full.utils.LogUtils;
 import java.io.File;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
@@ -99,7 +100,12 @@ public class CommandHandler implements Listener, CommandExecutor {
                     if (checkPerms(sender, "backup.list")) {
                         listBackups(sender, 8);
                     }
-                } // Unknown command.
+                }
+                else if (args[0].equals("toggle")) {
+                    if (checkPerms(sender, "backup.toggle")) {
+                        toggleEnabled(sender);
+                    }
+                } // Help command - Show help & support info.} // Unknown command.
                 else {
                     sender.sendMessage(strings.getString("unknowncommand"));
                 }
@@ -307,6 +313,16 @@ public class CommandHandler implements Listener, CommandExecutor {
 
             // Console session.
             return true;
+        }
+    }
+
+    private void toggleEnabled(CommandSender sender) {
+        if(prepareBackup.backupEnabled) {
+            prepareBackup.backupEnabled = false;
+            sender.sendMessage(strings.getString("backuptoggleoff"));
+        } else {
+            prepareBackup.backupEnabled = true;
+            sender.sendMessage(strings.getString("backuptoggleon"));
         }
     }
 }

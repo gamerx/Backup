@@ -43,4 +43,7 @@ permissions:
   backup.updateconf:
     description: Able to update the backups configuration file.
     default: false
+  backup.toggle:
+    description: Ability to enable/disable backup.
+    default: false
   
