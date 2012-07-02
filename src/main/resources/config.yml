@@ -24,7 +24,9 @@ alwayssaveall: false
 saveallinterval: 0
 
 ## How many backups are retained? (Default: 25)
-# If this limit is hit, the oldest backup(s) will be removed. 
+# If this limit is hit, the oldest backup(s) will be removed.
+# (Note: -1 or 0 disables this feature.)
+# This can also be a max size, Format: [Size][K-KiloBytes, M-MegaBytes, G-GigaByes]
 maxbackups: 25
 
 ## Should backups be performed on an empty server? (Default: false)
@@ -135,14 +137,6 @@ pluginlist:
 # If false messages will only be logged to file.
 displaylog: true
 
-## Should we log the plugins logs to the file. (Default: false)
-# File is specified in "backuplogname".
-logtofile: false
-
-## Backup log file name. (Default: backup.log)
-# Filename for log file, it is stored under the plugins data folder.
-backuplogname: backup.log
-
 ## Should we send messages in-game on backup complete. (Default: true)
 # False will only notify players with the "backup.notify" permission.
 notifyallplayers: true
@@ -155,5 +149,5 @@ enableversioncheck: true
 ##   Internal Settings (Read: DO NOT EDIT)   ##
 ###############################################
 
-requiredstrings: str-100
+requiredstrings: str-101
 version: 2.0-dev

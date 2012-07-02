@@ -3,6 +3,9 @@
 #  @author Domenic Horner (gamerx)  #
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-#
 
+# Create seperate lines with ';;' - This will push the rest of the message onto another line.
+# and can be used as many times in a string as you like, Please let me know if you have any issues with this.
+
 #========= In-Game Strings ==========#
 
 norights             : '[Backup] You do not have enough rights to run the backup!'
@@ -36,8 +39,10 @@ allpluginsdisabled   : Plugin backup is on, but no plugins are selected.
 abortedbackup        : Aborted backup as no players online. Next attempt in %%ARG%% minutes.
 skipworlds           : Skipworlds is enabled.
 skipplugins          : Skipping plugin backup, for all plugins.
-removeold            : 'Removing the following backup(s) due to age:'
+removeoldage         : 'Removing the following backup(s) due to age:'
+removeoldsize        : 'Removing the following backup(s) due to size:'
 lastbackup           : Last player left, backing up!
+schedlastbackup      : 'Scheduled last backup for %%ARG%% minutes.'
 alwayssaveall        : Forcing /save-all, stand by!
 unknowntimeident     : Failed to detect interval amount. (Please use M, H, D, or W).
 pluginoutdate        : 'Plugin is out of date, this: %%ARG%%, latest: %%ARG1%%.'
@@ -59,6 +64,8 @@ checkbackupinterval  : Please check your backupinterval setting is formatted cor
 unknowncommand       : Unknown command or incorrect syntax.
 unknownfailedversion : Unknown / Failed
 errorfolderempty     : Error listing directory, No entries!
+checksizelimit       : Error getting maximum allowed backups.
+
 
 #========= FTP Strings ==========#
 
@@ -77,4 +84,4 @@ ftpuploadcomplete    : 'FTP: Upload Complete.'
 
 stringnotfound       : 'String not found - '
 packagedwith         : 2.0-dev
-version              : str-100
+version              : str-101

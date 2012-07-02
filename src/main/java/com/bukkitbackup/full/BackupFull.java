@@ -5,7 +5,6 @@ import com.bukkitbackup.full.config.Strings;
 import com.bukkitbackup.full.config.UpdateChecker;
 import com.bukkitbackup.full.events.CommandHandler;
 import com.bukkitbackup.full.events.EventListener;
-import com.bukkitbackup.full.threading.BackupTask;
 import com.bukkitbackup.full.threading.PrepareBackup;
 import com.bukkitbackup.full.threading.SyncSaveAll;
 import com.bukkitbackup.full.utils.FileUtils;

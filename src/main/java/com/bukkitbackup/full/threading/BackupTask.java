@@ -10,10 +10,12 @@ import com.bukkitbackup.full.utils.FileUtils;
 import static com.bukkitbackup.full.utils.FileUtils.FILE_SEPARATOR;
 import com.bukkitbackup.full.utils.LogUtils;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.List;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -210,51 +212,109 @@ public class BackupTask implements Runnable {
         }
     }
 
-    private void cleanFolder(File folder) throws IOException {
-
-        // Get properties.
+    private void cleanFolder(File folderToClean) throws IOException {
         try {
-            final int maxBackups = settings.getIntProperty("maxbackups");
 
-            // Store all doBackup files in an array.
-            File[] filesList = folder.listFiles();
+            // Get total backup limit.
+            int backupLimit = settings.getBackupLimits();
 
+            // List all the files inside this folder.
+            File[] filesList = FileUtils.listFilesInDir(folderToClean);
+
+            // Check we listed the directory.
             if (filesList == null) {
                 LogUtils.sendLog("Failed to list backup directory.");
                 return;
             }
 
-            // If the amount of files exceeds the max backups to keep.
-            if (filesList.length > maxBackups) {
-                ArrayList<File> backupList = new ArrayList<File>(filesList.length);
-                backupList.addAll(Arrays.asList(filesList));
+            // Using size to limit backups.
+            if (settings.useMaxSizeBackup) {
 
-                int maxModifiedIndex;
-                long maxModified;
+                // Get total folder size.
+                int totalFolderSize =  FileUtils.getTotalFolderSize(folderToClean);
 
-                //Remove the newst backups from the list.
-                for (int i = 0; i < maxBackups; ++i) {
-                    maxModifiedIndex = 0;
-                    maxModified = backupList.get(0).lastModified();
-                    for (int j = 1; j < backupList.size(); ++j) {
-                        File currentFile = backupList.get(j);
-                        if (currentFile.lastModified() > maxModified) {
-                            maxModified = currentFile.lastModified();
-                            maxModifiedIndex = j;
+                // If the amount of files exceeds the max backups to keep.
+                if (totalFolderSize > backupLimit) {
+
+                    // Create a list for deleted backups.
+                    ArrayList<File> deletedList = new ArrayList<File>(filesList.length);
+
+                    // Inti variables.
+                    int maxModifiedIndex;
+                    long maxModified;
+
+                    // While the total folder size is bigger than the limit.
+                    while (FileUtils.getTotalFolderSize(folderToClean) > backupLimit) {
+                        
+                        // Create updated list.
+                        filesList = FileUtils.listFilesInDir(folderToClean);
+
+                        // List of all the backups.
+                        ArrayList<File> backupList = new ArrayList<File>(filesList.length);
+                        backupList.addAll(Arrays.asList(filesList));
+
+                        // Loop backup list,
+                        for (int i = 0; backupList.size() > 1; i++) {
+                            maxModifiedIndex = 0;
+                            maxModified = backupList.get(0).lastModified();
+                            for (int j = 1; j < backupList.size(); ++j) {
+                                File currentFile = backupList.get(j);
+                                if (currentFile.lastModified() > maxModified) {
+                                    maxModified = currentFile.lastModified();
+                                    maxModifiedIndex = j;
+                                }
+                            }
+                            backupList.remove(maxModifiedIndex);
                         }
+                        FileUtils.deleteDir(backupList.get(0));
+                        deletedList.add(backupList.get(0));
                     }
-                    backupList.remove(maxModifiedIndex);
+
+
+                    // Inform the user what backups are being deleted.
+                    LogUtils.sendLog(strings.getString("removeoldsize"));
+                    LogUtils.sendLog(Arrays.toString(deletedList.toArray()));
                 }
 
-                // Inform the user what backups are being deleted.
-                LogUtils.sendLog(strings.getString("removeold"));
-                LogUtils.sendLog(Arrays.toString(backupList.toArray()));
 
-                // Finally delete the backups.
-                for (File backupToDelete : backupList) {
-                    FileUtils.deleteDir(backupToDelete);
+
+
+            } else { // Using amount of backups.
+
+                // If the amount of files exceeds the max backups to keep.
+                if (filesList.length > backupLimit) {
+                    ArrayList<File> backupList = new ArrayList<File>(filesList.length);
+                    backupList.addAll(Arrays.asList(filesList));
+
+                    int maxModifiedIndex;
+                    long maxModified;
+
+                    //Remove the newst backups from the list.
+                    for (int i = 0; i < backupLimit; ++i) {
+                        maxModifiedIndex = 0;
+                        maxModified = backupList.get(0).lastModified();
+                        for (int j = 1; j < backupList.size(); ++j) {
+                            File currentFile = backupList.get(j);
+                            if (currentFile.lastModified() > maxModified) {
+                                maxModified = currentFile.lastModified();
+                                maxModifiedIndex = j;
+                            }
+                        }
+                        backupList.remove(maxModifiedIndex);
+                    }
+
+                    // Inform the user what backups are being deleted.
+                    LogUtils.sendLog(strings.getString("removeoldage"));
+                    LogUtils.sendLog(Arrays.toString(backupList.toArray()));
+
+                    // Finally delete the backups.
+                    for (File backupToDelete : backupList) {
+                        FileUtils.deleteDir(backupToDelete);
+                    }
                 }
+
             }
+
         } catch (SecurityException se) {
             LogUtils.exceptionLog(se, "Failed to clean old backups: Security Exception.");
         }
@@ -297,20 +357,60 @@ public class BackupTask implements Runnable {
                 // Check there is a message.
                 if (completedBackupMessage != null && !completedBackupMessage.trim().isEmpty()) {
 
-                    if (settings.getBooleanProperty("notifyallplayers")) {
-                        pluginServer.broadcastMessage(completedBackupMessage);
-                    } else {
-                        // Verify Permissions
-                        Player[] players = pluginServer.getOnlinePlayers();
-                        // Loop through all online players.
-                        for (int pos = 0; pos < players.length; pos++) {
-                            Player currentplayer = players[pos];
+                    // Check if we are using multiple lines.
+                    if (completedBackupMessage.contains(";;")) {
 
-                            // If the current player has the right permissions, notify them.
-                            if (currentplayer.hasPermission("backup.notify")) {
-                                currentplayer.sendMessage(completedBackupMessage);
+                        // Convert to array of lines.
+                        List<String> messageList = Arrays.asList(completedBackupMessage.split(";;"));
+
+                        // Loop the lines of this message.
+                        for (int i = 0; i < messageList.size(); i++) {
+
+                            // Retrieve this line of the message.
+                            String thisMessage = messageList.get(i);
+
+                            // Notify all players, regardless of the permission node.
+                            if (settings.getBooleanProperty("notifyallplayers")) {
+                                pluginServer.broadcastMessage(thisMessage);
+                            } else {
+
+                                // Get all players.
+                                Player[] players = pluginServer.getOnlinePlayers();
+
+                                // Loop through all online players.
+                                for (int pos = 0; pos < players.length; pos++) {
+                                    Player currentplayer = players[pos];
+
+                                    // If the current player has the right permissions, notify them.
+                                    if (currentplayer.hasPermission("backup.notify")) {
+                                        currentplayer.sendMessage(thisMessage);
+                                    }
+                                }
+                            }
+                            LogUtils.sendLog(thisMessage, false);
+                        }
+
+                    } else {
+
+                        // Notify all players, regardless of the permission node.
+                        if (settings.getBooleanProperty("notifyallplayers")) {
+                            pluginServer.broadcastMessage(completedBackupMessage);
+                        } else {
+
+                            // Get all players.
+                            Player[] players = pluginServer.getOnlinePlayers();
+
+                            // Loop through all online players.
+                            for (int pos = 0; pos < players.length; pos++) {
+                                Player currentplayer = players[pos];
+
+                                // If the current player has the right permissions, notify them.
+                                if (currentplayer.hasPermission("backup.notify")) {
+                                    currentplayer.sendMessage(completedBackupMessage);
+                                }
                             }
                         }
+                        LogUtils.sendLog(completedBackupMessage, false);
                     }
                 }
             }

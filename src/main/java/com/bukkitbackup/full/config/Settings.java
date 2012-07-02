@@ -2,7 +2,6 @@ package com.bukkitbackup.full.config;
 
 import com.bukkitbackup.full.utils.LogUtils;
 import java.io.*;
-import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -16,6 +15,7 @@ public final class Settings {
     private Strings strings;
     private File configurationFile;
     private FileConfiguration fileConfiguration;
+    public boolean useMaxSizeBackup = false;
 
     public Settings(Plugin plugin, File configurationFile, Strings strings) {
         this.plugin = plugin;
@@ -216,6 +216,58 @@ public final class Settings {
             }
         } else {
             LogUtils.sendLog(strings.getString("checkbackupinterval"));
+            return 0;
+        }
+    }
+
+
+
+
+    /**
+     * Method that gets the amount of time between backups. - Checks string for
+     * no automatic backup. - Checks for if only number (as minutes). - Checks
+     * for properly formatted string. - If unknown amount of time, sets as
+     * minutes.
+     *
+     * @return Amount of time between backups. (In minutes)
+     */
+    public int getBackupLimits() {
+        String limitSetting = getStringProperty("maxbackups").trim().toLowerCase();
+
+        // If it is null or set to disable.
+        if (limitSetting.equals("-1") || limitSetting == null) {
+            return 0;
+        }
+        // If it is just a number, return minutes.
+        if (limitSetting.matches("^[0-9]+$")) {
+            return Integer.parseInt(limitSetting);
+        } else if (limitSetting.matches("[0-9]+[a-z]")) {
+            Pattern timePattern = Pattern.compile("^([0-9]+)[a-z]$");
+            Matcher amountTime = timePattern.matcher(limitSetting);
+            Pattern letterPattern = Pattern.compile("^[0-9]+([a-z])$");
+            Matcher letterTime = letterPattern.matcher(limitSetting);
+            if (letterTime.matches() && amountTime.matches()) {
+                String letter = letterTime.group(1);
+                int bytes = Integer.parseInt(amountTime.group(1));
+                useMaxSizeBackup = true;
+                if (letter.equals("k")) {
+                    return bytes;
+                } else if (letter.equals("k")) {
+                    return bytes * 1024;
+                } else if (letter.equals("m")) {
+                    return bytes * 1048576;
+                } else if (letter.equals("g")) {
+                    return bytes * 1073741824;
+                } else {
+                    LogUtils.sendLog(strings.getString("unknownsizeident"));
+                    return bytes;
+                }
+            } else {
+                LogUtils.sendLog(strings.getString("checksizelimit"));
+                return 0;
+            }
+        } else {
+            LogUtils.sendLog(strings.getString("checksizelimit"));
             return 0;
         }
     }

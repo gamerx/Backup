@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 /**
@@ -634,4 +635,28 @@ public class FileUtils {
 
     }
 
+
+    public static File[] listFilesInDir(File directory) {
+        // List all the files inside this folder.
+            File[] filesList = directory.listFiles(new FileFilter() {
+                public boolean accept(File file) {
+                    return file.isFile();
+                }
+            });
+            return filesList;
+    }
+
+
+        public static int getTotalFolderSize(File folder) {
+        int bytes = 0;
+        File[] filelist = folder.listFiles();
+        for (int i = 0; i < filelist.length; i++) {
+            if (filelist[i].isDirectory()) {
+                bytes += getTotalFolderSize(filelist[i]);
+            } else {
+                bytes += filelist[i].length();
+            }
+        }
+        return bytes;
+    }
 }

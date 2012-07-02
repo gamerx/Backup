@@ -6,7 +6,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.UUID;
-import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -96,7 +95,6 @@ public class MetricUtils {
                         // Each post thereafter will be a ping
                         firstPost = false;
                     } catch (IOException e) {
-                        Bukkit.getLogger().log(Level.INFO, "[Metrics] " + e.getMessage());
                     }
                 }
             }, 0, PING_INTERVAL * 1200);
@@ -116,10 +114,8 @@ public class MetricUtils {
                 // Reload the metrics file
                 configuration.load(CONFIG_FILE);
             } catch (IOException ex) {
-                Bukkit.getLogger().log(Level.INFO, "[ Metrics ] " + ex.getMessage());
                 return true;
             } catch (InvalidConfigurationException ex) {
-                Bukkit.getLogger().log(Level.INFO, "[ Metrics ] " + ex.getMessage());
                 return true;
             }
             return configuration.getBoolean("opt-out", false);

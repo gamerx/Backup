@@ -68,7 +68,7 @@ public class EventListener implements Listener {
             if (intervalInMinutes != 0) {
                 int interval =  intervalInMinutes * 1200;
                 lastBackupID = plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, prepareBackup, interval);
-                LogUtils.sendLog("Scheduled last backup for " + intervalInMinutes +" minutes.");
+                LogUtils.sendLog(strings.getString("schedlastbackup", Integer.toString(intervalInMinutes)));
             } else {
                 LogUtils.sendLog(strings.getString("disbaledauto"));
             }

@@ -3,7 +3,9 @@ package com.bukkitbackup.full.threading;
 import com.bukkitbackup.full.config.Settings;
 import com.bukkitbackup.full.config.Strings;
 import com.bukkitbackup.full.utils.LogUtils;
+import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -14,7 +16,6 @@ public class PrepareBackup implements Runnable {
     public boolean isManualBackup;
     public boolean backupEnabled;
     public LinkedList<String> worldsToBackup;
-
     private final Server server;
     private final Settings settings;
     private Strings strings;
@@ -31,10 +32,11 @@ public class PrepareBackup implements Runnable {
 
     @Override
     public synchronized void run() {
-        if(backupEnabled)
+        if (backupEnabled) {
             checkShouldDoBackup();
-        else
+        } else {
             LogUtils.sendLog(strings.getString("backupoff"));
+        }
     }
 
     /**
@@ -58,7 +60,7 @@ public class PrepareBackup implements Runnable {
 
                 // Checking online players.
                 if (server.getOnlinePlayers().length == 0) {
-                    
+
                     // Check if last backup
                     if (isLastBackup) {
                         LogUtils.sendLog(strings.getString("lastbackup"));
@@ -120,6 +122,7 @@ public class PrepareBackup implements Runnable {
 
         // Scedule the doBackup.
         server.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+
             @Override
             public void run() {
                 server.getScheduler().scheduleAsyncDelayedTask(plugin, new BackupTask(plugin, settings, strings));
@@ -127,8 +130,6 @@ public class PrepareBackup implements Runnable {
         });
         isManualBackup = false;
     }
-
-
 
     /**
      * Notify that the backup has started.
@@ -142,22 +143,60 @@ public class PrepareBackup implements Runnable {
         // Check the string is set.
         if (startBackupMessage != null && !startBackupMessage.trim().isEmpty()) {
 
-            // Notify all players, regardless of the permission node.
-            if (settings.getBooleanProperty("notifyallplayers")) {
-                server.broadcastMessage(startBackupMessage);
+            // Check if we are using multiple lines.
+            if (startBackupMessage.contains(";;")) {
+
+                // Convert to array of lines.
+                List<String> messageList = Arrays.asList(startBackupMessage.split(";;"));
+
+                // Loop the lines of this message.
+                for (int i = 0; i < messageList.size(); i++) {
+
+                    // Retrieve this line of the message.
+                    String thisMessage = messageList.get(i);
+
+                    // Notify all players, regardless of the permission node.
+                    if (settings.getBooleanProperty("notifyallplayers")) {
+                        server.broadcastMessage(thisMessage);
+                    } else {
+
+                        // Get all players.
+                        Player[] players = server.getOnlinePlayers();
+
+                        // Loop through all online players.
+                        for (int pos = 0; pos < players.length; pos++) {
+                            Player currentplayer = players[pos];
+
+                            // If the current player has the right permissions, notify them.
+                            if (currentplayer.hasPermission("backup.notify")) {
+                                currentplayer.sendMessage(thisMessage);
+                            }
+                        }
+                    }
+                    LogUtils.sendLog(thisMessage, false);
+                }
+
             } else {
 
-                // Get all players.
-                Player[] players = server.getOnlinePlayers();
-                // Loop through all online players.
-                for (int pos = 0; pos < players.length; pos++) {
-                    Player currentplayer = players[pos];
+                // Notify all players, regardless of the permission node.
+                if (settings.getBooleanProperty("notifyallplayers")) {
+                    server.broadcastMessage(startBackupMessage);
+                } else {
 
-                    // If the current player has the right permissions, notify them.
-                    if (currentplayer.hasPermission("backup.notify")) {
-                        currentplayer.sendMessage(startBackupMessage);
+                    // Get all players.
+                    Player[] players = server.getOnlinePlayers();
+
+                    // Loop through all online players.
+                    for (int pos = 0; pos < players.length; pos++) {
+                        Player currentplayer = players[pos];
+
+                        // If the current player has the right permissions, notify them.
+                        if (currentplayer.hasPermission("backup.notify")) {
+                            currentplayer.sendMessage(startBackupMessage);
+                        }
                     }
                 }
+                LogUtils.sendLog(startBackupMessage, false);
             }
         }
     }

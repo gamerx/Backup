@@ -4,8 +4,9 @@ import com.bukkitbackup.full.config.Settings;
 import com.bukkitbackup.full.config.Strings;
 import com.bukkitbackup.full.config.UpdateChecker;
 import com.bukkitbackup.full.threading.PrepareBackup;
-import com.bukkitbackup.full.utils.LogUtils;
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -100,14 +101,14 @@ public class CommandHandler implements Listener, CommandExecutor {
                     if (checkPerms(sender, "backup.list")) {
                         listBackups(sender, 8);
                     }
-                }
-                else if (args[0].equals("toggle")) {
+                } else if (args[0].equals("toggle")) {
                     if (checkPerms(sender, "backup.toggle")) {
                         toggleEnabled(sender);
                     }
                 } // Help command - Show help & support info.} // Unknown command.
                 else {
-                    sender.sendMessage(strings.getString("unknowncommand"));
+                    // Unknown Command Message.
+                    messageSender(sender, strings.getString("unknowncommand"));
                 }
 
             } else if (args.length == 2) {
@@ -119,12 +120,12 @@ public class CommandHandler implements Listener, CommandExecutor {
                     }
                 } // Unknown command.
                 else {
-                    sender.sendMessage(strings.getString("unknowncommand"));
+                    messageSender(sender, strings.getString("unknowncommand"));
                 }
 
                 // Unknown command.
             } else {
-                sender.sendMessage(strings.getString("unknowncommand"));
+                messageSender(sender, strings.getString("unknowncommand"));
             }
         }
 
@@ -150,10 +151,11 @@ public class CommandHandler implements Listener, CommandExecutor {
      * @param sender The CommandSender.
      */
     public void reloadPlugin(CommandSender sender) {
+        plugin.getServer().getScheduler().cancelTasks(plugin);
         plugin.onDisable();
         plugin.onLoad();
         plugin.onEnable();
-        sender.sendMessage(strings.getString("reloadedok", plugin.getDescription().getVersion()));
+        messageSender(sender, strings.getString("reloadedok", plugin.getDescription().getVersion()));
     }
 
     /**
@@ -164,7 +166,7 @@ public class CommandHandler implements Listener, CommandExecutor {
     private void showVersion(final CommandSender sender) {
 
         // Notify the caller.
-        sender.sendMessage(strings.getString("gettingversions"));
+        messageSender(sender, strings.getString("gettingversions"));
 
         // Start a new asynchronous task to get version and print them.
         server.getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable() {
@@ -292,7 +294,7 @@ public class CommandHandler implements Listener, CommandExecutor {
 
                 // Check player for permissions node.
                 if (!player.hasPermission(permissionNode)) {
-                    player.sendMessage(strings.getString("norights"));
+                    messageSender(player, strings.getString("norights"));
                     return false;
                 } else {
                     return true;
@@ -302,7 +304,7 @@ public class CommandHandler implements Listener, CommandExecutor {
 
                 // Check what to do in case of no permissions.
                 if (settings.getBooleanProperty("onlyops") && !player.isOp()) {
-                    player.sendMessage(strings.getString("norights"));
+                    messageSender(player, strings.getString("norights"));
                     return false;
                 } else {
                     return true;
@@ -317,12 +319,28 @@ public class CommandHandler implements Listener, CommandExecutor {
     }
 
     private void toggleEnabled(CommandSender sender) {
-        if(prepareBackup.backupEnabled) {
+        if (prepareBackup.backupEnabled) {
             prepareBackup.backupEnabled = false;
-            sender.sendMessage(strings.getString("backuptoggleoff"));
+            messageSender(sender, strings.getString("backuptoggleoff"));
         } else {
             prepareBackup.backupEnabled = true;
-            sender.sendMessage(strings.getString("backuptoggleon"));
+            messageSender(sender, strings.getString("backuptoggleon"));
+        }
+    }
+
+    private void messageSender(CommandSender sender, String stringsMessage) {
+
+        // Check if we are using multiple lines.
+        if (stringsMessage.contains(";;")) {
+
+            // Convert to array of lines.
+            List<String> messageList = Arrays.asList(stringsMessage.split(";;"));
+
+            // Loop the lines of this message.
+            for (int i = 0; i < messageList.size(); i++) {
+
+                sender.sendMessage(stringsMessage);
+            }
         }
     }
 }

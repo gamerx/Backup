@@ -34,13 +34,13 @@ public class FTPUploader extends FtpClient implements Runnable {
 
         // Perform checking of settings.
         if (connAddress.equals("") || ((connPort < 0) && (connPort > 65535)) || connUser.equals("")) {
-            System.out.println(strings.getString("ftpfailsettings"));
+            LogUtils.sendLog(strings.getString("ftpfailsettings"));
             return;
         }
 
         // Check the file.
         if (fileToUpload.isEmpty()) {
-            System.out.println(strings.getString("ftpfailnofile"));
+            LogUtils.sendLog(strings.getString("ftpfailnofile"));
             return;
         }
 
@@ -50,13 +50,13 @@ public class FTPUploader extends FtpClient implements Runnable {
         try {
 
             // Start the connection.
-            System.out.println(strings.getString("ftpconnecting", connAddress + ":" + connPort));
+            LogUtils.sendLog(strings.getString("ftpconnecting", connAddress + ":" + connPort));
             ftpClient = new FtpClient(connAddress, connPort);
-            System.out.println(strings.getString("ftpestablished", connAddress));
+            LogUtils.sendLog(strings.getString("ftpestablished", connAddress));
 
             // Atempt authentication.
             ftpClient.login(connUser, connPassword);
-            System.out.println(strings.getString("ftphellomsg", ftpClient.welcomeMsg));
+            LogUtils.sendLog(strings.getString("ftphellomsg", ftpClient.welcomeMsg));
 
             // Switch to binary mode.
             ftpClient.binary();
@@ -64,11 +64,11 @@ public class FTPUploader extends FtpClient implements Runnable {
             // Change directory if required.
             if(!connTargetDIR.equals("")) {
                 ftpClient.cd(connTargetDIR);
-                System.out.println(strings.getString("ftpchangedinto", connTargetDIR));
+                LogUtils.sendLog(strings.getString("ftpchangedinto", connTargetDIR));
             }
 
             // Attempt the file upload.
-            System.out.println(strings.getString("ftpuploading"));
+            LogUtils.sendLog(strings.getString("ftpuploading"));
             FileInputStream in = new FileInputStream(fileToUpload.toString());
             OutputStream out = ftpClient.put(fileToUpload.substring(fileToUpload.lastIndexOf("\\") + 1));
             while (true) {
@@ -80,7 +80,7 @@ public class FTPUploader extends FtpClient implements Runnable {
             }
 
             // Notify complete, and close streams.
-            System.out.println(strings.getString("ftpuploadcomplete"));
+            LogUtils.sendLog(strings.getString("ftpuploadcomplete"));
             out.close();
             in.close();
 
