@@ -34,7 +34,7 @@ disabledplugins      : 'Backup is disabled for the following plugin(s):'
 enabledplugins       : 'Backup is enabled for the following plugin(s):'
 allpluginsdisabled   : Plugin backup is on, but no plugins are selected.
 abortedbackup        : Aborted backup as no players online. Next attempt in %%ARG%% minutes.
-skipworlds           : Either skipworlds is enabled or there are no worlds to backup.
+skipworlds           : Skipworlds is enabled.
 skipplugins          : Skipping plugin backup, for all plugins.
 removeold            : 'Removing the following backup(s) due to age:'
 lastbackup           : Last player left, backing up!
@@ -48,6 +48,7 @@ skipbackupbypass     : Skipping backup because all players have bypass node.
 backupoff            : 'Backup is currently disabled, please use "/backup toggle" to re-enable.'
 backuptoggleoff      : 'Backup has been toggled off.'
 backuptoggleon       : 'Backup has been toggled on.'
+noworlds             : There are no worlds to backup.
 
 #========= Error Strings ==========#
 
@@ -76,4 +77,4 @@ ftpuploadcomplete    : 'FTP: Upload Complete.'
 
 stringnotfound       : 'String not found - '
 packagedwith         : 2.0-dev
-version              : str-62
+version              : str-100

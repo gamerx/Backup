@@ -5,6 +5,7 @@ import com.bukkitbackup.full.config.Strings;
 import com.bukkitbackup.full.config.UpdateChecker;
 import com.bukkitbackup.full.events.CommandHandler;
 import com.bukkitbackup.full.events.EventListener;
+import com.bukkitbackup.full.threading.BackupTask;
 import com.bukkitbackup.full.threading.PrepareBackup;
 import com.bukkitbackup.full.threading.SyncSaveAll;
 import com.bukkitbackup.full.utils.FileUtils;
@@ -21,12 +22,15 @@ public class BackupFull extends JavaPlugin {
     public int mainBackupTaskID = -2;
     public int saveAllTaskID = -2;
     public File mainDataFolder;
+    public static boolean shouldDebug = true;
+    
     private static Strings strings;
     private static Settings settings;
     private PrepareBackup prepareBackup;
     private SyncSaveAll syncSaveAllUtil;
     private UpdateChecker updateChecker;
     private String clientID;
+    
 
     @Override
     public void onLoad() {

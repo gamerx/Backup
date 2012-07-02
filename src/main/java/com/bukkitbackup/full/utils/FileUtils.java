@@ -18,10 +18,13 @@
  */
 package com.bukkitbackup.full.utils;
 
+import com.bukkitbackup.full.threading.BackupTask;
 import java.io.*;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -555,10 +558,80 @@ public class FileUtils {
                 if (toCheck.mkdirs()) {
                     return true;
                 }
-            } catch (SecurityException se) {
-                LogUtils.exceptionLog(se);
+            } catch (Exception e) {
+                LogUtils.exceptionLog(e);
             }
         }
         return false;
     }
+
+    /**
+     * Add the folder specified to a ZIP file.
+     *
+     * @param folderToZIP
+     *
+     * ZIPENABLED
+     *
+     * backups/temp/blah -> backups/blah.zip
+     *
+     * ~~~ OR ~~~
+     *
+     * backups/temp/blah -> ( backups/blah
+     *
+     * sourceDIR finalDIR
+     *
+     */
+    /**
+     * Copies items from the temp DIR to the main DIR after ZIP if needed. After
+     * it has done the required action, it deletes the source folder.
+     *
+     * @param sourceDIR The source directory. (ex: "backups/temp/xxxxxxxx")
+     * @param finalDIR The final destination. (ex: "backups/xxxxxxxx")
+     */
+    public static void doCopyAndZIP(String sourceDIR, String finalDIR, boolean shouldZIP, boolean  useTempFolder) {
+
+        if (useTempFolder) {
+            if (shouldZIP) {
+                try {
+                    FileUtils.zipDir(sourceDIR, finalDIR);
+                } catch (IOException ioe) {
+                    LogUtils.exceptionLog(ioe, "Failed to ZIP backup: IO Exception.");
+                }
+            } else {
+                try {
+                    FileUtils.copyDirectory(sourceDIR, finalDIR);
+                } catch (IOException ex) {
+                    Logger.getLogger(BackupTask.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+            }
+            try {
+                // Delete the original doBackup directory.
+                FileUtils.deleteDirectory(new File(sourceDIR));
+                new File(sourceDIR).delete();
+            } catch (IOException ioe) {
+                LogUtils.exceptionLog(ioe, "Failed to delete temp folder: IO Exception.");
+            }
+        } else {
+            if (shouldZIP) {
+                try {
+                    FileUtils.zipDir(sourceDIR, finalDIR);
+                } catch (IOException ioe) {
+                    LogUtils.exceptionLog(ioe, "Failed to ZIP backup: IO Exception.");
+                }
+                try {
+                    // Delete the original doBackup directory.
+                    FileUtils.deleteDirectory(new File(sourceDIR));
+                    new File(sourceDIR).delete();
+                } catch (IOException ioe) {
+                    LogUtils.exceptionLog(ioe, "Failed to delete temp folder: IO Exception.");
+                }
+            }
+
+        }
+
+
+
+    }
+
 }

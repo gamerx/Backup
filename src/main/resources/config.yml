@@ -59,10 +59,11 @@ backuppath: backups
 ## Do we use the temp folder when doing backup? (Default: true)
 usetemp: true
 
-## Name for the temp folder. (Default: temp)
+## Name for the temp folder. (Default: none)
 # This stores tempoary files while backup is in progress.
 # Note: Path can be relative, or absolute. ('D:\temp', '/tmp', 'temp', and '~/backups/temp' are all valid)
-tempfoldername: temp
+# if this si not set, it defaults to a temp folder under the backups folder.
+tempfoldername:
 
 ## Whether to ZIP Backups or not. (Default: true)
 # If enabled, backups will be compressed and stored in a ZIP archive named with the current timestamp.
@@ -73,14 +74,14 @@ zipbackup: true
 # Needs to be true to be compatible with WorldEdit.
 splitbackup: false
 
-## Custom date format string that is appended to every backup.
-## If left empty, the default date format is used.
-## This has to be a Java String.format string, see
-## http://download.oracle.com/javase/1.5.0/docs/api/java/util/Formatter.html#syntax
-##for reference.
-## Example: -%1$tY%1$tm%1$td-%1$tH%1$tM%1$tS (YYYYMMDD-HHMMSS: 20101201-011323) (conforms to ISO 8601)
+## Customize the date format for each backup. (Default: '%1$tY%1$tm%1$td-%1$tH%1$tM%1$tS' [YYYYMMDD-HHMMSS])
+# This has to be a Java String.format string, see
+# http://download.oracle.com/javase/1.5.0/docs/api/java/util/Formatter.html#syntax
 dateformat: '%1$tY%1$tm%1$td-%1$tH%1$tM%1$tS'
 
+## WorldEdit Fixes Enabled? (Default: false)
+# If you are having issues with WorldEdit restores, then enable this.
+worldeditfix: false
 
 #======== FTP Server Settings ==========#
 
@@ -117,7 +118,7 @@ backupworlds: true
 backupplugins: true
 
 ## Worlds for the backup to skip. (Default: none)
-# Seperate by a semicolon. eg. World1;World2;Nether
+# Seperate by a semicolon. eg. world;world_nether
 skipworlds:
 
 ## Mode for the below list. (Default: true [Exclude listed files/folders])
@@ -154,5 +155,5 @@ enableversioncheck: true
 ##   Internal Settings (Read: DO NOT EDIT)   ##
 ###############################################
 
-requiredstrings: str-61-4
+requiredstrings: str-100
 version: 2.0-dev

@@ -3,11 +3,8 @@ package com.bukkitbackup.full.threading;
 import com.bukkitbackup.full.config.Settings;
 import com.bukkitbackup.full.config.Strings;
 import com.bukkitbackup.full.utils.LogUtils;
-import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.List;
 import org.bukkit.Server;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -33,7 +30,7 @@ public class PrepareBackup implements Runnable {
     }
 
     @Override
-    public void run() {
+    public synchronized void run() {
         if(backupEnabled)
             checkShouldDoBackup();
         else
@@ -119,46 +116,19 @@ public class PrepareBackup implements Runnable {
         // Save all players.
         server.savePlayers();
 
-        // Create list of worlds to ignore.
-        List<String> ignoredWorldNames = getIgnoredWorldNames();
-        worldsToBackup = new LinkedList<String>();
-        for (World world : server.getWorlds()) {
-            if ((world.getName() != null) && !world.getName().isEmpty() && (!ignoredWorldNames.contains(world.getName()))) {
-                worldsToBackup.add(world.getName());
-            }
-        }
+
 
         // Scedule the doBackup.
         server.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
             @Override
             public void run() {
-                server.getScheduler().scheduleAsyncDelayedTask(plugin, new BackupTask(server, settings, strings, worldsToBackup));
+                server.getScheduler().scheduleAsyncDelayedTask(plugin, new BackupTask(plugin, settings, strings));
             }
         });
         isManualBackup = false;
     }
 
-    /**
-     * Function to get world names to ignore.
-     *
-     * @return A List[] of the world names we should not be backing up.
-     */
-    private List<String> getIgnoredWorldNames() {
 
-        // Get skipped worlds form config.
-        List<String> worldNames = Arrays.asList(settings.getStringProperty("skipworlds").split(";"));
-
-        // Loop all ignored worlds.
-        if (worldNames.size() > 0 && !worldNames.get(0).isEmpty()) {
-
-            // Log what worlds are disabled.
-            LogUtils.sendLog(strings.getString("disabledworlds"));
-            LogUtils.sendLog(worldNames.toString());
-        }
-
-        // Return the world names.
-        return worldNames;
-    }
 
     /**
      * Notify that the backup has started.

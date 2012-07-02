@@ -7,6 +7,7 @@ import com.bukkitbackup.full.utils.LogUtils;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -41,27 +42,27 @@ public class EventListener implements Listener {
     
     @EventHandler(priority = EventPriority.LOW)
     public void onPlayerQuit(PlayerQuitEvent event) {
-        playerPart();
+        playerPart(event);
     }
     
     @EventHandler(priority = EventPriority.LOW)
     public void onPlayerKick(PlayerKickEvent event) {
-        playerPart();
+        playerPart(event);
     }
 
     @EventHandler(priority = EventPriority.LOW)
     public void onPlayerJoin(PlayerJoinEvent event) {
-        playerJoin();
+        playerJoin(event);
     }
 
     /**
      * Called when a player leaves the server.
      *
      */
-    private void playerPart() {
+    private void playerPart(PlayerEvent event) {
          int onlinePlayers = plugin.getServer().getOnlinePlayers().length;
          // Check if it was the last player, and we need to stop backups after this last player leaves.
-         if (onlinePlayers == 1 && settings.getBooleanProperty("backupemptyserver")) {
+         if (onlinePlayers == 1 && !settings.getBooleanProperty("backupemptyserver")) {
             prepareBackup.setAsLastBackup(true);
             int intervalInMinutes = settings.getIntervalInMinutes("backupinterval");
             if (intervalInMinutes != 0) {
@@ -78,7 +79,7 @@ public class EventListener implements Listener {
      * Called when a player joins the server.
      *
      */
-    private void playerJoin() {
+    private void playerJoin(PlayerEvent event) {
         if(lastBackupID != -2) {
             plugin.getServer().getScheduler().cancelTask(lastBackupID);
             lastBackupID = -2;
