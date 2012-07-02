@@ -1,5 +1,6 @@
 package com.bukkitbackup.full.threading;
 
+import com.bukkitbackup.full.BackupFull;
 import com.bukkitbackup.full.config.Settings;
 import com.bukkitbackup.full.config.Strings;
 import com.bukkitbackup.full.ftp.FTPUploader;
@@ -10,7 +11,6 @@ import com.bukkitbackup.full.utils.FileUtils;
 import static com.bukkitbackup.full.utils.FileUtils.FILE_SEPARATOR;
 import com.bukkitbackup.full.utils.LogUtils;
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -69,10 +69,10 @@ public class BackupTask implements Runnable {
         useTemp = settings.getBooleanProperty("usetemp");
         dateFormat = settings.getStringProperty("dateformat");
 
-        // Setup backup tasks.
-        everythingBackupTask = new BackupEverything(settings, strings);
-        worldBackupTask = new BackupWorlds(plugin.getServer(), settings, strings);
-        pluginBackupTask = new BackupPlugins(settings, strings);
+        // Import backup tasks.
+        everythingBackupTask = BackupFull.backupEverything;
+        worldBackupTask = BackupFull.backupWorlds;
+        pluginBackupTask = BackupFull.backupPlugins;
 
         // Generate the worldTempStore.
         if (useTemp) {

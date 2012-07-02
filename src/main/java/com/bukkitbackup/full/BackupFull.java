@@ -5,8 +5,12 @@ import com.bukkitbackup.full.config.Strings;
 import com.bukkitbackup.full.config.UpdateChecker;
 import com.bukkitbackup.full.events.CommandHandler;
 import com.bukkitbackup.full.events.EventListener;
+import com.bukkitbackup.full.threading.BackupTask;
 import com.bukkitbackup.full.threading.PrepareBackup;
 import com.bukkitbackup.full.threading.SyncSaveAll;
+import com.bukkitbackup.full.threading.tasks.BackupEverything;
+import com.bukkitbackup.full.threading.tasks.BackupPlugins;
+import com.bukkitbackup.full.threading.tasks.BackupWorlds;
 import com.bukkitbackup.full.utils.FileUtils;
 import com.bukkitbackup.full.utils.LogUtils;
 import com.bukkitbackup.full.utils.MetricUtils;
@@ -29,6 +33,11 @@ public class BackupFull extends JavaPlugin {
     private SyncSaveAll syncSaveAllUtil;
     private UpdateChecker updateChecker;
     private String clientID;
+
+    public static BackupEverything backupEverything;
+    public static BackupWorlds backupWorlds;
+    public static BackupPlugins backupPlugins;
+    public static BackupTask backupTask;
     
 
     @Override
@@ -75,8 +84,16 @@ public class BackupFull extends JavaPlugin {
         Server pluginServer = getServer();
         PluginManager pluginManager = pluginServer.getPluginManager();
 
+        // Setup backup tasks.
+        backupEverything = new BackupEverything(settings, strings);
+        backupWorlds = new BackupWorlds(pluginServer, settings, strings);
+        backupPlugins = new BackupPlugins(settings, strings);
+        backupTask = new BackupTask(this, settings, strings);
+
         // Create new "PrepareBackup" instance.
         prepareBackup = new PrepareBackup(pluginServer, settings, strings);
+
+
 
         // Initalize the update checker code.
         updateChecker = new UpdateChecker(this.getDescription(), strings, clientID);

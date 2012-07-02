@@ -99,7 +99,7 @@ public class BackupWorlds {
 
                 // Check if we have a different container for worlds.
                 if (!worldContainer.equals(".")) { // Custom.
-                    thisWorldBackupPath = backupPath.concat(FILE_SEPARATOR).concat(worldContainer).concat(currentWorldName);
+                    thisWorldBackupPath = backupPath.concat(FILE_SEPARATOR).concat(worldContainer).concat(FILE_SEPARATOR).concat(currentWorldName);
                 } else {
                     thisWorldBackupPath = backupPath.concat(FILE_SEPARATOR).concat(currentWorldName);
                 }

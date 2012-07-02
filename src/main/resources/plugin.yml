@@ -14,36 +14,30 @@ commands:
     usage: "Usage: /bu [args]"
 permissions:
   backup.*:
-    description: Gives access to all permissins.
+    description: Permission to perform all commands.
     default: op
   backup.backup:
-    description: Ability to perform backups
-    default: false
-  backup.reload:
-    description: Reload backup's configuration
+    description: Permission to perform a manual backup.
     default: false
   backup.notify:
-    description: Players with this permissions get notified of backups.
+    description: Permission to see when backups are started and completed.
+    default: false
+  backup.reload:
+    description: Permission to reload configuration/strings.
+    default: false
+  backup.ver:
+    description: Permission to display the version information.
+    default: true
+  backup.help:
+    description: Permission to view help information.
+    default: false
+  backup.list:
+    description: Permission to list the backups.
+    default: false
+  backup.toggle:
+    description: Permission to enable/disable automatic backups.
     default: false
   backup.bypass:
     description: Players with this permission are not counted as online players.
     default: false
-  backup.help:
-    description: Able to view plugin's help menu.
-    default: false
-  backup.list:
-    description: Able to list backups.
-    default: false
-  backup.config:
-    description: Able to view configuration.
-    default: false
-  backup.log:
-    description: Able to view log file.
-    default: false
-  backup.updateconf:
-    description: Able to update the backups configuration file.
-    default: false
-  backup.toggle:
-    description: Ability to enable/disable backup.
-    default: false
-  
+    

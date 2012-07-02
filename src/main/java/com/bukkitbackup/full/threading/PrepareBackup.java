@@ -1,5 +1,6 @@
 package com.bukkitbackup.full.threading;
 
+import com.bukkitbackup.full.BackupFull;
 import com.bukkitbackup.full.config.Settings;
 import com.bukkitbackup.full.config.Strings;
 import com.bukkitbackup.full.utils.LogUtils;
@@ -125,7 +126,7 @@ public class PrepareBackup implements Runnable {
 
             @Override
             public void run() {
-                server.getScheduler().scheduleAsyncDelayedTask(plugin, new BackupTask(plugin, settings, strings));
+                server.getScheduler().scheduleAsyncDelayedTask(plugin, BackupFull.backupTask);
             }
         });
         isManualBackup = false;
