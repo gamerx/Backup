@@ -6,11 +6,15 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+/**
+ * Class for loading the strings configuration file.
+ *
+ * @author Domenic Horner
+ */
 public class Strings {
 
-    // Private variables for this class.
     private File stringsFile;
-    private FileConfiguration fileStringConfiguration;
+    private FileConfiguration strings;
 
     /**
      * Loads the strings configuration file. If it does not exist, it creates it
@@ -19,29 +23,22 @@ public class Strings {
      * @param stringsFile The file that strings should be loaded from.
      */
     public Strings(File stringsFile) {
+
         this.stringsFile = stringsFile;
 
-        // Check strings file exists, and create is needed.
-        checkAndCreate();
-
-        // Lod strings from configuration file.
-        loadStrings();
-    }
-
-    /**
-     * Checks that the file exists and if not, creates defaults.
-     */
-    private void checkAndCreate() {
-        // Check for the config file, have it created if needed.
         try {
+
+            // Check strings file exists, and create is needed.
             if (!stringsFile.exists()) {
                 createDefaultStrings();
             }
-        } catch (NullPointerException npe) {
-            LogUtils.exceptionLog(npe, "Error checking strings file.");
-        } catch (SecurityException se) {
-            LogUtils.exceptionLog(se, "Error checking strings file.");
+
+        } catch (Exception e) {
+            LogUtils.exceptionLog(e, "Error checking for strings file.");
         }
+
+        // Load strings from configuration file.
+        loadStrings();
     }
 
     /**
@@ -55,10 +52,10 @@ public class Strings {
         boolean needsUpdate = false;
 
         // Check strings are loaded.
-        if (fileStringConfiguration != null) {
+        if (strings != null) {
 
             // Get the version information from the file.
-            String stringVersion = fileStringConfiguration.getString("version", null);
+            String stringVersion = strings.getString("version", null);
 
             // Check we got a version from the config file.
             if (stringVersion == null) {
@@ -78,15 +75,11 @@ public class Strings {
      * Load strings configuration into memory from file.
      */
     private void loadStrings() {
-        fileStringConfiguration = new YamlConfiguration();
+        strings = new YamlConfiguration();
         try {
-            fileStringConfiguration.load(stringsFile);
-        } catch (FileNotFoundException ex) {
-            LogUtils.exceptionLog(ex, "Error loading strings file.");
-        } catch (InvalidConfigurationException ice) {
-            LogUtils.exceptionLog(ice, "Error loading strings file.");
-        } catch (IOException ioe) {
-            LogUtils.exceptionLog(ioe, "Error loading strings file.");
+            strings.load(stringsFile);
+        } catch (Exception e) {
+            LogUtils.exceptionLog(e, "Error loading strings file.");
         }
     }
 
@@ -149,13 +142,13 @@ public class Strings {
     public String getString(String property) {
 
         // Get string for this name.
-        String string = fileStringConfiguration.getString(property);
+        String string = strings.getString(property);
 
         // If we cannot find a string for this, return default.
         if (string != null) {
             return colorizeString(string);
         } else {
-            return fileStringConfiguration.getString("stringnotfound") + property;
+            return strings.getString("stringnotfound") + property;
         }
     }
 
@@ -170,13 +163,13 @@ public class Strings {
     public String getString(String property, String option) {
 
         // Get string for this name.
-        String string = fileStringConfiguration.getString(property);
+        String string = strings.getString(property);
 
         // If we cannot find a string for this, return default.
         if (string != null) {
             return colorizeString(string.replaceAll("%%ARG%%", option));
         } else {
-            return fileStringConfiguration.getString("stringnotfound") + property;
+            return strings.getString("stringnotfound") + property;
         }
     }
 
@@ -191,7 +184,7 @@ public class Strings {
     public String getString(String property, String optionOne, String optionTwo) {
 
         // Get string for this name.
-        String string = fileStringConfiguration.getString(property);
+        String string = strings.getString(property);
 
         // If we cannot find a string for this, return default.
         if (string != null) {
@@ -200,7 +193,7 @@ public class Strings {
 
             return colorizeString(string);
         } else {
-            return fileStringConfiguration.getString("stringnotfound") + property;
+            return strings.getString("stringnotfound") + property;
         }
     }
 

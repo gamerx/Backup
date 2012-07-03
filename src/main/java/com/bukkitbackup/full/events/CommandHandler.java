@@ -236,7 +236,7 @@ public class CommandHandler implements Listener, CommandExecutor {
     private void listBackups(CommandSender sender, int amount) {
 
         // Get the backups path.
-        String backupDir = settings.getStringProperty("backuppath");
+        String backupDir = settings.getStringProperty("backuppath", "backups");
 
         // Make a list.
         String[] filesList = new File(backupDir).list();
@@ -303,7 +303,7 @@ public class CommandHandler implements Listener, CommandExecutor {
             } else {
 
                 // Check what to do in case of no permissions.
-                if (settings.getBooleanProperty("onlyops") && !player.isOp()) {
+                if (settings.getBooleanProperty("onlyops", true) && !player.isOp()) {
                     messageSender(player, strings.getString("norights"));
                     return false;
                 } else {

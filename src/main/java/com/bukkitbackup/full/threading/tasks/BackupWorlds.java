@@ -67,15 +67,16 @@ public class BackupWorlds {
         worldContainer = pluginServer.getWorldContainer().getName();
 
         // Get backup properties.
-        backupPath = settings.getStringProperty("backuppath");
-        shouldZIP = settings.getBooleanProperty("zipbackup");
-        splitBackup = settings.getBooleanProperty("splitbackup");
-        useTemp = settings.getBooleanProperty("usetemp");
+        backupPath = settings.getStringProperty("backuppath", "backups");
+        shouldZIP = settings.getBooleanProperty("zipbackup", true);
+        splitBackup = settings.getBooleanProperty("splitbackup", false);
+        useTemp = settings.getBooleanProperty("usetemp", true);
 
         // Generate the worldStore.
         if (useTemp) {
-            if (!settings.getStringProperty("tempfoldername").equals("")) { // Absolute.
-                tempDestination = settings.getStringProperty("tempfoldername").concat(FILE_SEPARATOR);
+            String tempFolder = settings.getStringProperty("tempfoldername", "");
+            if (!tempFolder.equals("")) { // Absolute.
+                tempDestination = tempFolder.concat(FILE_SEPARATOR);
             } else { // Relative.
                 tempDestination = backupPath.concat(FILE_SEPARATOR).concat("temp").concat(FILE_SEPARATOR);
             }
@@ -118,7 +119,7 @@ public class BackupWorlds {
                 }
 
                 // Copy the current world into it's backup folder.
-                if (settings.getBooleanProperty("worldeditfix")) {
+                if (settings.getBooleanProperty("worldeditfix", false)) {
                     thisWorldBackupFolder = thisWorldBackupFolder.concat(FILE_SEPARATOR).concat(currentWorldName);
                 }
 
@@ -161,7 +162,7 @@ public class BackupWorlds {
     private List<String> getIgnoredWorldNames() {
 
         // Get skipped worlds form config.
-        List<String> worldNames = Arrays.asList(settings.getStringProperty("skipworlds").split(";"));
+        List<String> worldNames = Arrays.asList(settings.getStringProperty("skipworlds", "").split(";"));
 
         // Loop all ignored worlds.
         if (worldNames.size() > 0 && !worldNames.get(0).isEmpty()) {

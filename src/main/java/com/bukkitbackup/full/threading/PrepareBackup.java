@@ -55,7 +55,7 @@ public class PrepareBackup implements Runnable {
         } else {
 
             // No player checking.
-            if (settings.getBooleanProperty("backupemptyserver")) {
+            if (settings.getBooleanProperty("backupemptyserver", false)) {
                 prepareBackup();
             } else {
 
@@ -99,7 +99,7 @@ public class PrepareBackup implements Runnable {
         }
 
         // Check we should do a save-all.
-        if (settings.getBooleanProperty("alwayssaveall")) {
+        if (settings.getBooleanProperty("alwayssaveall", false)) {
             server.getScheduler().scheduleSyncDelayedTask(plugin, new SyncSaveAll(server, 0));
             LogUtils.sendLog(strings.getString("alwayssaveall"));
         }
@@ -157,7 +157,7 @@ public class PrepareBackup implements Runnable {
                     String thisMessage = messageList.get(i);
 
                     // Notify all players, regardless of the permission node.
-                    if (settings.getBooleanProperty("notifyallplayers")) {
+                    if (settings.getBooleanProperty("notifyallplayers", true)) {
                         server.broadcastMessage(thisMessage);
                     } else {
 
@@ -180,7 +180,7 @@ public class PrepareBackup implements Runnable {
             } else {
 
                 // Notify all players, regardless of the permission node.
-                if (settings.getBooleanProperty("notifyallplayers")) {
+                if (settings.getBooleanProperty("notifyallplayers", true)) {
                     server.broadcastMessage(startBackupMessage);
                 } else {
 

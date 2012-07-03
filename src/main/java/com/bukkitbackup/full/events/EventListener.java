@@ -62,7 +62,7 @@ public class EventListener implements Listener {
     private void playerPart(PlayerEvent event) {
          int onlinePlayers = plugin.getServer().getOnlinePlayers().length;
          // Check if it was the last player, and we need to stop backups after this last player leaves.
-         if (onlinePlayers == 1 && !settings.getBooleanProperty("backupemptyserver")) {
+         if (onlinePlayers == 1 && !settings.getBooleanProperty("backupemptyserver", false)) {
             prepareBackup.setAsLastBackup(true);
             int intervalInMinutes = settings.getIntervalInMinutes("backupinterval");
             if (intervalInMinutes != 0) {

@@ -4,61 +4,86 @@ import com.bukkitbackup.full.utils.LogUtils;
 import java.io.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
+/**
+ * Class for loading the configuration file.
+ *
+ * @author Domenic Horner
+ */
 public final class Settings {
-    
+
     private Plugin plugin;
     private Strings strings;
-    private File configurationFile;
-    private FileConfiguration fileConfiguration;
+    private File configFile;
+    private FileConfiguration settings;
     public boolean useMaxSizeBackup = false;
 
-    public Settings(Plugin plugin, File configurationFile, Strings strings) {
+    public Settings(Plugin plugin, Strings strings, File configFile) {
+
         this.plugin = plugin;
-        this.configurationFile = configurationFile;
         this.strings = strings;
+        this.configFile = configFile;
 
-        // Checks if config exists, creates if not.
-        checkAndCreate();
+        try {
 
-        // Load the properties into memory.
-        loadProperties();
+            // Checks if configuration file exists, creates it if it does not.
+            if (!configFile.exists()) {
+                LogUtils.sendLog(strings.getString("newconfigfile"));
+                createDefaultSettings();
+            }
+
+            // Initialize the configuration, and populate with settings.
+            settings = new YamlConfiguration();
+            settings.load(configFile);
+
+        } catch (Exception e) {
+            LogUtils.exceptionLog(e, "Failed to load configuration.");
+        }
 
         // Checks configuration version, notifys the user/log.
         checkConfigVersion(true);
     }
 
-    /**
-     * Check that the configuration file exists, and creates it if necessary.
-     */
-    private void checkAndCreate() {
-        try {
-            if (!configurationFile.exists()) {
-                LogUtils.sendLog(strings.getString("newconfigfile"));
-                createDefaultSettings();
-            }
-        } catch (NullPointerException npe) {
-            LogUtils.exceptionLog(npe, "Failed to create default configuration file.");
-        } catch (SecurityException se) {
-            LogUtils.exceptionLog(se, "Failed to create default configuration file.");
-        }
-    }
 
     /**
-     * Load the configuration to memory from the configurationFile.
+     * Load the properties file from the JAR and place it in the backup DIR.
      */
-    private void loadProperties() {
-        fileConfiguration = new YamlConfiguration();
+    private void createDefaultSettings() {
+
+        BufferedReader bReader = null;
+        BufferedWriter bWriter = null;
+        String line;
+
         try {
-            fileConfiguration.load(configurationFile);
-        } catch (InvalidConfigurationException ice) {
-            LogUtils.exceptionLog(ice, "Failed to load configuration.");
-        } catch (IOException ioe) {
-            LogUtils.exceptionLog(ioe, "Failed to load configuration.");
+
+            // Open a stream to the configuration file in the jar, because we can only access over the class loader.
+            bReader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/resources/config.yml")));
+            bWriter = new BufferedWriter(new FileWriter(configFile));
+
+            // Writeout the new configuration file.
+            while ((line = bReader.readLine()) != null) {
+                bWriter.write(line);
+                bWriter.newLine();
+            }
+
+        } catch (Exception e) {
+            LogUtils.exceptionLog(e, "Error opening stream.");
+        } finally {
+            try {
+
+                // Confirm the streams are closed.
+                if (bReader != null) {
+                    bReader.close();
+                }
+                if (bWriter != null) {
+                    bWriter.close();
+                }
+            } catch (Exception e) {
+                LogUtils.exceptionLog(e, "Error closing configuration stream.");
+            }
         }
     }
 
@@ -72,10 +97,10 @@ public final class Settings {
         boolean needsUpgrade = false;
 
         // Check configuration is loaded.
-        if (fileConfiguration != null) {
+        if (settings != null) {
 
             // Get the version information from the file.
-            String configVersion = fileConfiguration.getString("version", plugin.getDescription().getVersion());
+            String configVersion = settings.getString("version", plugin.getDescription().getVersion());
             String pluginVersion = plugin.getDescription().getVersion();
 
             // Check we got a version from the config file.
@@ -102,45 +127,11 @@ public final class Settings {
      */
     public void doConfigurationUpgrade() {
         LogUtils.sendLog(strings.getString("updatingconf"));
-        if (configurationFile.exists()) {
-            configurationFile.delete();
+        if (configFile.exists()) {
+            configFile.delete();
         }
         createDefaultSettings();
         LogUtils.sendLog(strings.getString("updatingconf"));
-    }
-
-    /**
-     * Load the properties file from the JAR and place it in the backup DIR.
-     */
-    private void createDefaultSettings() {
-
-        BufferedReader bReader = null;
-        BufferedWriter bWriter = null;
-        String line;
-        try {
-            // Open a stream to the properties file in the jar, because we can only access over the class loader.
-            bReader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/resources/config.yml")));
-            bWriter = new BufferedWriter(new FileWriter(configurationFile));
-
-            // Copy the content to the configfile location.
-            while ((line = bReader.readLine()) != null) {
-                bWriter.write(line);
-                bWriter.newLine();
-            }
-        } catch (IOException ioe) {
-            LogUtils.exceptionLog(ioe, "Error opening stream.");
-        } finally {
-            try {
-                if (bReader != null) {
-                    bReader.close();
-                }
-                if (bWriter != null) {
-                    bWriter.close();
-                }
-            } catch (IOException ioe) {
-                LogUtils.exceptionLog(ioe, "Error closing stream.");
-            }
-        }
     }
 
     /**
@@ -149,8 +140,8 @@ public final class Settings {
      * @param property The name of the property.
      * @return The value of the property, defaults to -1.
      */
-    public int getIntProperty(String property) {
-        return fileConfiguration.getInt(property, -1);
+    public int getIntProperty(String property, int defaultInt) {
+        return settings.getInt(property, defaultInt);
     }
 
     /**
@@ -159,8 +150,8 @@ public final class Settings {
      * @param property The name of the property.
      * @return The value of the property, defaults to true.
      */
-    public boolean getBooleanProperty(String property) {
-        return fileConfiguration.getBoolean(property, true);
+    public boolean getBooleanProperty(String property, boolean defaultBool) {
+        return settings.getBoolean(property, defaultBool);
     }
 
     /**
@@ -169,8 +160,8 @@ public final class Settings {
      * @param property The name of the property.
      * @return The value of the property.
      */
-    public String getStringProperty(String property) {
-        return fileConfiguration.getString(property, "");
+    public String getStringProperty(String property, String defaultString) {
+        return settings.getString(property, defaultString);
     }
 
     /**
@@ -182,7 +173,7 @@ public final class Settings {
      * @return Amount of time between backups. (In minutes)
      */
     public int getIntervalInMinutes(String forSetting) {
-        String settingInterval = getStringProperty(forSetting).trim().toLowerCase();
+        String settingInterval = getStringProperty(forSetting, "15M").trim().toLowerCase();
         // If it is null or set to disable.
         if (settingInterval.equals("-1") || settingInterval == null) {
             return 0;
@@ -232,7 +223,7 @@ public final class Settings {
      * @return Amount of time between backups. (In minutes)
      */
     public int getBackupLimits() {
-        String limitSetting = getStringProperty("maxbackups").trim().toLowerCase();
+        String limitSetting = getStringProperty("maxbackups", "25").trim().toLowerCase();
 
         // If it is null or set to disable.
         if (limitSetting.equals("-1") || limitSetting == null) {

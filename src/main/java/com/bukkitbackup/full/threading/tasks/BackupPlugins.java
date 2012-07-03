@@ -33,19 +33,20 @@ public class BackupPlugins {
         this.strings = strings;
 
         // Get the backup destination.
-        backupPath = settings.getStringProperty("backuppath");
+        backupPath = settings.getStringProperty("backuppath", "backups");
 
         // Get backup properties.
-        shouldZIP = settings.getBooleanProperty("zipbackup");
-        splitBackup = settings.getBooleanProperty("splitbackup");
-        useTemp = settings.getBooleanProperty("usetemp");
-        pluginListMode = settings.getBooleanProperty("pluginlistmode");
-        pluginList = Arrays.asList(settings.getStringProperty("pluginlist").split(";"));
+        shouldZIP = settings.getBooleanProperty("zipbackup", true);
+        splitBackup = settings.getBooleanProperty("splitbackup", false);
+        useTemp = settings.getBooleanProperty("usetemp", true);
+        pluginListMode = settings.getBooleanProperty("pluginlistmode", true);
+        pluginList = Arrays.asList(settings.getStringProperty("pluginlist", "").split(";"));
 
         // Generate the worldStore.
         if (useTemp) {
-            if (!settings.getStringProperty("tempfoldername").equals("")) { // Absolute.
-                tempDestination = settings.getStringProperty("tempfoldername").concat(FILE_SEPARATOR);
+            String tempFolder = settings.getStringProperty("tempfoldername", "");
+            if (!tempFolder.equals("")) { // Absolute.
+                tempDestination = tempFolder.concat(FILE_SEPARATOR);
             } else { // Relative.
                 tempDestination = backupPath.concat(FILE_SEPARATOR).concat("temp").concat(FILE_SEPARATOR);
             }

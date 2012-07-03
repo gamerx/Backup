@@ -29,16 +29,16 @@ public class BackupEverything {
         this.strings = strings;
 
         // Get the backup destination.
-        backupPath = settings.getStringProperty("backuppath");
+        backupPath = settings.getStringProperty("backuppath", "backups");
 
         // Get backup properties.
-        shouldZIP = settings.getBooleanProperty("zipbackup");
-        useTemp = settings.getBooleanProperty("usetemp");
+        shouldZIP = settings.getBooleanProperty("zipbackup", true);
+        useTemp = settings.getBooleanProperty("usetemp", true);
 
         // Generate the worldStore.
         if (useTemp) {
-            if (!settings.getStringProperty("tempfoldername").equals("")) { // Absolute.
-                tempDestination = settings.getStringProperty("tempfoldername").concat(FILE_SEPARATOR);
+            if (!settings.getStringProperty("tempfoldername", "").equals("")) { // Absolute.
+                tempDestination = settings.getStringProperty("tempfoldername", "").concat(FILE_SEPARATOR);
             } else { // Relative.
                 tempDestination = backupPath.concat(FILE_SEPARATOR).concat("temp").concat(FILE_SEPARATOR);
             }
@@ -64,7 +64,7 @@ public class BackupEverything {
             public boolean accept(File f) {
 
                 // Disallow server.log and the backuppath.
-                if (f.getName().equals(settings.getStringProperty("backuppath"))) {
+                if (f.getName().equals(settings.getStringProperty("backuppath", "backups"))) {
                     return false;
                 }
 

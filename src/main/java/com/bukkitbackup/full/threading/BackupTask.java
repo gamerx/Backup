@@ -40,7 +40,7 @@ public class BackupTask implements Runnable {
     private String dateFormat;
 
     private final String worldContainer;
-    private String backupsPath;
+    private String backupPath;
     private String tempDestination;
 
     private String thisBackupName;
@@ -62,28 +62,28 @@ public class BackupTask implements Runnable {
         worldContainer = pluginServer.getWorldContainer().getName();
 
         // Load settings.
-        backupsPath = settings.getStringProperty("backuppath");
-        backupEverything = settings.getBooleanProperty("backupeverything");
-        splitBackup = settings.getBooleanProperty("splitbackup");
-        shouldZIP = settings.getBooleanProperty("zipbackup");
-        useTemp = settings.getBooleanProperty("usetemp");
-        dateFormat = settings.getStringProperty("dateformat");
+        backupPath = settings.getStringProperty("backuppath", "backups");
+        backupEverything = settings.getBooleanProperty("backupeverything", false);
+        splitBackup = settings.getBooleanProperty("splitbackup", false);
+        shouldZIP = settings.getBooleanProperty("zipbackup", true);
+        useTemp = settings.getBooleanProperty("usetemp", true);
+        dateFormat = settings.getStringProperty("dateformat", "%1$tY%1$tm%1$td-%1$tH%1$tM%1$tS");
 
         // Import backup tasks.
         everythingBackupTask = BackupFull.backupEverything;
         worldBackupTask = BackupFull.backupWorlds;
         pluginBackupTask = BackupFull.backupPlugins;
 
-        // Generate the worldTempStore.
+        // Generate the worldStore.
         if (useTemp) {
-            if (!settings.getStringProperty("tempfoldername").equals("")) { // Absolute.
-                tempDestination = settings.getStringProperty("tempfoldername").concat(FILE_SEPARATOR);
-                FileUtils.checkFolderAndCreate(new File(backupsPath));
+            String tempFolder = settings.getStringProperty("tempfoldername", "");
+            if (!tempFolder.equals("")) { // Absolute.
+                tempDestination = tempFolder.concat(FILE_SEPARATOR);
             } else { // Relative.
-                tempDestination = backupsPath.concat(FILE_SEPARATOR).concat("temp").concat(FILE_SEPARATOR);
+                tempDestination = backupPath.concat(FILE_SEPARATOR).concat("temp").concat(FILE_SEPARATOR);
             }
         } else { // No temp folder.
-            tempDestination = backupsPath.concat(FILE_SEPARATOR);
+            tempDestination = backupPath.concat(FILE_SEPARATOR);
         }
 
         // Do checking for these folders.
@@ -104,7 +104,7 @@ public class BackupTask implements Runnable {
         } else {
 
             // Check if we should be backing up worlds.
-            if (settings.getBooleanProperty("backupworlds")) {
+            if (settings.getBooleanProperty("backupworlds", true)) {
 
                 // Attempt to backup worlds.
                 try {
@@ -117,7 +117,7 @@ public class BackupTask implements Runnable {
             }
 
             // Check if we should be backing up plugins.
-            if (settings.getBooleanProperty("backupplugins")) {
+            if (settings.getBooleanProperty("backupplugins", true)) {
 
                 // Attempt to backup plugins.
                 try {
@@ -131,7 +131,7 @@ public class BackupTask implements Runnable {
 
             // If this is a non-split backup, we need to ZIP the whole thing.
             if (!splitBackup) {
-                FileUtils.doCopyAndZIP(tempDestination.concat(thisBackupName), backupsPath.concat(FILE_SEPARATOR).concat(thisBackupName), shouldZIP, useTemp);
+                FileUtils.doCopyAndZIP(tempDestination.concat(thisBackupName), backupPath.concat(FILE_SEPARATOR).concat(thisBackupName), shouldZIP, useTemp);
             }
         }
 
@@ -170,14 +170,14 @@ public class BackupTask implements Runnable {
  */
     private void deleteOldBackups() throws Exception {
 
-        File backupDir = new File(backupsPath);
+        File backupDir = new File(backupPath);
 
 
         if (splitBackup) { // Look inside the folders.
             // Check if we have a different container for worlds.
                 if (!worldContainer.equals(".")) { // Custom.
 
-                backupDir = new File(backupsPath.concat(FILE_SEPARATOR).concat(worldContainer));
+                backupDir = new File(backupPath.concat(FILE_SEPARATOR).concat(worldContainer));
 
                 File[] worldFoldersToClean = backupDir.listFiles();
                 for (int l = 0; l < worldFoldersToClean.length; l++) {
@@ -187,7 +187,7 @@ public class BackupTask implements Runnable {
                     }
                 }
 
-                backupDir = new File(backupsPath.concat(FILE_SEPARATOR).concat("plugins"));
+                backupDir = new File(backupPath.concat(FILE_SEPARATOR).concat("plugins"));
 
                 File[] pluginFolderToClean = backupDir.listFiles();
                 for (int l = 0; l < pluginFolderToClean.length; l++) {
@@ -328,7 +328,7 @@ public class BackupTask implements Runnable {
 
         // Do the FTP upload if required.
         if (shouldZIP && !splitBackup) {
-            doFTPUpload(backupsPath.concat(FILE_SEPARATOR).concat(thisBackupName) + ".zip");
+            doFTPUpload(backupPath.concat(FILE_SEPARATOR).concat(thisBackupName) + ".zip");
         }
 
         // Create new Runnable instance.
@@ -338,7 +338,7 @@ public class BackupTask implements Runnable {
             public void run() {
 
                 // Should we enable auto-save again?
-                if (settings.getBooleanProperty("enableautosave")) {
+                if (settings.getBooleanProperty("enableautosave", true)) {
                     syncSaveAllUtil = new SyncSaveAll(pluginServer, 2);
                     pluginServer.getScheduler().scheduleSyncDelayedTask(plugin, syncSaveAllUtil);
                 }
@@ -370,7 +370,7 @@ public class BackupTask implements Runnable {
                             String thisMessage = messageList.get(i);
 
                             // Notify all players, regardless of the permission node.
-                            if (settings.getBooleanProperty("notifyallplayers")) {
+                            if (settings.getBooleanProperty("notifyallplayers", true)) {
                                 pluginServer.broadcastMessage(thisMessage);
                             } else {
 
@@ -393,7 +393,7 @@ public class BackupTask implements Runnable {
                     } else {
 
                         // Notify all players, regardless of the permission node.
-                        if (settings.getBooleanProperty("notifyallplayers")) {
+                        if (settings.getBooleanProperty("notifyallplayers", true)) {
                             pluginServer.broadcastMessage(completedBackupMessage);
                         } else {
 
@@ -421,7 +421,7 @@ public class BackupTask implements Runnable {
     private void doFTPUpload(String ZIPFile) {
 
         // This runs in another thread to ensure it does nto affect server performance.
-        if (settings.getBooleanProperty("ftpuploadenable")) {
+        if (settings.getBooleanProperty("ftpuploadenable", false)) {
             pluginServer.getScheduler().scheduleAsyncDelayedTask(plugin, new FTPUploader(settings, strings, ZIPFile));
         }
     }

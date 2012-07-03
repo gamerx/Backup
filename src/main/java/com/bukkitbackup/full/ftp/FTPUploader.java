@@ -25,11 +25,11 @@ public class FTPUploader extends FtpClient implements Runnable {
     public void run() {
 
         // Settings.
-        String connAddress = settings.getStringProperty("ftpserveraddress");
-        int connPort = settings.getIntProperty("ftpserverport");
-        String connUser = settings.getStringProperty("ftpusername");
-        String connPassword = settings.getStringProperty("ftppassword");
-        String connTargetDIR = settings.getStringProperty("ftpdirectory");
+        String connAddress = settings.getStringProperty("ftpserveraddress", "");
+        int connPort = settings.getIntProperty("ftpserverport", 21);
+        String connUser = settings.getStringProperty("ftpusername", "");
+        String connPassword = settings.getStringProperty("ftppassword", "");
+        String connTargetDIR = settings.getStringProperty("ftpdirectory", "backups");
 
 
         // Perform checking of settings.

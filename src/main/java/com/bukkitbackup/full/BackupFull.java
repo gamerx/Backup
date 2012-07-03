@@ -20,26 +20,27 @@ import org.bukkit.Server;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+/**
+ * BackupFull - Plugin Loader Class.
+ * This extends Bukkit's JavaPlugin class.
+ *
+ * @author Domenic Horner
+ */
 public class BackupFull extends JavaPlugin {
 
-    public int mainBackupTaskID = -2;
-    public int saveAllTaskID = -2;
     public File mainDataFolder;
-    public static boolean shouldDebug = true;
-    
+    private String clientID;
+
     private static Strings strings;
     private static Settings settings;
     private PrepareBackup prepareBackup;
-    private SyncSaveAll syncSaveAllUtil;
-    private UpdateChecker updateChecker;
-    private String clientID;
-
+    private static SyncSaveAll syncSaveAllUtil;
+    private static UpdateChecker updateChecker;
     public static BackupEverything backupEverything;
     public static BackupWorlds backupWorlds;
     public static BackupPlugins backupPlugins;
     public static BackupTask backupTask;
     
-
     @Override
     public void onLoad() {
 
@@ -54,19 +55,20 @@ public class BackupFull extends JavaPlugin {
 
         // Load configuration files.
         strings = new Strings(new File(mainDataFolder, "strings.yml"));
-        settings = new Settings(this, new File(mainDataFolder, "config.yml"), strings);
+        settings = new Settings(this, strings, new File(mainDataFolder, "config.yml"));
 
         // Run version checking on strings file.
-        strings.checkStringsVersion(settings.getStringProperty("requiredstrings"));
+        strings.checkStringsVersion(settings.getStringProperty("requiredstrings", ""));
 
         // Complete initalization of LogUtils.
-        LogUtils.finishInitLogUtils(settings.getBooleanProperty("displaylog"));
+        LogUtils.finishInitLogUtils(settings.getBooleanProperty("displaylog", true));
 
         // Check backup path.
-        if (FileUtils.checkFolderAndCreate(new File(settings.getStringProperty("backuppath")))) {
+        if (FileUtils.checkFolderAndCreate(new File(settings.getStringProperty("backuppath", "backups")))) {
             LogUtils.sendLog(strings.getString("createbudir"));
         }
 
+        // Load Metric Utils.
         try {
             MetricUtils metricUtils = new MetricUtils(this);
             metricUtils.start();
@@ -74,7 +76,6 @@ public class BackupFull extends JavaPlugin {
         } catch (IOException ex) {
             LogUtils.exceptionLog(ex, "Exception loading metrics.");
         }
-
     }
 
     @Override
@@ -92,8 +93,6 @@ public class BackupFull extends JavaPlugin {
 
         // Create new "PrepareBackup" instance.
         prepareBackup = new PrepareBackup(pluginServer, settings, strings);
-
-
 
         // Initalize the update checker code.
         updateChecker = new UpdateChecker(this.getDescription(), strings, clientID);
@@ -114,11 +113,11 @@ public class BackupFull extends JavaPlugin {
             int backupIntervalInTicks = (backupInterval * 1200);
 
             // Should the schedule repeat?
-            if (settings.getBooleanProperty("norepeat")) {
-                mainBackupTaskID = pluginServer.getScheduler().scheduleAsyncDelayedTask(this, prepareBackup, backupIntervalInTicks);
+            if (settings.getBooleanProperty("norepeat", false)) {
+                pluginServer.getScheduler().scheduleAsyncDelayedTask(this, prepareBackup, backupIntervalInTicks);
                 LogUtils.sendLog(strings.getString("norepeatenabled", Integer.toString(backupInterval)));
             } else {
-                mainBackupTaskID = pluginServer.getScheduler().scheduleAsyncRepeatingTask(this, prepareBackup, backupIntervalInTicks, backupIntervalInTicks);
+                pluginServer.getScheduler().scheduleAsyncRepeatingTask(this, prepareBackup, backupIntervalInTicks, backupIntervalInTicks);
             }
         } else {
             LogUtils.sendLog(strings.getString("disbaledauto"));
@@ -135,11 +134,11 @@ public class BackupFull extends JavaPlugin {
 
             // Syncronised save-all.
             syncSaveAllUtil = new SyncSaveAll(pluginServer, 0);
-            saveAllTaskID = pluginServer.getScheduler().scheduleSyncRepeatingTask(this, syncSaveAllUtil, saveAllIntervalInTicks, saveAllIntervalInTicks);
+            pluginServer.getScheduler().scheduleSyncRepeatingTask(this, syncSaveAllUtil, saveAllIntervalInTicks, saveAllIntervalInTicks);
         }
 
         // Update & version checking loading.
-        if (settings.getBooleanProperty("enableversioncheck")) {
+        if (settings.getBooleanProperty("enableversioncheck", true)) {
             pluginServer.getScheduler().scheduleAsyncDelayedTask(this, updateChecker);
         }
 
