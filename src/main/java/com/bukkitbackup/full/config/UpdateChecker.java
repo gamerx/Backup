@@ -2,16 +2,20 @@ package com.bukkitbackup.full.config;
 
 import com.bukkitbackup.full.utils.LogUtils;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import org.bukkit.plugin.PluginDescriptionFile;
 
+/**
+ * Class for checking for the latest version of Backup.
+ * It will report to the user depending if it is out of date or not.
+ *
+ * @author Domenic Horner
+ */
 public class UpdateChecker implements Runnable {
 
-    private Strings strings;
     private PluginDescriptionFile descriptionFile;
+    private Strings strings;
     private String clientID;
 
     public UpdateChecker(PluginDescriptionFile descriptionFile, Strings strings, String clientID) {
@@ -22,12 +26,14 @@ public class UpdateChecker implements Runnable {
 
     public void run() {
         
-        // Read the version.
+        // Read the version from the web.
         String webVersion = getVersion();
 
+        // Confirm we recieved a version.
         if(webVersion == null) {
-            LogUtils.sendLog("Failed to retrieve latest version information.");
+            LogUtils.sendLog(strings.getString("errorversioncheck"));
         } else {
+
             // Check versions and output log to the user.
             if (!webVersion.equals(descriptionFile.getVersion())) {
                 LogUtils.sendLog(strings.getString("pluginoutdate", descriptionFile.getVersion(), webVersion));
@@ -37,6 +43,11 @@ public class UpdateChecker implements Runnable {
         }
     }
 
+    /**
+     * This method retrieves the latest version from the web site, and returns it.
+     *
+     * @return The latest version.
+     */
     public String getVersion() {
         String webVersion;
         try {
@@ -55,9 +66,7 @@ public class UpdateChecker implements Runnable {
 
             // Return the version.
             return webVersion;
-         } catch (MalformedURLException exeption) {
-            return null;
-         } catch (IOException exeption) {
+         } catch (Exception e) {
             return null;
          }
     }

@@ -2,6 +2,7 @@ package com.bukkitbackup.full.threading.tasks;
 
 import com.bukkitbackup.full.config.Settings;
 import com.bukkitbackup.full.config.Strings;
+import com.bukkitbackup.full.threading.BackupTask;
 import com.bukkitbackup.full.utils.FileUtils;
 import static com.bukkitbackup.full.utils.FileUtils.FILE_SEPARATOR;
 import com.bukkitbackup.full.utils.LogUtils;
@@ -10,6 +11,8 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * [Backup] BackupPlugins.java (Plugin Backup) Backup plugins when the function
@@ -103,10 +106,10 @@ public class BackupPlugins {
 
 
         String thisTempDestination;
-        if (!splitBackup) {
-             thisTempDestination = tempDestination.concat(backupName).concat(FILE_SEPARATOR).concat("plugins");
+        if (splitBackup) {
+             thisTempDestination = backupPath.concat(FILE_SEPARATOR).concat("plugins").concat(FILE_SEPARATOR).concat(backupName);
         } else {
-            thisTempDestination = backupPath.concat(FILE_SEPARATOR).concat("plugins").concat(FILE_SEPARATOR).concat(backupName);
+            thisTempDestination = tempDestination.concat(backupName).concat(FILE_SEPARATOR).concat("plugins");
         }
         FileUtils.checkFolderAndCreate(new File(thisTempDestination));
 
@@ -122,8 +125,20 @@ public class BackupPlugins {
         FileUtils.copyDirectory(pluginsFolder, new File(thisTempDestination), pluginsFileFilter, true);
 
         // Check if ZIP is required.
-        if (splitBackup) {
-            FileUtils.doCopyAndZIP(thisTempDestination, backupPath.concat(FILE_SEPARATOR).concat("plugins").concat(FILE_SEPARATOR).concat(backupName), shouldZIP, useTemp);
+        if (splitBackup && shouldZIP) {
+            String destination = backupPath.concat(FILE_SEPARATOR).concat("plugins").concat(FILE_SEPARATOR).concat(backupName);
+            try {
+                if (useTemp) {
+                    FileUtils.zipDir(thisTempDestination, destination);
+                    FileUtils.deleteDirectory(new File(thisTempDestination));
+                    new File(thisTempDestination).delete();
+                }
+            } catch (Exception e) {
+                LogUtils.exceptionLog(e);
+            }
+
+
+            //FileUtils.doCopyAndZIP(thisTempDestination, backupPath.concat(FILE_SEPARATOR).concat("plugins").concat(FILE_SEPARATOR).concat(backupName), shouldZIP, useTemp);
         }
     }
 }

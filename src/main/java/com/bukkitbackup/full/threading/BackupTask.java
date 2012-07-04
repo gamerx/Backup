@@ -67,7 +67,7 @@ public class BackupTask implements Runnable {
         splitBackup = settings.getBooleanProperty("splitbackup", false);
         shouldZIP = settings.getBooleanProperty("zipbackup", true);
         useTemp = settings.getBooleanProperty("usetemp", true);
-        dateFormat = settings.getStringProperty("dateformat", "%1$tY%1$tm%1$td-%1$tH%1$tM%1$tS");
+        dateFormat = settings.getStringProperty("dateformat", "%1$tY-%1$tm-%1$td-%1$tH-%1$tM-%1$tS");
 
         // Import backup tasks.
         everythingBackupTask = BackupFull.backupEverything;
@@ -158,7 +158,7 @@ public class BackupTask implements Runnable {
             formattedDate = String.format(dateFormat, calendar);
         } catch (Exception e) {
             LogUtils.exceptionLog(e, "Exception formatting date.");
-            formattedDate = String.format("%1$td%1$tm%1$tY-%1$tH%1$tM%1$tS", calendar);
+            formattedDate = String.format("%1$tY-%1$tm-%1$td-%1$tH-%1$tM-%1$tS", calendar);
         }
         return formattedDate;
     }
@@ -223,7 +223,7 @@ public class BackupTask implements Runnable {
 
             // Check we listed the directory.
             if (filesList == null) {
-                LogUtils.sendLog("Failed to list backup directory.");
+                LogUtils.sendLog(strings.getString("failedlistdir"));
                 return;
             }
 

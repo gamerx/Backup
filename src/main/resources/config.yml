@@ -76,14 +76,10 @@ zipbackup: true
 # Needs to be true to be compatible with WorldEdit.
 splitbackup: false
 
-## Customize the date format for each backup. (Default: '%1$tY%1$tm%1$td-%1$tH%1$tM%1$tS' [YYYYMMDD-HHMMSS])
+## Customize the date format for each backup. (Default: '%1$tY-%1$tm-%1$td-%1$tH-%1$tM-%1$tS' [YYYY-MM-DD-HH-MM-SS])
 # This has to be a Java String.format string, see
 # http://download.oracle.com/javase/1.5.0/docs/api/java/util/Formatter.html#syntax
-dateformat: '%1$tY%1$tm%1$td-%1$tH%1$tM%1$tS'
-
-## WorldEdit Fixes Enabled? (Default: false)
-# If you are having issues with WorldEdit restores, then enable this.
-worldeditfix: false
+dateformat: '%1$tY-%1$tm-%1$td-%1$tH-%1$tM-%1$tS'
 
 #======== FTP Server Settings ==========#
 

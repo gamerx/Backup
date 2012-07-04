@@ -26,12 +26,12 @@ public class BackupWorlds {
 
     private final String worldContainer;
     private final String backupPath;
-    private final LinkedList<String> worldsToBackup;
     private final boolean useTemp;
     private final boolean shouldZIP;
     private final boolean splitBackup;
     private final String tempDestination;
     private String thisTempDestination;
+    private final List<String> ignoredWorlds;
     
 
     /**
@@ -49,19 +49,7 @@ public class BackupWorlds {
         this.strings = strings;
 
         // Create list of worlds we need to backup.
-        worldsToBackup = new LinkedList<String>();
-        List<String> ignoredWorlds = getIgnoredWorldNames();
-
-        for (World loopWorld : pluginServer.getWorlds()) {
-            if ((loopWorld.getName() != null) && !loopWorld.getName().isEmpty() && (!ignoredWorlds.contains(loopWorld.getName()))) {
-                worldsToBackup.add(loopWorld.getName());
-            }
-        }
-
-        // Alert the user.
-        if (worldsToBackup == null) {
-            LogUtils.sendLog(strings.getString("noworlds"));
-        }
+        ignoredWorlds = getIgnoredWorldNames();
 
         // Build folder paths.
         worldContainer = pluginServer.getWorldContainer().getName();
@@ -87,7 +75,14 @@ public class BackupWorlds {
 
     // The actual backup should be done here.
     public void doWorlds(String backupName) throws Exception {
-        
+
+        LinkedList<String> worldsToBackup = getWorldsToBackup();
+
+        // Alert the user.
+        if (worldsToBackup == null) {
+            LogUtils.sendLog(strings.getString("noworlds"));
+        }
+
         // Loops each world that needs to backed up, and do the required copies.
         while (!worldsToBackup.isEmpty()) {
             String currentWorldName = worldsToBackup.removeFirst();
@@ -96,52 +91,47 @@ public class BackupWorlds {
             if (splitBackup) {
 
                 // Init backup path variable.
-                String thisWorldBackupPath;
+                String thisWorldBackupPath = backupPath.concat(FILE_SEPARATOR).concat(currentWorldName);
+                // backups/world
 
-                // Check if we have a different container for worlds.
-                if (!worldContainer.equals(".")) { // Custom.
+                // Check if we have a custom container for worlds.
+                if (!worldContainer.equals(".")) {
                     thisWorldBackupPath = backupPath.concat(FILE_SEPARATOR).concat(worldContainer).concat(FILE_SEPARATOR).concat(currentWorldName);
-                } else {
-                    thisWorldBackupPath = backupPath.concat(FILE_SEPARATOR).concat(currentWorldName);
+                    // backup/custom/world
                 }
-                
-                // Check this worlds folder exists.
-                FileUtils.checkFolderAndCreate(new File(thisWorldBackupPath));
 
                 // Set up destinations for temp and full backups.
-                String thisWorldBackupFolder;
+                String thisWorldBackupFolder = thisWorldBackupPath.concat(FILE_SEPARATOR).concat(backupName);
+                // backup/world/yymmdd-hhmmss
 
-                // Modify paths if using temp folder.
+                // Check this backup folder exists.
+                FileUtils.checkFolderAndCreate(new File(thisWorldBackupPath));
+
+                // If we arent using the temp folder.
                 if (useTemp) {
                     thisWorldBackupFolder = tempDestination.concat(currentWorldName).concat(FILE_SEPARATOR).concat(backupName);
-                } else {
-                    thisWorldBackupFolder = thisWorldBackupPath.concat(FILE_SEPARATOR).concat(backupName);
+                    // backups/temp/world/yymmdd-hhmmss
                 }
+
+                // Check this backup folder exists.
+                FileUtils.checkFolderAndCreate(new File(thisWorldBackupFolder));
 
                 // Copy the current world into it's backup folder.
-                if (settings.getBooleanProperty("worldeditfix", false)) {
-                    thisWorldBackupFolder = thisWorldBackupFolder.concat(FILE_SEPARATOR).concat(currentWorldName);
-                }
-
-                // Copy this world.
                 FileUtils.copyDirectory(worldContainer.concat(FILE_SEPARATOR).concat(currentWorldName), thisWorldBackupFolder);
-
+                
                 // Check and ZIP folder.
-                FileUtils.doCopyAndZIP(thisWorldBackupFolder, thisWorldBackupPath.concat(FILE_SEPARATOR).concat(backupName), shouldZIP, useTemp);
+                if(useTemp || shouldZIP) {
+                    FileUtils.doCopyAndZIP(thisWorldBackupFolder, thisWorldBackupPath.concat(FILE_SEPARATOR).concat(backupName), shouldZIP, useTemp);
+                }
 
             } else { // Not a split backup.
 
-                // This is the place worlds get copied to before they run through the doCopyOrZIP function.
-                thisTempDestination = tempDestination.concat(backupName);
-                
                 // The folder where we should put the world folders.
-                String copyDestination;
+                String copyDestination = tempDestination.concat(backupName).concat(FILE_SEPARATOR).concat(currentWorldName);
 
-                // Check if we have a different container for worlds.
-                if (!worldContainer.equals(".")) { // Custom.
-                    copyDestination = thisTempDestination.concat(FILE_SEPARATOR).concat(worldContainer).concat(FILE_SEPARATOR).concat(currentWorldName);
-                } else {
-                    copyDestination  = thisTempDestination.concat(FILE_SEPARATOR).concat(currentWorldName);
+                // If we have a custom world-container.
+                if (!worldContainer.equals(".")) {
+                    copyDestination = tempDestination.concat(backupName).concat(FILE_SEPARATOR).concat(worldContainer).concat(FILE_SEPARATOR).concat(currentWorldName);
                 }
                 
                 // Create this folder.
@@ -174,5 +164,15 @@ public class BackupWorlds {
 
         // Return the world names.
         return worldNames;
+    }
+
+    private LinkedList<String> getWorldsToBackup() {
+        LinkedList<String> toBackup = new LinkedList<String>();
+        for (World loopWorld : pluginServer.getWorlds()) {
+            if ((loopWorld.getName() != null) && !loopWorld.getName().isEmpty() && (!ignoredWorlds.contains(loopWorld.getName()))) {
+                toBackup.add(loopWorld.getName());
+            }
+        }
+        return toBackup;
     }
 }

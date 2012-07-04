@@ -9,6 +9,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import sun.net.ftp.FtpClient;
 
+/**
+ * The class provides the functionality to upload files to an FTP server.
+ *
+ * @author Domenic Horner
+ */
 public class FTPUploader extends FtpClient implements Runnable {
 
     private Settings settings;

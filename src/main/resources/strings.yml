@@ -54,6 +54,7 @@ backupoff            : 'Backup is currently disabled, please use "/backup toggle
 backuptoggleoff      : 'Backup has been toggled off.'
 backuptoggleon       : 'Backup has been toggled on.'
 noworlds             : There are no worlds to backup.
+stoppedlastjoined    : Stopped last backup, because someone joined.
 
 #========= Error Strings ==========#
 
@@ -65,7 +66,8 @@ unknowncommand       : Unknown command or incorrect syntax.
 unknownfailedversion : Unknown / Failed
 errorfolderempty     : Error listing directory, No entries!
 checksizelimit       : Error getting maximum allowed backups.
-
+errorversioncheck    : Failed to retrieve latest version information.
+failedlistdir        : Failed to list backup directory.
 
 #========= FTP Strings ==========#
 

@@ -84,7 +84,7 @@ public class EventListener implements Listener {
             plugin.getServer().getScheduler().cancelTask(lastBackupID);
             lastBackupID = -2;
             prepareBackup.setAsLastBackup(false);
-            LogUtils.sendLog("Stopped last backup, because someone joined.");
+            LogUtils.sendLog(strings.getString("stoppedlastjoined"));
         }
     }
 }
