@@ -20,6 +20,8 @@ public final class Settings {
     private File configFile;
     private FileConfiguration settings;
     public boolean useMaxSizeBackup = false;
+    public boolean debugMessages;
+
 
     public Settings(Plugin plugin, Strings strings, File configFile) {
 

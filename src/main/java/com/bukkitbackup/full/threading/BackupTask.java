@@ -85,22 +85,24 @@ public class BackupTask implements Runnable {
         } else { // No temp folder.
             tempDestination = backupPath.concat(FILE_SEPARATOR);
         }
-
-        // Do checking for these folders.
-        FileUtils.checkFolderAndCreate(new File(tempDestination));
+        
     }
 
     @Override
     public void run() {
 
-        // Get this instances folder name, set variables..
+        // Get this instances folder name, set variables.
         thisBackupName = getBackupName();
 
         // Check if backupeverything enabled.
         if (backupEverything) {
 
             // Start the BackupEverything class.
-            everythingBackupTask.doEverything(thisBackupName);
+                try {
+                    everythingBackupTask.doEverything(thisBackupName);
+                } catch (Exception e) {
+                    LogUtils.exceptionLog(e, "Failed to backup worlds: Exception in BackupWorlds.");
+                }
         } else {
 
             // Check if we should be backing up worlds.

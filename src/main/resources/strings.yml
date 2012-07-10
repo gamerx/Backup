@@ -22,7 +22,6 @@ stringsupdate        : Your strings file is out of date. It may stop working cor
 failedtogetpropsver  : Failed to retrieve version from config file, I suggest upgrading!
 configupdate         : Your configuration is outdated, please upgrade it. (backup upgradeconf)
 zipdisabled          : You have disabled backup compression.
-createbudir          : Created the folder for backups.
 defaultperms         : No permissions plugin detected, defaulting to OP.
 hookedperms          : Found and hooked a permissions plugin.
 newconfigfile        : No config file exists, creating default.

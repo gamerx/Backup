@@ -17,7 +17,6 @@ public class MetricUtils {
     private final static int REVISION = 5;
     private static final String BASE_URL = "http://mcstats.org";
     private static final String REPORT_URL = "/report/%s";
-    private static final String CONFIG_FILE = "plugins/Backup/metrics.yml";
     private final static int PING_INTERVAL = 10;
     private final Plugin plugin;
     private final YamlConfiguration configuration;
@@ -26,14 +25,14 @@ public class MetricUtils {
     private final Object optOutLock = new Object();
     private volatile int taskId = -1;
 
-    public MetricUtils(Plugin plugin) throws IOException {
+    public MetricUtils(Plugin plugin, File mainDataFolder) throws IOException {
         if (plugin == null) {
             throw new IllegalArgumentException("Plugin cannot be null");
         }
         this.plugin = plugin;
 
         // load the config
-        configurationFile = new File(CONFIG_FILE);
+        configurationFile = mainDataFolder;
         configuration = YamlConfiguration.loadConfiguration(configurationFile);
 
         // add some defaults
@@ -112,7 +111,7 @@ public class MetricUtils {
         synchronized(optOutLock) {
             try {
                 // Reload the metrics file
-                configuration.load(CONFIG_FILE);
+                configuration.load(configurationFile);
             } catch (IOException ex) {
                 return true;
             } catch (InvalidConfigurationException ex) {

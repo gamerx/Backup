@@ -117,7 +117,7 @@ public class BackupWorlds {
                 FileUtils.checkFolderAndCreate(new File(thisWorldBackupFolder));
 
                 // Copy the current world into it's backup folder.
-                FileUtils.copyDirectory(worldContainer.concat(FILE_SEPARATOR).concat(currentWorldName), thisWorldBackupFolder);
+                FileUtils.copyDirectory(worldContainer.concat(FILE_SEPARATOR).concat(currentWorldName), thisWorldBackupFolder.concat(FILE_SEPARATOR).concat(currentWorldName));
                 
                 // Check and ZIP folder.
                 if(useTemp || shouldZIP) {

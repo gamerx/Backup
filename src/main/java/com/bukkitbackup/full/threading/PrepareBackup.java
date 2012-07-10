@@ -33,11 +33,7 @@ public class PrepareBackup implements Runnable {
 
     @Override
     public synchronized void run() {
-        if (backupEnabled) {
-            checkShouldDoBackup();
-        } else {
-            LogUtils.sendLog(strings.getString("backupoff"));
-        }
+        checkShouldDoBackup();
     }
 
     /**
@@ -52,7 +48,7 @@ public class PrepareBackup implements Runnable {
         // If it is a manual doBackup, start it, otherwise, perform checks.
         if (isManualBackup) {
             prepareBackup();
-        } else {
+        } else if(backupEnabled) {
 
             // No player checking.
             if (settings.getBooleanProperty("backupemptyserver", false)) {
@@ -96,6 +92,8 @@ public class PrepareBackup implements Runnable {
                     }
                 }
             }
+        } else {
+            LogUtils.sendLog(strings.getString("backupoff"));
         }
 
         // Check we should do a save-all.
@@ -118,8 +116,6 @@ public class PrepareBackup implements Runnable {
 
         // Save all players.
         server.savePlayers();
-
-
 
         // Scedule the doBackup.
         server.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {

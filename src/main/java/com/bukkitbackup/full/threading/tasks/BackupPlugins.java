@@ -2,7 +2,6 @@ package com.bukkitbackup.full.threading.tasks;
 
 import com.bukkitbackup.full.config.Settings;
 import com.bukkitbackup.full.config.Strings;
-import com.bukkitbackup.full.threading.BackupTask;
 import com.bukkitbackup.full.utils.FileUtils;
 import static com.bukkitbackup.full.utils.FileUtils.FILE_SEPARATOR;
 import com.bukkitbackup.full.utils.LogUtils;
@@ -11,8 +10,6 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * [Backup] BackupPlugins.java (Plugin Backup) Backup plugins when the function
@@ -30,6 +27,7 @@ public class BackupPlugins {
     private final String tempDestination;
     private final boolean pluginListMode;
     private final List<String> pluginList;
+    private final FileFilter pluginsFileFilter;
 
     public BackupPlugins(Settings settings, Strings strings) {
 
@@ -45,24 +43,8 @@ public class BackupPlugins {
         pluginListMode = settings.getBooleanProperty("pluginlistmode", true);
         pluginList = Arrays.asList(settings.getStringProperty("pluginlist", "").split(";"));
 
-        // Generate the worldStore.
-        if (useTemp) {
-            String tempFolder = settings.getStringProperty("tempfoldername", "");
-            if (!tempFolder.equals("")) { // Absolute.
-                tempDestination = tempFolder.concat(FILE_SEPARATOR);
-            } else { // Relative.
-                tempDestination = backupPath.concat(FILE_SEPARATOR).concat("temp").concat(FILE_SEPARATOR);
-            }
-        } else { // No temp folder.
-            tempDestination = backupPath.concat(FILE_SEPARATOR);
-        }
-    }
-
-    // The actual backup should be done here.
-    public void doPlugins(String backupName) throws IOException {
-
         // The FileFilter instance for skipped/enabled plugins.
-        FileFilter pluginsFileFilter = new FileFilter() {
+        pluginsFileFilter = new FileFilter() {
 
             @Override
             public boolean accept(File name) {
@@ -97,6 +79,22 @@ public class BackupPlugins {
                 }
             }
         };
+
+        // Generate the worldStore.
+        if (useTemp) {
+            String tempFolder = settings.getStringProperty("tempfoldername", "");
+            if (!tempFolder.equals("")) { // Absolute.
+                tempDestination = tempFolder.concat(FILE_SEPARATOR);
+            } else { // Relative.
+                tempDestination = backupPath.concat(FILE_SEPARATOR).concat("temp").concat(FILE_SEPARATOR);
+            }
+        } else { // No temp folder.
+            tempDestination = backupPath.concat(FILE_SEPARATOR);
+        }
+    }
+
+    // The actual backup should be done here.
+    public void doPlugins(String backupName) throws IOException {
 
         // Setup Source and destination DIR's.
         File pluginsFolder = new File("plugins");

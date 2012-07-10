@@ -65,6 +65,7 @@ usetemp: true
 # This stores tempoary files while backup is in progress.
 # Note: Path can be relative, or absolute. ('D:\temp', '/tmp', 'temp', and '~/backups/temp' are all valid)
 # if this si not set, it defaults to a temp folder under the backups folder.
+# Needs to be false to be compatible with WorldEdit.
 tempfoldername:
 
 ## Whether to ZIP Backups or not. (Default: true)

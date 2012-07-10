@@ -30,7 +30,6 @@ public class BackupFull extends JavaPlugin {
 
     public File mainDataFolder;
     private String clientID;
-
     private static Strings strings;
     private static Settings settings;
     private PrepareBackup prepareBackup;
@@ -63,14 +62,9 @@ public class BackupFull extends JavaPlugin {
         // Complete initalization of LogUtils.
         LogUtils.finishInitLogUtils(settings.getBooleanProperty("displaylog", true));
 
-        // Check backup path.
-        if (FileUtils.checkFolderAndCreate(new File(settings.getStringProperty("backuppath", "backups")))) {
-            LogUtils.sendLog(strings.getString("createbudir"));
-        }
-
         // Load Metric Utils.
         try {
-            MetricUtils metricUtils = new MetricUtils(this);
+            MetricUtils metricUtils = new MetricUtils(this, new File(mainDataFolder, "metrics.yml"));
             metricUtils.start();
             clientID = metricUtils.guid;
         } catch (IOException ex) {
@@ -85,6 +79,9 @@ public class BackupFull extends JavaPlugin {
         Server pluginServer = getServer();
         PluginManager pluginManager = pluginServer.getPluginManager();
 
+        // Check backup path.
+        FileUtils.checkFolderAndCreate(new File(settings.getStringProperty("backuppath", "backups")));
+        
         // Setup backup tasks.
         backupEverything = new BackupEverything(settings, strings);
         backupWorlds = new BackupWorlds(pluginServer, settings, strings);
