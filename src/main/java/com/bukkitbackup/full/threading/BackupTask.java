@@ -21,8 +21,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 /**
- * This is the main backup thread.
- * It handles backing everything up.
+ * This is the main backup thread. It handles backing everything up.
  *
  * @author Domenic Horner
  */
@@ -32,17 +31,14 @@ public class BackupTask implements Runnable {
     private Server pluginServer;
     private Settings settings;
     private Strings strings;
-
     private boolean backupEverything;
     private boolean splitBackup;
     private boolean shouldZIP;
     private boolean useTemp;
     private String dateFormat;
-
     private final String worldContainer;
     private String backupPath;
     private String tempDestination;
-
     private String thisBackupName;
     // Threads.
     private BackupWorlds worldBackupTask;
@@ -85,7 +81,7 @@ public class BackupTask implements Runnable {
         } else { // No temp folder.
             tempDestination = backupPath.concat(FILE_SEPARATOR);
         }
-        
+
     }
 
     @Override
@@ -98,11 +94,11 @@ public class BackupTask implements Runnable {
         if (backupEverything) {
 
             // Start the BackupEverything class.
-                try {
-                    everythingBackupTask.doEverything(thisBackupName);
-                } catch (Exception e) {
-                    LogUtils.exceptionLog(e, "Failed to backup worlds: Exception in BackupWorlds.");
-                }
+            try {
+                everythingBackupTask.doEverything(thisBackupName);
+            } catch (Exception e) {
+                LogUtils.exceptionLog(e, "Failed to backup worlds: Exception in BackupWorlds.");
+            }
         } else {
 
             // Check if we should be backing up worlds.
@@ -165,11 +161,11 @@ public class BackupTask implements Runnable {
         return formattedDate;
     }
 
-/**
- * Check if we need to delete old backups, and perform required operations.
- *
- * @throws Exception
- */
+    /**
+     * Check if we need to delete old backups, and perform required operations.
+     *
+     * @throws Exception
+     */
     private void deleteOldBackups() throws Exception {
 
         File backupDir = new File(backupPath);
@@ -177,7 +173,7 @@ public class BackupTask implements Runnable {
 
         if (splitBackup) { // Look inside the folders.
             // Check if we have a different container for worlds.
-                if (!worldContainer.equals(".")) { // Custom.
+            if (!worldContainer.equals(".")) { // Custom.
 
                 backupDir = new File(backupPath.concat(FILE_SEPARATOR).concat(worldContainer));
 
@@ -233,7 +229,7 @@ public class BackupTask implements Runnable {
             if (settings.useMaxSizeBackup) {
 
                 // Get total folder size.
-                int totalFolderSize =  FileUtils.getTotalFolderSize(folderToClean);
+                int totalFolderSize = FileUtils.getTotalFolderSize(folderToClean);
 
                 // If the amount of files exceeds the max backups to keep.
                 if (totalFolderSize > backupLimit) {
@@ -247,7 +243,7 @@ public class BackupTask implements Runnable {
 
                     // While the total folder size is bigger than the limit.
                     while (FileUtils.getTotalFolderSize(folderToClean) > backupLimit) {
-                        
+
                         // Create updated list.
                         filesList = FileUtils.listFilesInDir(folderToClean);
 
@@ -346,8 +342,9 @@ public class BackupTask implements Runnable {
                 }
 
                 // Delete the temp directory.
-                if(useTemp)
+                if (useTemp) {
                     FileUtils.deleteDir(new File(tempDestination));
+                }
 
                 // Notify that it has completed.
                 notifyCompleted();

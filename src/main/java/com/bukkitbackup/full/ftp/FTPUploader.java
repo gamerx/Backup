@@ -67,7 +67,7 @@ public class FTPUploader extends FtpClient implements Runnable {
             ftpClient.binary();
 
             // Change directory if required.
-            if(!connTargetDIR.equals("")) {
+            if (!connTargetDIR.equals("")) {
                 ftpClient.cd(connTargetDIR);
                 LogUtils.sendLog(strings.getString("ftpchangedinto", connTargetDIR));
             }

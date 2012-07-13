@@ -6,7 +6,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.Plugin;
 
 /**
  * Class for loading the configuration file.
@@ -15,17 +14,14 @@ import org.bukkit.plugin.Plugin;
  */
 public final class Settings {
 
-    private Plugin plugin;
     private Strings strings;
     private File configFile;
     private FileConfiguration settings;
     public boolean useMaxSizeBackup = false;
     public boolean debugMessages;
 
+    public Settings(File configFile, Strings strings) {
 
-    public Settings(Plugin plugin, Strings strings, File configFile) {
-
-        this.plugin = plugin;
         this.strings = strings;
         this.configFile = configFile;
 
@@ -44,11 +40,7 @@ public final class Settings {
         } catch (Exception e) {
             LogUtils.exceptionLog(e, "Failed to load configuration.");
         }
-
-        // Checks configuration version, notifys the user/log.
-        checkConfigVersion(true);
     }
-
 
     /**
      * Load the properties file from the JAR and place it in the backup DIR.
@@ -89,39 +81,17 @@ public final class Settings {
         }
     }
 
-    /**
-     * Checks configuration version, and return true if it requires an update.
-     *
-     * @return False for no update done, True for update done.
-     */
-    public boolean checkConfigVersion(boolean notify) {
+    public void checkSettingsVersion(String requiredVersion) {
 
-        boolean needsUpgrade = false;
+        // Get the version information from the file.
+        String configVersion = settings.getString("version", null);
 
-        // Check configuration is loaded.
-        if (settings != null) {
-
-            // Get the version information from the file.
-            String configVersion = settings.getString("version", plugin.getDescription().getVersion());
-            String pluginVersion = plugin.getDescription().getVersion();
-
-            // Check we got a version from the config file.
-            if (configVersion == null) {
-                LogUtils.sendLog(strings.getString("failedtogetpropsver"));
-                needsUpgrade = true;
-            }
-
-            // Check if the config is outdated.
-            if (!configVersion.equals(pluginVersion)) {
-                needsUpgrade = true;
-            }
-
-            // After we have checked the versions, we have determined that we need to update.
-            if (needsUpgrade && notify) {
-                LogUtils.sendLog(strings.getString("configupdate"));
-            }
+        // Check we got a version from the config file.
+        if (configVersion == null) {
+            LogUtils.sendLog(strings.getString("failedtogetpropsver"));
+        } else if (!configVersion.equals(requiredVersion)) {
+            LogUtils.sendLog(strings.getString("configupdate"));
         }
-        return needsUpgrade;
     }
 
     /**
@@ -212,9 +182,6 @@ public final class Settings {
             return 0;
         }
     }
-
-
-
 
     /**
      * Method that gets the amount of time between backups. - Checks string for

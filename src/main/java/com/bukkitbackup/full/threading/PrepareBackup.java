@@ -5,7 +5,6 @@ import com.bukkitbackup.full.config.Settings;
 import com.bukkitbackup.full.config.Strings;
 import com.bukkitbackup.full.utils.LogUtils;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
@@ -16,7 +15,6 @@ public class PrepareBackup implements Runnable {
     public boolean isLastBackup;
     public boolean isManualBackup;
     public boolean backupEnabled;
-    public LinkedList<String> worldsToBackup;
     private final Server server;
     private final Settings settings;
     private Strings strings;
@@ -48,7 +46,7 @@ public class PrepareBackup implements Runnable {
         // If it is a manual doBackup, start it, otherwise, perform checks.
         if (isManualBackup) {
             prepareBackup();
-        } else if(backupEnabled) {
+        } else if (backupEnabled) {
 
             // No player checking.
             if (settings.getBooleanProperty("backupemptyserver", false)) {

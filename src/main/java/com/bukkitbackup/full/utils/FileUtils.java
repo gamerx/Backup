@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 /**
@@ -62,9 +61,7 @@ public class FileUtils {
     public FileUtils() {
         super();
     }
-
     public static int BUFFER_SIZE = 10240;
-
     /**
      * The number of bytes in a kilobyte.
      */
@@ -292,8 +289,8 @@ public class FileUtils {
         if (destFile.exists() && destFile.isDirectory()) {
             throw new IOException("Destination '" + destFile + "' exists but is a directory");
         }
-        if(!srcFile.exists()){
-            throw new IOException("Source file '"+srcFile+"' does not exist");
+        if (!srcFile.exists()) {
+            throw new IOException("Source file '" + srcFile + "' does not exist");
         }
         FileInputStream fis = null;
         FileOutputStream fos = null;
@@ -589,7 +586,7 @@ public class FileUtils {
      * @param sourceDIR The source directory. (ex: "backups/temp/xxxxxxxx")
      * @param finalDIR The final destination. (ex: "backups/xxxxxxxx")
      */
-    public static void doCopyAndZIP(String sourceDIR, String finalDIR, boolean shouldZIP, boolean  useTempFolder) {
+    public static void doCopyAndZIP(String sourceDIR, String finalDIR, boolean shouldZIP, boolean useTempFolder) {
 
         if (useTempFolder) {
             if (shouldZIP) {
@@ -635,19 +632,18 @@ public class FileUtils {
 
     }
 
-
     public static File[] listFilesInDir(File directory) {
         // List all the files inside this folder.
-            File[] filesList = directory.listFiles(new FileFilter() {
-                public boolean accept(File file) {
-                    return file.isFile();
-                }
-            });
-            return filesList;
+        File[] filesList = directory.listFiles(new FileFilter() {
+
+            public boolean accept(File file) {
+                return file.isFile();
+            }
+        });
+        return filesList;
     }
 
-
-        public static int getTotalFolderSize(File folder) {
+    public static int getTotalFolderSize(File folder) {
         int bytes = 0;
         File[] filelist = folder.listFiles();
         for (int i = 0; i < filelist.length; i++) {

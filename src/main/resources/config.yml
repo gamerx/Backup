@@ -10,14 +10,6 @@
 # Format: [Time][M-Minutes, H-Hours, D-Days, W-Weeks]
 backupinterval: 15M
 
-## Should the backup stop the schedule after the first backup? (Default: false)
-# If enabled, one backup will be performed at the time specified under backupinterval.
-norepeat: false
-
-## Option to always perform a /save-all on backup schedule. (Default: false)
-# If false, /save-all's are only performed when a backup is required.
-alwayssaveall: false
-
 ## Enable scheduled save-all? (Default: "0" / Off)
 # (Note: -1 or 0 disables this feature.)
 # Format: [Time][M-Minutes, H-Hours, D-Days, W-Weeks]
@@ -32,6 +24,14 @@ maxbackups: 25
 ## Should backups be performed on an empty server? (Default: false)
 # When the last player leaves the server, a final backup will be made. The automatic backup cycle will resume when a player re-joins.
 backupemptyserver: false
+
+## Should the backup stop the schedule after the first backup? (Default: false)
+# If enabled, one backup will be performed at the time specified under backupinterval.
+norepeat: false
+
+## Option to always perform a /save-all on backup schedule. (Default: false)
+# If false, /save-all's are only performed when a backup is required.
+alwayssaveall: false
 
 ## If permissions system is un-available, should everyone be able to access all commands, or just ops? (Default: true)
 # If set to false, all players will be able to perform all commands, unless you use a permissions system.
@@ -64,8 +64,7 @@ usetemp: true
 ## Name for the temp folder. (Default: none)
 # This stores tempoary files while backup is in progress.
 # Note: Path can be relative, or absolute. ('D:\temp', '/tmp', 'temp', and '~/backups/temp' are all valid)
-# if this si not set, it defaults to a temp folder under the backups folder.
-# Needs to be false to be compatible with WorldEdit.
+# If this is not set, it defaults to a temp folder under the backups folder.
 tempfoldername:
 
 ## Whether to ZIP Backups or not. (Default: true)
@@ -73,8 +72,7 @@ tempfoldername:
 # If disabled, the backup will stored in a folder with the timestamp.
 zipbackup: true
 
-## Should all the worlds be split into their own files? (Default: false)
-# Needs to be true to be compatible with WorldEdit.
+## Should all the worlds be split into their own foders? (Default: false)
 splitbackup: false
 
 ## Customize the date format for each backup. (Default: '%1$tY-%1$tm-%1$td-%1$tH-%1$tM-%1$tS' [YYYY-MM-DD-HH-MM-SS])
@@ -83,6 +81,16 @@ splitbackup: false
 dateformat: '%1$tY-%1$tm-%1$td-%1$tH-%1$tM-%1$tS'
 
 #======== FTP Server Settings ==========#
+
+###########################################################
+##             !!!  Warning on FTP  !!!                  ##
+## This implementation relies on Sun's implemenentation  ##
+##  of the FTP protocol, and depending on the version    ##
+##  of Java you have installed, it may or may not work.  ##
+##     You need sun.net.ftp.FtpClient in your JRE.       ##
+##    Please tell me if this works/doesn't for you.      ##
+###########################################################
+
 
 ## Should we enable FTP uploads? (Default: false)
 # If enabled, following options must be set.
@@ -146,5 +154,5 @@ enableversioncheck: true
 ##   Internal Settings (Read: DO NOT EDIT)   ##
 ###############################################
 
-requiredstrings: str-101
-version: 2.0-dev
+requiredstrings: str-200
+version: 2.0

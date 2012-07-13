@@ -13,18 +13,13 @@ import java.io.FileFilter;
  */
 public class BackupEverything {
 
-    private final Settings settings;
-    private final Strings strings;
     private final String backupPath;
     private final boolean shouldZIP;
     private final boolean useTemp;
     private final String tempDestination;
     private FileFilter fileFilter;
 
-    public BackupEverything(final Settings settings, Strings strings) {
-
-        this.settings = settings;
-        this.strings = strings;
+    public BackupEverything(final Settings settings) {
 
         // Get the backup destination.
         backupPath = settings.getStringProperty("backuppath", "backups");

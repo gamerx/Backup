@@ -17,7 +17,7 @@ import org.bukkit.plugin.Plugin;
 
 public class CommandHandler implements Listener, CommandExecutor {
 
-    private PrepareBackup prepareBackup = null;
+    private PrepareBackup prepareBackup;
     private Plugin plugin;
     private Server server;
     private Settings settings;

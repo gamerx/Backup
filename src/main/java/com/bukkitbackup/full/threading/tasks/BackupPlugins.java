@@ -105,21 +105,21 @@ public class BackupPlugins {
 
         String thisTempDestination;
         if (splitBackup) {
-             thisTempDestination = backupPath.concat(FILE_SEPARATOR).concat("plugins").concat(FILE_SEPARATOR).concat(backupName);
+            thisTempDestination = backupPath.concat(FILE_SEPARATOR).concat("plugins").concat(FILE_SEPARATOR).concat(backupName);
         } else {
             thisTempDestination = tempDestination.concat(backupName).concat(FILE_SEPARATOR).concat("plugins");
         }
         FileUtils.checkFolderAndCreate(new File(thisTempDestination));
 
         // Perform plugin backup.
-            if (pluginList.size() > 0 && !pluginList.get(0).isEmpty()) {
-                if (pluginListMode) {
-                    LogUtils.sendLog(strings.getString("disabledplugins"));
-                } else {
-                    LogUtils.sendLog(strings.getString("enabledplugins"));
-                }
-                LogUtils.sendLog(pluginList.toString());
+        if (pluginList.size() > 0 && !pluginList.get(0).isEmpty()) {
+            if (pluginListMode) {
+                LogUtils.sendLog(strings.getString("disabledplugins"));
+            } else {
+                LogUtils.sendLog(strings.getString("enabledplugins"));
             }
+            LogUtils.sendLog(pluginList.toString());
+        }
         FileUtils.copyDirectory(pluginsFolder, new File(thisTempDestination), pluginsFileFilter, true);
 
         // Check if ZIP is required.
@@ -134,9 +134,6 @@ public class BackupPlugins {
             } catch (Exception e) {
                 LogUtils.exceptionLog(e);
             }
-
-
-            //FileUtils.doCopyAndZIP(thisTempDestination, backupPath.concat(FILE_SEPARATOR).concat("plugins").concat(FILE_SEPARATOR).concat(backupName), shouldZIP, useTemp);
         }
     }
 }

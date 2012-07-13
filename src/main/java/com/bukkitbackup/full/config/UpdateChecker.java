@@ -7,8 +7,8 @@ import java.net.URL;
 import org.bukkit.plugin.PluginDescriptionFile;
 
 /**
- * Class for checking for the latest version of Backup.
- * It will report to the user depending if it is out of date or not.
+ * Class for checking for the latest version of Backup. It will report to the
+ * user depending if it is out of date or not.
  *
  * @author Domenic Horner
  */
@@ -25,12 +25,12 @@ public class UpdateChecker implements Runnable {
     }
 
     public void run() {
-        
+
         // Read the version from the web.
         String webVersion = getVersion();
 
         // Confirm we recieved a version.
-        if(webVersion == null) {
+        if (webVersion == null) {
             LogUtils.sendLog(strings.getString("errorversioncheck"));
         } else {
 
@@ -44,7 +44,8 @@ public class UpdateChecker implements Runnable {
     }
 
     /**
-     * This method retrieves the latest version from the web site, and returns it.
+     * This method retrieves the latest version from the web site, and returns
+     * it.
      *
      * @return The latest version.
      */
@@ -53,7 +54,7 @@ public class UpdateChecker implements Runnable {
         try {
 
             // Configure the URL to pull updated from.
-            URL updateURL = new URL("http://checkin.bukkitbackup.com/?ver=" + descriptionFile.getVersion() + "&uuid="+clientID+"&name="+descriptionFile.getName()+"&fromplugin");
+            URL updateURL = new URL("http://checkin.bukkitbackup.com/?ver=" + descriptionFile.getVersion() + "&uuid=" + clientID + "&name=" + descriptionFile.getName() + "&fromplugin");
 
             // Read from the URL into a BufferedReader.
             BufferedReader bReader = new BufferedReader(new InputStreamReader(updateURL.openStream()));
@@ -66,8 +67,8 @@ public class UpdateChecker implements Runnable {
 
             // Return the version.
             return webVersion;
-         } catch (Exception e) {
+        } catch (Exception e) {
             return null;
-         }
+        }
     }
 }

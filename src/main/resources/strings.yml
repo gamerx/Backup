@@ -8,19 +8,17 @@
 
 #========= In-Game Strings ==========#
 
-norights             : '[Backup] You do not have enough rights to run the backup!'
-confuptodate         : '[Backup] Config file is already Up-To-Date!'
-backupfinished       : '[Backup] Finished Backup!'
 backupstarted        : '[Backup] Started Backup...'
-updateconf           : '[Backup] Config upgrade requested, Upgrading...'
+backupfinished       : '[Backup] Finished Backup!'
+norights             : '[Backup] You do not have enough rights to run the backup!'
 reloadedok           : '[Backup] Reloaded %%ARG%% successfully!'
 gettingversions      : '[Backup] Please wait, Retrieving version information...'
 
 #========= Startup Strings ==========#
 
-stringsupdate        : Your strings file is out of date. It may stop working correctly if you do not update it.
-failedtogetpropsver  : Failed to retrieve version from config file, I suggest upgrading!
-configupdate         : Your configuration is outdated, please upgrade it. (backup upgradeconf)
+configupdate         : Your config file is outdated, please regenerate it.
+stringsupdate        : Your strings file is out of date, please regenerate it.
+failedtogetpropsver  : Failed to obtain version information from config file.
 zipdisabled          : You have disabled backup compression.
 defaultperms         : No permissions plugin detected, defaulting to OP.
 hookedperms          : Found and hooked a permissions plugin.
@@ -84,5 +82,5 @@ ftpuploadcomplete    : 'FTP: Upload Complete.'
 ###############################################
 
 stringnotfound       : 'String not found - '
-packagedwith         : 2.0-dev
-version              : str-101
+packagedwith         : 2.0
+version              : str-200

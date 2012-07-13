@@ -23,7 +23,6 @@ public class BackupWorlds {
     private final Server pluginServer;
     private final Settings settings;
     private final Strings strings;
-
     private final String worldContainer;
     private final String backupPath;
     private final boolean useTemp;
@@ -32,7 +31,6 @@ public class BackupWorlds {
     private final String tempDestination;
     private String thisTempDestination;
     private final List<String> ignoredWorlds;
-    
 
     /**
      * This should be the place where all the settings and paths for the backup
@@ -42,7 +40,7 @@ public class BackupWorlds {
      * @param settings
      * @param strings
      */
-    public BackupWorlds(Server server, Settings settings, Strings strings) {
+    public BackupWorlds(Server server, final Settings settings, Strings strings) {
 
         this.pluginServer = server;
         this.settings = settings;
@@ -118,9 +116,9 @@ public class BackupWorlds {
 
                 // Copy the current world into it's backup folder.
                 FileUtils.copyDirectory(worldContainer.concat(FILE_SEPARATOR).concat(currentWorldName), thisWorldBackupFolder.concat(FILE_SEPARATOR).concat(currentWorldName));
-                
+
                 // Check and ZIP folder.
-                if(useTemp || shouldZIP) {
+                if (useTemp || shouldZIP) {
                     FileUtils.doCopyAndZIP(thisWorldBackupFolder, thisWorldBackupPath.concat(FILE_SEPARATOR).concat(backupName), shouldZIP, useTemp);
                 }
 
@@ -133,7 +131,7 @@ public class BackupWorlds {
                 if (!worldContainer.equals(".")) {
                     copyDestination = tempDestination.concat(backupName).concat(FILE_SEPARATOR).concat(worldContainer).concat(FILE_SEPARATOR).concat(currentWorldName);
                 }
-                
+
                 // Create this folder.
                 FileUtils.checkFolderAndCreate(new File(copyDestination));
 

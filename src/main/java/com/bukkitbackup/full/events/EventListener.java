@@ -19,16 +19,16 @@ import org.bukkit.plugin.Plugin;
  * @author Domenic Horner (gamerx)
  */
 public class EventListener implements Listener {
-    
+
     private PrepareBackup prepareBackup = null;
     private Plugin plugin;
     private Settings settings;
     private Strings strings;
     private int lastBackupID;
-    
+
     /**
      * Constructor for listening for login events.
-     * 
+     *
      * @param backupTask The BackupTast to call.
      * @param plugin Plugin to link this class too.
      */
@@ -39,12 +39,12 @@ public class EventListener implements Listener {
         this.strings = strings;
         lastBackupID = -2;
     }
-    
+
     @EventHandler(priority = EventPriority.LOW)
     public void onPlayerQuit(PlayerQuitEvent event) {
         playerPart(event);
     }
-    
+
     @EventHandler(priority = EventPriority.LOW)
     public void onPlayerKick(PlayerKickEvent event) {
         playerPart(event);
@@ -60,19 +60,19 @@ public class EventListener implements Listener {
      *
      */
     private void playerPart(PlayerEvent event) {
-         int onlinePlayers = plugin.getServer().getOnlinePlayers().length;
-         // Check if it was the last player, and we need to stop backups after this last player leaves.
-         if (onlinePlayers == 1 && !settings.getBooleanProperty("backupemptyserver", false)) {
+        int onlinePlayers = plugin.getServer().getOnlinePlayers().length;
+        // Check if it was the last player, and we need to stop backups after this last player leaves.
+        if (onlinePlayers == 1 && !settings.getBooleanProperty("backupemptyserver", false)) {
             prepareBackup.setAsLastBackup(true);
             int intervalInMinutes = settings.getIntervalInMinutes("backupinterval");
             if (intervalInMinutes != 0) {
-                int interval =  intervalInMinutes * 1200;
+                int interval = intervalInMinutes * 1200;
                 lastBackupID = plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, prepareBackup, interval);
                 LogUtils.sendLog(strings.getString("schedlastbackup", Integer.toString(intervalInMinutes)));
             } else {
                 LogUtils.sendLog(strings.getString("disbaledauto"));
             }
-         }
+        }
     }
 
     /**
@@ -80,7 +80,7 @@ public class EventListener implements Listener {
      *
      */
     private void playerJoin(PlayerEvent event) {
-        if(lastBackupID != -2) {
+        if (lastBackupID != -2) {
             plugin.getServer().getScheduler().cancelTask(lastBackupID);
             lastBackupID = -2;
             prepareBackup.setAsLastBackup(false);
@@ -88,4 +88,3 @@ public class EventListener implements Listener {
         }
     }
 }
-

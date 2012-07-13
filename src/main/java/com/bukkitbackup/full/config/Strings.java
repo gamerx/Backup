@@ -48,26 +48,16 @@ public class Strings {
      */
     public void checkStringsVersion(String requiredVersion) {
 
-        boolean needsUpdate = false;
+        // Get the version information from the file.
+        String stringVersion = strings.getString("version", null);
 
-        // Check strings are loaded.
-        if (strings != null) {
-
-            // Get the version information from the file.
-            String stringVersion = strings.getString("version", null);
-
-            // Check we got a version from the config file.
-            if (stringVersion == null) {
-                LogUtils.sendLog("Failed to get strings file verison.");
-                needsUpdate = true;
-            } else if (!stringVersion.equals(requiredVersion)) {
-                needsUpdate = true;
-            }
-            // After we have checked the versions, we have determined that we need to update.
-            if (needsUpdate) {
-                LogUtils.sendLog(this.getString("stringsupdate"));
-            }
+        // Check we got a version from the config file.
+        if (stringVersion == null) {
+            LogUtils.sendLog("Failed to get strings file verison.");
+        } else if (!stringVersion.equals(requiredVersion)) {
+            LogUtils.sendLog(this.getString("stringsupdate"));
         }
+
     }
 
     /**
@@ -172,7 +162,7 @@ public class Strings {
         }
     }
 
-        /**
+    /**
      * Gets a value of the string property, and replaces options.
      *
      * @param property The identifier for the string.

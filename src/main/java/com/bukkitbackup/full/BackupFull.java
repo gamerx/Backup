@@ -21,8 +21,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
- * BackupFull - Plugin Loader Class.
- * This extends Bukkit's JavaPlugin class.
+ * BackupFull - Plugin Loader Class. This extends Bukkit's JavaPlugin class.
  *
  * @author Domenic Horner
  */
@@ -39,7 +38,7 @@ public class BackupFull extends JavaPlugin {
     public static BackupWorlds backupWorlds;
     public static BackupPlugins backupPlugins;
     public static BackupTask backupTask;
-    
+
     @Override
     public void onLoad() {
 
@@ -54,10 +53,11 @@ public class BackupFull extends JavaPlugin {
 
         // Load configuration files.
         strings = new Strings(new File(mainDataFolder, "strings.yml"));
-        settings = new Settings(this, strings, new File(mainDataFolder, "config.yml"));
+        settings = new Settings(new File(mainDataFolder, "config.yml"), strings);
 
-        // Run version checking on strings file.
+        // Run version checking on configurations.
         strings.checkStringsVersion(settings.getStringProperty("requiredstrings", ""));
+        settings.checkSettingsVersion(this.getDescription().getVersion());
 
         // Complete initalization of LogUtils.
         LogUtils.finishInitLogUtils(settings.getBooleanProperty("displaylog", true));
@@ -81,9 +81,9 @@ public class BackupFull extends JavaPlugin {
 
         // Check backup path.
         FileUtils.checkFolderAndCreate(new File(settings.getStringProperty("backuppath", "backups")));
-        
+
         // Setup backup tasks.
-        backupEverything = new BackupEverything(settings, strings);
+        backupEverything = new BackupEverything(settings);
         backupWorlds = new BackupWorlds(pluginServer, settings, strings);
         backupPlugins = new BackupPlugins(settings, strings);
         backupTask = new BackupTask(this, settings, strings);

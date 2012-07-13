@@ -19,6 +19,7 @@ public class LogUtils {
             }
             LogUtils.plugin = plugin;
         }
+        LogUtils.logToConsole = true;
     }
 
     public static void finishInitLogUtils(boolean logToConsole) {
@@ -42,7 +43,6 @@ public class LogUtils {
             }
 
         } else {
-
             if (logToConsole && print) {
                 logger.log(Level.INFO, "[".concat(plugin.getDescription().getName()).concat("] ").concat(message));
             }
@@ -58,5 +58,4 @@ public class LogUtils {
         sendLog("Please provide following error with support request:");
         ste.printStackTrace(System.out);
     }
-
 }
