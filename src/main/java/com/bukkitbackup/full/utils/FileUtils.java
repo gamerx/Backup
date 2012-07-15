@@ -16,12 +16,15 @@
  *
  * (modified version)
  */
-package com.bukkitbackup.plugin.utils;
+package com.bukkitbackup.full.utils;
 
+import com.bukkitbackup.full.threading.BackupTask;
 import java.io.*;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -58,6 +61,7 @@ public class FileUtils {
     public FileUtils() {
         super();
     }
+    public static int BUFFER_SIZE = 10240;
     /**
      * The number of bytes in a kilobyte.
      */
@@ -285,8 +289,8 @@ public class FileUtils {
         if (destFile.exists() && destFile.isDirectory()) {
             throw new IOException("Destination '" + destFile + "' exists but is a directory");
         }
-        if(!srcFile.exists()){
-            throw new IOException("Source file '"+srcFile+"' does not exist");
+        if (!srcFile.exists()) {
+            throw new IOException("Source file '" + srcFile + "' does not exist");
         }
         FileInputStream fis = null;
         FileOutputStream fos = null;
@@ -532,5 +536,124 @@ public class FileUtils {
             }
         }
 
+    }
+
+    public static boolean deleteDir(File dir) {
+        if (dir.isDirectory()) {
+            String[] children = dir.list();
+            for (int i = 0; i < children.length; i++) {
+                boolean success = deleteDir(new File(dir, children[i]));
+                if (!success) {
+                    return false;
+                }
+            }
+        }
+        return dir.delete();
+    }
+
+    public static boolean checkFolderAndCreate(File toCheck) {
+        if (!toCheck.exists()) {
+            try {
+                if (toCheck.mkdirs()) {
+                    return true;
+                }
+            } catch (Exception e) {
+                LogUtils.exceptionLog(e);
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Add the folder specified to a ZIP file.
+     *
+     * @param folderToZIP
+     *
+     * ZIPENABLED
+     *
+     * backups/temp/blah -> backups/blah.zip
+     *
+     * ~~~ OR ~~~
+     *
+     * backups/temp/blah -> ( backups/blah
+     *
+     * sourceDIR finalDIR
+     *
+     */
+    /**
+     * Copies items from the temp DIR to the main DIR after ZIP if needed. After
+     * it has done the required action, it deletes the source folder.
+     *
+     * @param sourceDIR The source directory. (ex: "backups/temp/xxxxxxxx")
+     * @param finalDIR The final destination. (ex: "backups/xxxxxxxx")
+     */
+    public static void doCopyAndZIP(String sourceDIR, String finalDIR, boolean shouldZIP, boolean useTempFolder) {
+
+        if (useTempFolder) {
+            if (shouldZIP) {
+                try {
+                    FileUtils.zipDir(sourceDIR, finalDIR);
+                } catch (IOException ioe) {
+                    LogUtils.exceptionLog(ioe, "Failed to ZIP backup: IO Exception.");
+                }
+            } else {
+                try {
+                    FileUtils.copyDirectory(sourceDIR, finalDIR);
+                } catch (IOException ex) {
+                    Logger.getLogger(BackupTask.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+            }
+            try {
+                // Delete the original doBackup directory.
+                FileUtils.deleteDirectory(new File(sourceDIR));
+                new File(sourceDIR).delete();
+            } catch (IOException ioe) {
+                LogUtils.exceptionLog(ioe, "Failed to delete temp folder: IO Exception.");
+            }
+        } else {
+            if (shouldZIP) {
+                try {
+                    FileUtils.zipDir(sourceDIR, finalDIR);
+                } catch (IOException ioe) {
+                    LogUtils.exceptionLog(ioe, "Failed to ZIP backup: IO Exception.");
+                }
+                try {
+                    // Delete the original doBackup directory.
+                    FileUtils.deleteDirectory(new File(sourceDIR));
+                    new File(sourceDIR).delete();
+                } catch (IOException ioe) {
+                    LogUtils.exceptionLog(ioe, "Failed to delete temp folder: IO Exception.");
+                }
+            }
+
+        }
+
+
+
+    }
+
+    public static File[] listFilesInDir(File directory) {
+        // List all the files inside this folder.
+        File[] filesList = directory.listFiles(new FileFilter() {
+
+            public boolean accept(File file) {
+                return file.isFile();
+            }
+        });
+        return filesList;
+    }
+
+    public static int getTotalFolderSize(File folder) {
+        int bytes = 0;
+        File[] filelist = folder.listFiles();
+        for (int i = 0; i < filelist.length; i++) {
+            if (filelist[i].isDirectory()) {
+                bytes += getTotalFolderSize(filelist[i]);
+            } else {
+                bytes += filelist[i].length();
+            }
+        }
+        return bytes;
     }
 }
