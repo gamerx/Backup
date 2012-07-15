@@ -10,6 +10,21 @@
 # Format: [Time][M-Minutes, H-Hours, D-Days, W-Weeks]
 backupinterval: 15M
 
+## Enable scheduled save-all? (Default: "0" / Off)
+# (Note: -1 or 0 disables this feature.)
+# Format: [Time][M-Minutes, H-Hours, D-Days, W-Weeks]
+saveallinterval: 0
+
+## How many backups are retained? (Default: 25)
+# If this limit is hit, the oldest backup(s) will be removed.
+# (Note: -1 or 0 disables this feature.)
+# This can also be a max size, Format: [Size][K-KiloBytes, M-MegaBytes, G-GigaByes]
+maxbackups: 25
+
+## Should backups be performed on an empty server? (Default: false)
+# When the last player leaves the server, a final backup will be made. The automatic backup cycle will resume when a player re-joins.
+backupemptyserver: false
+
 ## Should the backup stop the schedule after the first backup? (Default: false)
 # If enabled, one backup will be performed at the time specified under backupinterval.
 norepeat: false
@@ -17,19 +32,6 @@ norepeat: false
 ## Option to always perform a /save-all on backup schedule. (Default: false)
 # If false, /save-all's are only performed when a backup is required.
 alwayssaveall: false
-
-## Enable scheduled save-all? (Default: "0" / Off)
-# (Note: -1 or 0 disables this feature.)
-# Format: [Time][M-Minutes, H-Hours, D-Days, W-Weeks]
-saveallinterval: 0
-
-## How many backups are retained? (Default: 25)
-# If this limit is hit, the oldest backup(s) will be removed. 
-maxbackups: 25
-
-## Should backups be performed on an empty server? (Default: false)
-# When the last player leaves the server, a final backup will be made. The automatic backup cycle will resume when a player re-joins.
-backupemptyserver: false
 
 ## If permissions system is un-available, should everyone be able to access all commands, or just ops? (Default: true)
 # If set to false, all players will be able to perform all commands, unless you use a permissions system.
@@ -53,32 +55,66 @@ backupeverything: false
 #======== File & Location Settings ==========#
 
 ## Directory to store backup in. (Default: backups)
-# Note: Path can be relative, or absolute. ('D:/Backups', '/var/backups', 'altbackups', and '~/backups' are all valid)
+# Note: Path can be relative, or absolute. ('D:\Backups', '/var/backups', 'altbackups', and '~/backups' are all valid)
 backuppath: backups
 
 ## Do we use the temp folder when doing backup? (Default: true)
 usetemp: true
 
-## Name for the temp folder. (Default: temp)
+## Name for the temp folder. (Default: none)
 # This stores tempoary files while backup is in progress.
-tempfoldername: temp
+# Note: Path can be relative, or absolute. ('D:\temp', '/tmp', 'temp', and '~/backups/temp' are all valid)
+# If this is not set, it defaults to a temp folder under the backups folder.
+tempfoldername:
 
 ## Whether to ZIP Backups or not. (Default: true)
 # If enabled, backups will be compressed and stored in a ZIP archive named with the current timestamp.
 # If disabled, the backup will stored in a folder with the timestamp.
 zipbackup: true
 
-## Should all the worlds be split into their own files? (Default: false)
-# Needs to be true to be compatible with WorldEdit.
+## Should all the worlds be split into their own foders? (Default: false)
 splitbackup: false
 
-## Custom date format string that is appended to every backup.
-## If left empty, the default date format is used.
-## This has to be a Java String.format string, see
-## http://download.oracle.com/javase/1.5.0/docs/api/java/util/Formatter.html#syntax
-##for reference.
-## Example: -%1$tY%1$tm%1$td-%1$tH%1$tM%1$tS (YYYYMMDD-HHMMSS: 20101201-011323) (conforms to ISO 8601)
-dateformat: '%1$tY%1$tm%1$td-%1$tH%1$tM%1$tS'
+## Customize the date format for each backup. (Default: '%1$tY-%1$tm-%1$td-%1$tH-%1$tM-%1$tS' [YYYY-MM-DD-HH-MM-SS])
+# This has to be a Java String.format string, see
+# http://download.oracle.com/javase/1.5.0/docs/api/java/util/Formatter.html#syntax
+dateformat: '%1$tY-%1$tm-%1$td-%1$tH-%1$tM-%1$tS'
+
+#======== FTP Server Settings ==========#
+
+###########################################################
+##             !!!  Warning on FTP  !!!                  ##
+## This implementation relies on Sun's implemenentation  ##
+##  of the FTP protocol, and depending on the version    ##
+##  of Java you have installed, it may or may not work.  ##
+##     You need sun.net.ftp.FtpClient in your JRE.       ##
+##    Please tell me if this works/doesn't for you.      ##
+###########################################################
+
+
+## Should we enable FTP uploads? (Default: false)
+# If enabled, following options must be set.
+# zipbackup must be true for this to take effect.
+ftpuploadenable: false
+
+## The FTP server address to connect to. (Default: none)
+# Can be an IP address or a hostname.
+ftpserveraddress:
+
+## What port should we connect to on the server? (Default: 22)
+# The FTP default port is 21, if you're unsure, don't change this.
+ftpserverport: 21
+
+## The username to login to the FTP server with. (Default: none)
+ftpusername:
+
+## The password to login to the FTP server with. (Default: none)
+ftppassword:
+
+## The directory on the FTP server you would like backups stored in.  (Default: backups)
+# Please leave blank for the root directory.
+# This folder MUST exist on the FTP server, and will NOT be created!
+ftpdirectory: backups
 
 
 #======== Content Settings ==========#
@@ -89,7 +125,7 @@ backupworlds: true
 backupplugins: true
 
 ## Worlds for the backup to skip. (Default: none)
-# Seperate by a semicolon. eg. World1;World2;Nether
+# Seperate by a semicolon. eg. world;world_nether
 skipworlds:
 
 ## Mode for the below list. (Default: true [Exclude listed files/folders])
@@ -106,14 +142,6 @@ pluginlist:
 # If false messages will only be logged to file.
 displaylog: true
 
-## Should we log the plugins logs to the file. (Default: false)
-# File is specified in "backuplogname".
-logtofile: false
-
-## Backup log file name. (Default: backup.log)
-# Filename for log file, it is stored under the plugins data folder.
-backuplogname: backup.log
-
 ## Should we send messages in-game on backup complete. (Default: true)
 # False will only notify players with the "backup.notify" permission.
 notifyallplayers: true
@@ -125,6 +153,12 @@ enableversioncheck: true
 ###############################################
 ##   Internal Settings (Read: DO NOT EDIT)   ##
 ###############################################
+<<<<<<< HEAD
 
 requiredstrings: str-61-3
 version: 1.9
+=======
+
+requiredstrings: str-200
+version: 2.0
+>>>>>>> dev
