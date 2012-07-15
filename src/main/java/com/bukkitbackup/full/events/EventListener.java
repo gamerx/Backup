@@ -63,7 +63,7 @@ public class EventListener implements Listener {
         int onlinePlayers = plugin.getServer().getOnlinePlayers().length;
         // Check if it was the last player, and we need to stop backups after this last player leaves.
         if (onlinePlayers == 1 && !settings.getBooleanProperty("backupemptyserver", false)) {
-            prepareBackup.setAsLastBackup(true);
+            prepareBackup.isLastBackup = true;
             int intervalInMinutes = settings.getIntervalInMinutes("backupinterval");
             if (intervalInMinutes != 0) {
                 int interval = intervalInMinutes * 1200;
@@ -83,7 +83,7 @@ public class EventListener implements Listener {
         if (lastBackupID != -2) {
             plugin.getServer().getScheduler().cancelTask(lastBackupID);
             lastBackupID = -2;
-            prepareBackup.setAsLastBackup(false);
+            prepareBackup.isLastBackup = false;
             LogUtils.sendLog(strings.getString("stoppedlastjoined"));
         }
     }

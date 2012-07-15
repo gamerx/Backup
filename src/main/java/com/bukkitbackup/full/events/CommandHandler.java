@@ -139,7 +139,7 @@ public class CommandHandler implements Listener, CommandExecutor {
     private void doManualBackup() {
 
         // Sets this as a manual backup in the preperation stage.
-        prepareBackup.setAsManualBackup();
+        prepareBackup.isManualBackup = true;
 
         // Schedule an async task to run for the backup.
         plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, prepareBackup);

@@ -89,7 +89,7 @@ public class BackupFull extends JavaPlugin {
         backupTask = new BackupTask(this, settings, strings);
 
         // Create new "PrepareBackup" instance.
-        prepareBackup = new PrepareBackup(pluginServer, settings, strings);
+        prepareBackup = new PrepareBackup(this, settings, strings);
 
         // Initalize the update checker code.
         updateChecker = new UpdateChecker(this.getDescription(), strings, clientID);

@@ -10,28 +10,38 @@ import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
+/**
+ * This class determines if we should start a backup, and what settings to use for the backup.
+ * Once it has determined to start a backup, it pushes one out to a new thread.
+ * 
+ * @author Domenic Horner
+ */
 public class PrepareBackup implements Runnable {
 
-    public boolean isLastBackup;
-    public boolean isManualBackup;
-    public boolean backupEnabled;
-    private final Server server;
+    private Plugin plugin;
+    private final Server pluginServer;
     private final Settings settings;
     private Strings strings;
-    private Plugin plugin;
-
-    public PrepareBackup(Server server, Settings settings, Strings strings) {
-        this.server = server;
+    
+    public static boolean backupInProgress = false;
+    public static boolean backupEnabled = true;
+    public boolean isLastBackup = false;
+    public boolean isManualBackup;
+    
+    public PrepareBackup(Plugin plugin, Settings settings, Strings strings) {
+        this.plugin = plugin;
+        this.pluginServer = plugin.getServer();
         this.settings = settings;
-        this.plugin = server.getPluginManager().getPlugin("Backup");
         this.strings = strings;
-        isLastBackup = false;
-        backupEnabled = true;
     }
 
     @Override
     public synchronized void run() {
-        checkShouldDoBackup();
+        if (backupInProgress) {
+            LogUtils.sendLog(strings.getString("backupinprogress"));
+        } else {
+            checkShouldDoBackup();
+        }
     }
 
     /**
@@ -54,7 +64,7 @@ public class PrepareBackup implements Runnable {
             } else {
 
                 // Checking online players.
-                if (server.getOnlinePlayers().length == 0) {
+                if (pluginServer.getOnlinePlayers().length == 0) {
 
                     // Check if last backup
                     if (isLastBackup) {
@@ -70,7 +80,7 @@ public class PrepareBackup implements Runnable {
                     boolean doBackup = false;
 
                     // Get all online players.
-                    Player[] players = server.getOnlinePlayers();
+                    Player[] players = pluginServer.getOnlinePlayers();
 
                     // Loop players.
                     for (int player = 0; player < players.length; player++) {
@@ -96,7 +106,7 @@ public class PrepareBackup implements Runnable {
 
         // Check we should do a save-all.
         if (settings.getBooleanProperty("alwayssaveall", false)) {
-            server.getScheduler().scheduleSyncDelayedTask(plugin, new SyncSaveAll(server, 0));
+            pluginServer.getScheduler().scheduleSyncDelayedTask(plugin, new SyncSaveAll(pluginServer, 0));
             LogUtils.sendLog(strings.getString("alwayssaveall"));
         }
     }
@@ -105,22 +115,25 @@ public class PrepareBackup implements Runnable {
      * Prepared for, and starts, a doBackup.
      */
     protected void prepareBackup() {
-
+        
+        // Tell the world!
+        backupInProgress = true;
+        
         // Notify doBackup has started.
         notifyStarted();
 
         // Perform final world save before backup, then turn off auto-saving.
-        server.getScheduler().scheduleSyncDelayedTask(plugin, new SyncSaveAll(server, 1));
+        pluginServer.getScheduler().scheduleSyncDelayedTask(plugin, new SyncSaveAll(pluginServer, 1));
 
         // Save all players.
-        server.savePlayers();
+        pluginServer.savePlayers();
 
         // Scedule the doBackup.
-        server.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+        pluginServer.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 
             @Override
             public void run() {
-                server.getScheduler().scheduleAsyncDelayedTask(plugin, BackupFull.backupTask);
+                pluginServer.getScheduler().scheduleAsyncDelayedTask(plugin, BackupFull.backupTask);
             }
         });
         isManualBackup = false;
@@ -152,11 +165,11 @@ public class PrepareBackup implements Runnable {
 
                     // Notify all players, regardless of the permission node.
                     if (settings.getBooleanProperty("notifyallplayers", true)) {
-                        server.broadcastMessage(thisMessage);
+                        pluginServer.broadcastMessage(thisMessage);
                     } else {
 
                         // Get all players.
-                        Player[] players = server.getOnlinePlayers();
+                        Player[] players = pluginServer.getOnlinePlayers();
 
                         // Loop through all online players.
                         for (int pos = 0; pos < players.length; pos++) {
@@ -168,18 +181,17 @@ public class PrepareBackup implements Runnable {
                             }
                         }
                     }
-                    LogUtils.sendLog(thisMessage, false);
                 }
 
             } else {
 
                 // Notify all players, regardless of the permission node.
                 if (settings.getBooleanProperty("notifyallplayers", true)) {
-                    server.broadcastMessage(startBackupMessage);
+                    pluginServer.broadcastMessage(startBackupMessage);
                 } else {
 
                     // Get all players.
-                    Player[] players = server.getOnlinePlayers();
+                    Player[] players = pluginServer.getOnlinePlayers();
 
                     // Loop through all online players.
                     for (int pos = 0; pos < players.length; pos++) {
@@ -191,22 +203,7 @@ public class PrepareBackup implements Runnable {
                         }
                     }
                 }
-                LogUtils.sendLog(startBackupMessage, false);
             }
         }
-    }
-
-    /**
-     * Set the doBackup as a manual doBackup. IE: Not scheduled.
-     */
-    public void setAsManualBackup() {
-        this.isManualBackup = true;
-    }
-
-    /**
-     * Set the doBackup as a last doBackup.
-     */
-    public void setAsLastBackup(boolean isLast) {
-        this.isLastBackup = isLast;
     }
 }

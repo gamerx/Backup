@@ -86,7 +86,7 @@ public class BackupTask implements Runnable {
 
     @Override
     public void run() {
-
+        
         // Get this instances folder name, set variables.
         thisBackupName = getBackupName();
 
@@ -386,7 +386,6 @@ public class BackupTask implements Runnable {
                                     }
                                 }
                             }
-                            LogUtils.sendLog(thisMessage, false);
                         }
 
                     } else {
@@ -409,12 +408,14 @@ public class BackupTask implements Runnable {
                                 }
                             }
                         }
-                        LogUtils.sendLog(completedBackupMessage, false);
                     }
                 }
             }
         };
         pluginServer.getScheduler().scheduleSyncDelayedTask(plugin, run);
+        
+        PrepareBackup.backupInProgress = false;
+        
     }
 
     private void doFTPUpload(String ZIPFile) {
