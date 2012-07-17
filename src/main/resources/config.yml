@@ -153,12 +153,6 @@ enableversioncheck: true
 ###############################################
 ##   Internal Settings (Read: DO NOT EDIT)   ##
 ###############################################
-<<<<<<< HEAD
-
-requiredstrings: str-61-3
-version: 1.9
-=======
 
 requiredstrings: str-200
 version: 2.0
->>>>>>> dev
