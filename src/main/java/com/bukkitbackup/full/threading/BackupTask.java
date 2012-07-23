@@ -3,7 +3,6 @@ package com.bukkitbackup.full.threading;
 import com.bukkitbackup.full.BackupFull;
 import com.bukkitbackup.full.config.Settings;
 import com.bukkitbackup.full.config.Strings;
-import com.bukkitbackup.full.ftp.FTPUploader;
 import com.bukkitbackup.full.threading.tasks.BackupEverything;
 import com.bukkitbackup.full.threading.tasks.BackupPlugins;
 import com.bukkitbackup.full.threading.tasks.BackupWorlds;

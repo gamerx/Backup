@@ -1,4 +1,4 @@
-package com.bukkitbackup.full.ftp;
+package com.bukkitbackup.full.threading;
 
 import com.bukkitbackup.full.config.Settings;
 import com.bukkitbackup.full.config.Strings;
