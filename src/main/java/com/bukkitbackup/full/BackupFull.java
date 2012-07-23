@@ -7,7 +7,6 @@ import com.bukkitbackup.full.events.CommandHandler;
 import com.bukkitbackup.full.events.EventListener;
 import com.bukkitbackup.full.threading.BackupTask;
 import com.bukkitbackup.full.threading.PrepareBackup;
-import com.bukkitbackup.full.threading.SyncSaveAll;
 import com.bukkitbackup.full.threading.tasks.BackupEverything;
 import com.bukkitbackup.full.threading.tasks.BackupPlugins;
 import com.bukkitbackup.full.threading.tasks.BackupWorlds;
@@ -17,6 +16,7 @@ import com.bukkitbackup.full.utils.MetricUtils;
 import java.io.File;
 import java.io.IOException;
 import org.bukkit.Server;
+import org.bukkit.World;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -32,7 +32,6 @@ public class BackupFull extends JavaPlugin {
     private static Strings strings;
     private static Settings settings;
     private PrepareBackup prepareBackup;
-    private static SyncSaveAll syncSaveAllUtil;
     private static UpdateChecker updateChecker;
     public static BackupEverything backupEverything;
     public static BackupWorlds backupWorlds;
@@ -130,8 +129,22 @@ public class BackupFull extends JavaPlugin {
             LogUtils.sendLog(strings.getString("savealltimeron", Integer.toString(saveAllInterval)));
 
             // Syncronised save-all.
-            syncSaveAllUtil = new SyncSaveAll(pluginServer, 0);
-            pluginServer.getScheduler().scheduleSyncRepeatingTask(this, syncSaveAllUtil, saveAllIntervalInTicks, saveAllIntervalInTicks);
+
+            // Create new Runnable instance.
+            Runnable saveAllTask = new Runnable() {
+
+                public Server pluginServer = BackupFull.this.getServer();
+
+                @Override
+                public void run() {
+                    pluginServer.savePlayers();
+                    for (World world : pluginServer.getWorlds()) {
+                        world.save();
+                    }
+
+                }
+            };
+            pluginServer.getScheduler().scheduleSyncRepeatingTask(this, saveAllTask, saveAllIntervalInTicks, saveAllIntervalInTicks);
         }
 
         // Update & version checking loading.

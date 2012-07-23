@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import org.bukkit.Server;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -44,7 +45,7 @@ public class BackupTask implements Runnable {
     private BackupWorlds worldBackupTask;
     private final BackupPlugins pluginBackupTask;
     private final BackupEverything everythingBackupTask;
-    private SyncSaveAll syncSaveAllUtil;
+    //private SyncSaveAll syncSaveAllUtil;
 
     public BackupTask(Plugin plugin, Settings settings, Strings strings) {
 
@@ -337,8 +338,9 @@ public class BackupTask implements Runnable {
 
                 // Should we enable auto-save again?
                 if (settings.getBooleanProperty("enableautosave", true)) {
-                    syncSaveAllUtil = new SyncSaveAll(pluginServer, 2);
-                    pluginServer.getScheduler().scheduleSyncDelayedTask(plugin, syncSaveAllUtil);
+                    for (World world : pluginServer.getWorlds()) {
+                        world.setAutoSave(true);
+                    }
                 }
 
                 // Delete the temp directory.

@@ -7,6 +7,7 @@ import com.bukkitbackup.full.utils.LogUtils;
 import java.util.Arrays;
 import java.util.List;
 import org.bukkit.Server;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -106,7 +107,10 @@ public class PrepareBackup implements Runnable {
 
         // Check we should do a save-all.
         if (settings.getBooleanProperty("alwayssaveall", false)) {
-            pluginServer.getScheduler().scheduleSyncDelayedTask(plugin, new SyncSaveAll(pluginServer, 0));
+            pluginServer.savePlayers();
+            for (World world : pluginServer.getWorlds()) {
+                world.save();
+            }
             LogUtils.sendLog(strings.getString("alwayssaveall"));
         }
     }
@@ -122,8 +126,16 @@ public class PrepareBackup implements Runnable {
         // Notify doBackup has started.
         notifyStarted();
 
-        // Perform final world save before backup, then turn off auto-saving.
-        pluginServer.getScheduler().scheduleSyncDelayedTask(plugin, new SyncSaveAll(pluginServer, 1));
+        // Perform final world save before backup.
+        pluginServer.savePlayers();
+        for (World world : pluginServer.getWorlds()) {
+            world.save();
+        }
+        
+        // Turn off auto-saving of worlds.
+        for (World world : pluginServer.getWorlds()) {
+            world.setAutoSave(false);
+        }
 
         // Save all players.
         pluginServer.savePlayers();
