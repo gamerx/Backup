@@ -27,21 +27,21 @@ import org.bukkit.plugin.Plugin;
  */
 public class BackupTask implements Runnable {
 
-    private Plugin plugin;
-    private Server pluginServer;
-    private Settings settings;
-    private Strings strings;
-    private boolean backupEverything;
-    private boolean splitBackup;
-    private boolean shouldZIP;
-    private boolean useTemp;
-    private String dateFormat;
+    private final Plugin plugin;
+    private final Server pluginServer;
+    private final Settings settings;
+    private final Strings strings;
+    private final boolean backupEverything;
+    private final boolean splitBackup;
+    private final boolean shouldZIP;
+    private final boolean useTemp;
+    private final String dateFormat;
     private final String worldContainer;
-    private String backupPath;
-    private String tempDestination;
+    private final String backupPath;
+    private final String tempDestination;
     private String thisBackupName;
     // Threads.
-    private BackupWorlds worldBackupTask;
+    private final BackupWorlds worldBackupTask;
     private final BackupPlugins pluginBackupTask;
     private final BackupEverything everythingBackupTask;
     //private SyncSaveAll syncSaveAllUtil;
@@ -86,10 +86,10 @@ public class BackupTask implements Runnable {
 
     @Override
     public void run() {
-        
+
         // Get this instances folder name, set variables.
         thisBackupName = getBackupName();
-        
+
         // Check if backupeverything enabled.
         if (backupEverything) {
 
@@ -419,9 +419,9 @@ public class BackupTask implements Runnable {
             }
         };
         pluginServer.getScheduler().scheduleSyncDelayedTask(plugin, run);
-        
+
         PrepareBackup.backupInProgress = false;
-        
+
     }
 
     private void doFTPUpload(String ZIPFile) {

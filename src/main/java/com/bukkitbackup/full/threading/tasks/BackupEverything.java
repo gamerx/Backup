@@ -1,14 +1,13 @@
 package com.bukkitbackup.full.threading.tasks;
 
 import com.bukkitbackup.full.config.Settings;
-import com.bukkitbackup.full.config.Strings;
 import com.bukkitbackup.full.utils.FileUtils;
 import static com.bukkitbackup.full.utils.FileUtils.FILE_SEPARATOR;
 import java.io.File;
 import java.io.FileFilter;
-import org.bukkit.World;
 
 /**
+ * Backup all server files when the function doEverything() is called.
  *
  * @author Domenic Horner
  */
@@ -18,7 +17,7 @@ public class BackupEverything {
     private final boolean shouldZIP;
     private final boolean useTemp;
     private final String tempDestination;
-    private FileFilter fileFilter;
+    private final FileFilter fileFilter;
 
     public BackupEverything(final Settings settings) {
 
@@ -63,7 +62,7 @@ public class BackupEverything {
 
     // The actual backup should be done here, as it is run in another thread.
     public void doEverything(String backupName) throws Exception {
-        
+
         // Copy the directory.
         FileUtils.copyDirectory(new File(".".concat(FILE_SEPARATOR)), new File(tempDestination), fileFilter, true);
 

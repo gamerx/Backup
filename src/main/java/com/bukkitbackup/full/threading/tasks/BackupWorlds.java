@@ -13,8 +13,7 @@ import org.bukkit.Server;
 import org.bukkit.World;
 
 /**
- * [Backup] BackupWorlds.java (World Backup) Backup worlds when the function
- * doWorlds() is called.
+ * Backup worlds when the function doWorlds() is called.
  *
  * @author Domenic Horner
  */
@@ -29,7 +28,6 @@ public class BackupWorlds {
     private final boolean shouldZIP;
     private final boolean splitBackup;
     private final String tempDestination;
-    private String thisTempDestination;
     private final List<String> ignoredWorlds;
 
     /**

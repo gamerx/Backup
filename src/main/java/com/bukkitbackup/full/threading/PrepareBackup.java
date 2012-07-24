@@ -19,10 +19,10 @@ import org.bukkit.plugin.Plugin;
  */
 public class PrepareBackup implements Runnable {
 
-    private Plugin plugin;
+    private final Plugin plugin;
     private final Server pluginServer;
     private final Settings settings;
-    private Strings strings;
+    private final Strings strings;
     
     public static boolean backupInProgress = false;
     public static boolean backupEnabled = true;

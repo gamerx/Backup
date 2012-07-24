@@ -12,8 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * [Backup] BackupPlugins.java (Plugin Backup) Backup plugins when the function
- * doPlugins() is called.
+ * Backup plugins when the function doPlugins() is called.
  *
  * @author Domenic Horner
  */
