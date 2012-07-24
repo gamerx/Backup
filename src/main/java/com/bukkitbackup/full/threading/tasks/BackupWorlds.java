@@ -84,7 +84,10 @@ public class BackupWorlds {
         // Loops each world that needs to backed up, and do the required copies.
         while (!worldsToBackup.isEmpty()) {
             String currentWorldName = worldsToBackup.removeFirst();
-
+            
+            // Save this world.
+            pluginServer.getWorld(currentWorldName).save();
+            
             // Check for split backup.
             if (splitBackup) {
 

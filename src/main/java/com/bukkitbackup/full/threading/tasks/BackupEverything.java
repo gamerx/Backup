@@ -6,6 +6,7 @@ import com.bukkitbackup.full.utils.FileUtils;
 import static com.bukkitbackup.full.utils.FileUtils.FILE_SEPARATOR;
 import java.io.File;
 import java.io.FileFilter;
+import org.bukkit.World;
 
 /**
  *
@@ -62,7 +63,7 @@ public class BackupEverything {
 
     // The actual backup should be done here, as it is run in another thread.
     public void doEverything(String backupName) throws Exception {
-
+        
         // Copy the directory.
         FileUtils.copyDirectory(new File(".".concat(FILE_SEPARATOR)), new File(tempDestination), fileFilter, true);
 

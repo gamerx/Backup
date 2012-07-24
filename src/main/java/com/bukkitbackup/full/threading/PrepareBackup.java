@@ -126,19 +126,13 @@ public class PrepareBackup implements Runnable {
         // Notify doBackup has started.
         notifyStarted();
 
-        // Perform final world save before backup.
+        // Save all players to worlds.
         pluginServer.savePlayers();
-        for (World world : pluginServer.getWorlds()) {
-            world.save();
-        }
         
         // Turn off auto-saving of worlds.
         for (World world : pluginServer.getWorlds()) {
             world.setAutoSave(false);
         }
-
-        // Save all players.
-        pluginServer.savePlayers();
 
         // Scedule the doBackup.
         pluginServer.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {

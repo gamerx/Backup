@@ -89,9 +89,14 @@ public class BackupTask implements Runnable {
         
         // Get this instances folder name, set variables.
         thisBackupName = getBackupName();
-
+        
         // Check if backupeverything enabled.
         if (backupEverything) {
+
+            // Perform final world save before backup.
+            for (World world : pluginServer.getWorlds()) {
+                world.save();
+            }
 
             // Start the BackupEverything class.
             try {
