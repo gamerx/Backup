@@ -26,7 +26,7 @@ public class LogUtils {
     public static void initLogUtils(Plugin plugin) {
         LogUtils.plugin = plugin;
         LogUtils.logger = Logger.getLogger(plugin.getServer().getLogger().getName() + "." + plugin.getServer().getName());
-        lastMesage = null;
+        lastMesage = "";
     }
 
     /**

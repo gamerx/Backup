@@ -55,12 +55,6 @@ import java.util.zip.ZipOutputStream;
  */
 public class FileUtils {
 
-    /**
-     * Instances should NOT be constructed in standard programming.
-     */
-    public FileUtils() {
-        super();
-    }
     public static int BUFFER_SIZE = 10240;
     /**
      * The number of bytes in a kilobyte.
@@ -87,7 +81,7 @@ public class FileUtils {
     private static final char WINDOWS_SEPARATOR = '\\';
 
     /**
-     * Copies a whole directory to a new location preserving the file dates. <p>
+     * Copies a whole directory to a new location preserving the file dates.
      * This method copies the specified directory and all its child directories
      * and files to the specified destination. The destination is the new
      * location and name of the directory. <p> The destination directory is
@@ -110,7 +104,6 @@ public class FileUtils {
      * @since Commons IO 1.1
      */
     public static void copyDirectory(String srcDir, String destDir) throws IOException {
-
         copyDirectory(new File(srcDir), new File(destDir), true);
     }
 
@@ -140,8 +133,7 @@ public class FileUtils {
      * @throws IOException if an IO error occurs during copying
      * @since Commons IO 1.1
      */
-    private static void copyDirectory(File srcDir, File destDir,
-            boolean preserveFileDate) throws IOException {
+    private static void copyDirectory(File srcDir, File destDir, boolean preserveFileDate) throws IOException {
         copyDirectory(srcDir, destDir, null, preserveFileDate);
     }
 
@@ -240,8 +232,7 @@ public class FileUtils {
      * @throws IOException if an error occurs
      * @since Commons IO 1.1
      */
-    private static void doCopyDirectory(File srcDir, File destDir, FileFilter filter,
-            boolean preserveFileDate, List<String> exclusionList) throws IOException {
+    private static void doCopyDirectory(File srcDir, File destDir, FileFilter filter, boolean preserveFileDate, List<String> exclusionList) throws IOException {
         // recurse
         File[] files = filter == null ? srcDir.listFiles() : srcDir.listFiles(filter);
         if (files == null) // null if security restricted
@@ -362,14 +353,15 @@ public class FileUtils {
      * @throws IOException in case deletion is unsuccessful
      */
     public static void deleteDirectory(File directory) throws IOException {
+
+        // Check provided file exists.
         if (!directory.exists()) {
             return;
         }
+        
+        cleanDirectory(directory);
 
-        if (!isSymlink(directory)) {
-            cleanDirectory(directory);
-        }
-
+        // Attempt deletion.
         if (!directory.delete()) {
             String message = "Unable to delete directory " + directory + ".";
             throw new IOException(message);
@@ -377,28 +369,32 @@ public class FileUtils {
     }
 
     /**
-     * Cleans a directory without deleting it.
+     * Recursively empties a directory without deleting it.
      *
-     * @param directory directory to clean
+     * @param directory directory to recursively empty
      * @throws IOException in case cleaning is unsuccessful
      */
     private static void cleanDirectory(File directory) throws IOException {
+
+        // Check it exists.
         if (!directory.exists()) {
             String message = directory + " does not exist";
             throw new IllegalArgumentException(message);
         }
 
+        // Check it is a directory.
         if (!directory.isDirectory()) {
             String message = directory + " is not a directory";
             throw new IllegalArgumentException(message);
         }
 
+        // Retrieve contents.
         File[] files = directory.listFiles();
-        if (files == null) // null if security restricted
-        {
-            throw new IOException("Failed to list contents of " + directory);
+        if (files == null) {
+            throw new SecurityException("Failed to list contents of " + directory);
         }
 
+        // Attempt file deletion.
         IOException exception = null;
         for (File file : files) {
             try {
@@ -408,7 +404,8 @@ public class FileUtils {
             }
         }
 
-        if (null != exception) {
+        // Do we need to throw an exception?
+        if (exception != null) {
             throw exception;
         }
     }
