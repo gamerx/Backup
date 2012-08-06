@@ -13,6 +13,7 @@ import com.bukkitbackup.full.threading.tasks.BackupWorlds;
 import com.bukkitbackup.full.utils.FileUtils;
 import com.bukkitbackup.full.utils.LogUtils;
 import com.bukkitbackup.full.utils.MetricUtils;
+import com.bukkitbackup.full.webplatform.HTTPServer;
 import java.io.File;
 import java.io.IOException;
 import org.bukkit.Server;
@@ -60,7 +61,7 @@ public class BackupFull extends JavaPlugin {
 
         // Complete initalization of LogUtils.
         LogUtils.finishInitLogUtils(settings.getBooleanProperty("displaylog", true));
-
+        
         // Load Metric Utils.
         try {
             MetricUtils metricUtils = new MetricUtils(this, new File(mainDataFolder, "metrics.yml"));
@@ -77,7 +78,10 @@ public class BackupFull extends JavaPlugin {
         // Get server and plugin manager instances.
         Server pluginServer = getServer();
         PluginManager pluginManager = pluginServer.getPluginManager();
-
+        
+        HTTPServer httpServer = new HTTPServer();
+        pluginServer.getScheduler().scheduleAsyncDelayedTask(this, httpServer);
+        
         // Check backup path.
         FileUtils.checkFolderAndCreate(new File(settings.getStringProperty("backuppath", "backups")));
 
@@ -150,6 +154,9 @@ public class BackupFull extends JavaPlugin {
         // Update & version checking loading.
         if (settings.getBooleanProperty("enableversioncheck", true)) {
             pluginServer.getScheduler().scheduleAsyncDelayedTask(this, updateChecker);
+        } else {
+            // Checksum JAR.
+            LogUtils.sendLog("Debug Checksum: "+UpdateChecker.getMD5Checksum("plugins/Backup.jar"));
         }
 
         // Notify loading complete.

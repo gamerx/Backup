@@ -37,6 +37,11 @@
                     <include>strings.yml</include>
                 </includes>
             </resource>
+            <resource>
+                <targetPath>web/</targetPath>
+                <filtering>true</filtering>
+                <directory>${basedir}/src/main/resources/web</directory>
+            </resource>
         </resources>
         <plugins>
             <plugin>
