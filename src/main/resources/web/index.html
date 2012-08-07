@@ -1,13 +1,34 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <title>Bukkit Admin</title>
-</head>
-<body>
-<h1>My First Heading</h1>
-
-<p>My first paragraph.</p>
-
-</body>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Bukkit Backup Administration Panel</title>
+        <link type="text/css" href="style.css" rel="stylesheet" />
+        <link type="text/css" href="css/jquery.ui.all.css" rel="Stylesheet" />
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.21/jquery-ui.min.js"></script>
+        <script src="js/main.js"></script>
+    </head>
+    <body>
+        <div id="container">
+            <div id="header" >
+                Bukkit Backup Administration Panel
+            </div>
+            <div id="main">
+                <ul>
+                    <li><a href="#maintab">Main</a></li>
+                    <li><a href="ajax/backups">Backups</a></li>
+                    <li><a href="ajax/stats">Statistics</a></li>
+                    <li><a href="ajax/commands">Commands</a></li>
+                    <li><a href="ajax/settings">Settings</a></li>
+                    <li><a href="ajax/logs">Logs</a></li>
+                    <li><a href="ajax/startstop">Start/Stop</a></li>
+                </ul>
+                <div id="maintab">
+                    <p>Please use the tabs above to navigate this page.</p>
+                    <p>Backup v2.1-dev (Development Build) + &lt; MD5HASH HERE &gt; By Domenic Horner</p>
+                </div>
+            </div>
+        </div>
+    </body>
 </html>
-

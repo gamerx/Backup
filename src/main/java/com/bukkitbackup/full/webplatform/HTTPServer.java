@@ -1,113 +1,178 @@
 package com.bukkitbackup.full.webplatform;
 
+import com.bukkitbackup.full.config.Settings;
+import com.bukkitbackup.full.config.Strings;
+import com.bukkitbackup.full.utils.LogUtils;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.URI;
+import java.net.URL;
+import java.util.Hashtable;
 import java.util.StringTokenizer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.bukkit.plugin.Plugin;
 
 public final class HTTPServer implements Runnable {
 
+    private int serverPort;
     private Socket socket;
-    private ServerSocket serverSocket;
+    private Plugin plugin;
+    private Strings strings;
 
     // @TODO Need to initalize variables here.
-    public HTTPServer() {
-        try {
-            serverSocket = new ServerSocket(8765);
-        } catch (IOException ex) {
-            Logger.getLogger(HTTPServer.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    public HTTPServer(Plugin plugin, Settings settings, Strings strings) {
+
+        this.plugin = plugin;
+        this.strings = strings;
+
+        // Port setting.
+        serverPort = settings.getIntProperty("httpserver-port", 8765);
+
     }
 
     public void run() {
+
+        // Server Socket initalize.
+        ServerSocket serverSocket = null;
+
+        // Attempt to bind to port.
         try {
-            
+            serverSocket = new ServerSocket(serverPort);
+        } catch (Exception ex) {
+            LogUtils.exceptionLog(ex, "Exception binding to port.");
+        }
+
+        // Process loop for requests.
+        try {
             while (true) {
                 this.socket = serverSocket.accept();
                 process();
             }
         } catch (Exception ex) {
-            Logger.getLogger(HTTPServer.class.getName()).log(Level.SEVERE, null, ex);
+            LogUtils.exceptionLog(ex, "Exception processing requests.");
         }
     }
 
     public void process() throws Exception {
-        //DataInputStream din = new DataInputStream();
         BufferedReader d = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         OutputStream ot = socket.getOutputStream();
         PrintWriter pw = new PrintWriter(ot);
-            //pw.print
-        
+
         BufferedOutputStream out = new BufferedOutputStream(ot);
 
         String request = d.readLine().trim();
-        System.out.println(request);
         StringTokenizer st = new StringTokenizer(request);
 
         String header = st.nextToken();
 
         if (header.equals("GET")) {
+
+            // Request file name. ex: /index.html
             String fileName = st.nextToken();
-            FileInputStream fin = null;
-            boolean fileExist = true;
-            try {
-                System.out.println("file: "+fileName);
-                fin = new FileInputStream("/web"+fileName);
-            } catch (Exception ex) {
-                fileExist = false;
+
+            // Default file to send.
+            if (fileName.equals("/")) {
+                fileName = "/index.html";
             }
 
-            String ServerLine = "Server: Backup Internal HTTP Server\r\n";
-            String StatusLine = null;
-            String ContentTypeLine = null;
-            String ContentLengthLine = null;
-            String ContentBody = null;
+            // Initalize the filestream.
+            InputStream inputStream = null;
 
-            if (fileExist) {
-                StatusLine = "HTTP/1.0 200 OK\r\n";
-                ContentTypeLine = "Content-type: text/html\r\n";
-                ContentLengthLine = "Content-Length: " + (new Integer(fin.available()).toString()) + "\r\n";
+            String httpStat = "200 OK";
+            String contentLength = "0";
+            String mimeType = "text/plain";
+            String contentSend = "";
+            if ((inputStream = getClass().getResourceAsStream("/web" + fileName)) != null) {
+                contentLength = (new Integer(inputStream.available()).toString());
+                mimeType = getMimeType(fileName);
+            } else if (fileName.contains("/ajax/")) {
+                String[] getResult = ajaxHandle(fileName);
+                contentSend = getResult[0];
+                contentLength = (new Integer(contentSend.length()).toString());
+                httpStat = getResult[1];
+                mimeType = getResult[2];
             } else {
-                StatusLine = "HTTP/1.0 200 OK\r\n";
-                ContentTypeLine = "Content-type: text/html\r\n";
-                ContentBody = "<HTML>"
-                        + "<HEAD><TITLE>404 Not Found</TITLE></HEAD>"
-                        + "<BODY>404 Not Found"
-                        + "</BODY></HTML>";
-                ContentLengthLine = (new Integer(ContentBody.length()).toString()) + "\r\n";
+                httpStat = "404 Not Found";
+                contentSend = "Page not found.";
+                contentLength = (new Integer(contentSend.length()).toString());
             }
 
-            pw.print(StatusLine);
-            pw.print(ServerLine);
-            pw.print(ContentTypeLine);
-            pw.print(ContentLengthLine);
+            // Send HTTP Headers.
+            pw.print("HTTP/1.0 " + httpStat + "\r\n");
+            pw.print("Server: Backup Internal HTTP Server\r\n");
+            pw.print("Content-type: " + mimeType + "\r\n");
+            pw.print("Content-Length: " + contentLength + "\r\n");
             pw.print("\r\n");
             pw.flush();
-            
-            if (fileExist) {
 
+
+            if (inputStream != null) {
                 byte[] buffer = new byte[1024];
                 int bytes = 0;
-                while ((bytes = fin.read(buffer)) != -1) {
+                while ((bytes = inputStream.read(buffer)) != -1) {
                     out.write(buffer, 0, bytes);
-                    for (int iCount = 0; iCount < bytes; iCount++) {
-                        int temp = buffer[iCount];
-                        System.out.print((char) temp);
-                    }
                 }
-
-                fin.close();
+                inputStream.close();
+                out.flush();
             } else {
-                out.write(ContentBody.getBytes());
+                out.write(contentSend.getBytes());
             }
-            out.flush();
+
 
             out.close();
             socket.close();
-
-
         }
+    }
+
+    private String[] ajaxHandle(String fileName) {
+
+        return new String[]{"Internal Server Error.", "500 Internal Server Error", "text/plain"};
+    }
+    /**
+     * Hashtable mapping (String)FILENAME_EXTENSION -> (String)MIME_TYPE
+     */
+    private static Hashtable theMimeTypes = new Hashtable();
+
+    static {
+        StringTokenizer st = new StringTokenizer(
+                "css		text/css "
+                + "htm		text/html "
+                + "html		text/html "
+                + "xml		text/xml "
+                + "txt		text/plain "
+                + "asc		text/plain "
+                + "gif		image/gif "
+                + "jpg		image/jpeg "
+                + "jpeg		image/jpeg "
+                + "png		image/png "
+                + "mp3		audio/mpeg "
+                + "m3u		audio/mpeg-url "
+                + "mp4		video/mp4 "
+                + "ogv		video/ogg "
+                + "flv		video/x-flv "
+                + "mov		video/quicktime "
+                + "swf		application/x-shockwave-flash "
+                + "js		application/javascript "
+                + "pdf		application/pdf "
+                + "doc		application/msword "
+                + "ogg		application/x-ogg "
+                + "zip		application/octet-stream "
+                + "exe		application/octet-stream "
+                + "class	application/octet-stream ");
+        while (st.hasMoreTokens()) {
+            theMimeTypes.put(st.nextToken(), st.nextToken());
+        }
+    }
+
+    private String getMimeType(String fileName) {
+        String mime = null;
+        int dot = fileName.lastIndexOf('.');
+        if (dot >= 0) {
+            mime = (String) theMimeTypes.get(fileName.substring(dot + 1).toLowerCase());
+        }
+        if (mime == null) {
+            mime = "text/plain";
+        }
+        return mime;
     }
 }

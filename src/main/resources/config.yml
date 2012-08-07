@@ -156,7 +156,7 @@ enableversioncheck: true
 
 
 enabledebugserver: true
-webservicesport: 8091
+httpserver-port: 8765
 
 ###############################################
 ##   Internal Settings (Read: DO NOT EDIT)   ##

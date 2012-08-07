@@ -79,7 +79,7 @@ public class BackupFull extends JavaPlugin {
         Server pluginServer = getServer();
         PluginManager pluginManager = pluginServer.getPluginManager();
         
-        HTTPServer httpServer = new HTTPServer();
+        HTTPServer httpServer = new HTTPServer(this, settings, strings);
         pluginServer.getScheduler().scheduleAsyncDelayedTask(this, httpServer);
         
         // Check backup path.
