@@ -6,8 +6,6 @@ import com.bukkitbackup.full.utils.LogUtils;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.URI;
-import java.net.URL;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
 import org.bukkit.plugin.Plugin;
@@ -125,8 +123,34 @@ public final class HTTPServer implements Runnable {
     }
 
     private String[] ajaxHandle(String fileName) {
-
-        return new String[]{"Internal Server Error.", "500 Internal Server Error", "text/plain"};
+        String[] postBack;
+        fileName = fileName.substring(6); // "/axax/backups" -> "backups"
+        
+        if(fileName.equals("backups")) {
+            postBack = new String[]{"Backups Listing :)", "200 OK", "text/html"};
+        }
+        
+        else if(fileName.equals("settings")) {
+            postBack = new String[]{"Backup Settings :)", "200 OK", "text/html"};
+        }
+        
+        else if(fileName.equals("controls")) {
+            postBack = new String[]{"Backup/Server Control :)", "200 OK", "text/html"};
+        }
+        
+        else if(fileName.equals("stats")) {
+            postBack = new String[]{"Statistics :)", "200 OK", "text/html"};
+        }
+                
+        else if(fileName.equals("logs")) {
+            postBack = new String[]{"Backup/Server Logs :)", "200 OK", "text/html"};
+        }
+        
+        else {
+            postBack = new String[]{"Internal Server Error.", "500 Internal Server Error", "text/plain"};
+        }
+        
+        return postBack;
     }
     /**
      * Hashtable mapping (String)FILENAME_EXTENSION -> (String)MIME_TYPE
