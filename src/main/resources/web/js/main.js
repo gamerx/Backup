@@ -1,5 +1,8 @@
 $(function() {
     
+    
+    
+    
     // Bind tabs jQueryUI to the main div.
     $("#main").tabs({
         ajaxOptions: {

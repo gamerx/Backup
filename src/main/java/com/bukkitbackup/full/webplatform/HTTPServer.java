@@ -127,7 +127,11 @@ public final class HTTPServer implements Runnable {
         String[] postBack;
         fileName = fileName.substring(6); // "/axax/backups" -> "backups"
         
-        if(fileName.equals("backups")) {
+        if(fileName.equals("main")) {
+            postBack = new String[]{"<p>Please use the tabs above to navigate this page.</p><p>Backup v2.1-dev (Development Build) + &lt; MD5HASH HERE &gt; By Domenic Horner</p>", "200 OK", "text/html"};
+        }
+        
+        else if(fileName.equals("backups")) {
             postBack = new String[]{"Backups Listing :)", "200 OK", "text/html"};
         }
         
