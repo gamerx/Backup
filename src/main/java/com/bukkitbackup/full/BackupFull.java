@@ -154,9 +154,6 @@ public class BackupFull extends JavaPlugin {
         // Update & version checking loading.
         if (settings.getBooleanProperty("enableversioncheck", true)) {
             pluginServer.getScheduler().scheduleAsyncDelayedTask(this, updateChecker);
-        } else {
-            // Checksum JAR.
-            LogUtils.sendLog("Debug Checksum: "+UpdateChecker.getMD5Checksum("plugins/Backup.jar"));
         }
 
         // Notify loading complete.

@@ -85,6 +85,17 @@ public class LogUtils {
         sendLog(message);
         exceptionLog(ste);
     }
+    
+     /**
+     * This is where debug messages should be sent.
+     * 
+     * @param message Debug message.
+     */
+    // @TODO Implement proper debug on/off.
+    public static void sendDebug(String message) {
+        if(true)
+            sendLog(message);
+    }
 
     /**
      * This posts a tidy stack trace to the console.

@@ -14,18 +14,18 @@ public final class HTTPServer implements Runnable {
 
     private int serverPort;
     private Socket socket;
-    private Plugin plugin;
-    private Strings strings;
+    private final AjaxLoader ajaxLoader;
+    private final RunAction runAction;
 
-    // @TODO Need to initalize variables here.
     public HTTPServer(Plugin plugin, Settings settings, Strings strings) {
-
-        this.plugin = plugin;
-        this.strings = strings;
-
+        
+        ajaxLoader = new AjaxLoader(settings, strings);
+        runAction = new RunAction(settings, strings);
+        
         // Port setting.
         serverPort = settings.getIntProperty("webserviceport", 8765);
-
+        
+        
     }
 
     public void run() {
@@ -59,107 +59,95 @@ public final class HTTPServer implements Runnable {
 
         BufferedOutputStream out = new BufferedOutputStream(ot);
 
-        String request = d.readLine().trim();
-        StringTokenizer st = new StringTokenizer(request);
+        String request;
+        try {
+            request = d.readLine().trim();
 
-        String header = st.nextToken();
+            StringTokenizer st = new StringTokenizer(request);
 
-        if (header.equals("GET")) {
+            String header = st.nextToken();
 
-            // Request file name. ex: /index.html
-            String fileName = st.nextToken();
+            if (header.equals("GET")) {
 
-            // Default file to send.
-            if (fileName.equals("/")) {
-                fileName = "/index.html";
+                // Request file name. ex: /index.html
+                String fileName = st.nextToken();
+
+                // Default file to send.
+                if (fileName.equals("/")) {
+                    fileName = "/index.html";
+                }
+
+                // Initalize the filestream.
+                InputStream inputStream = null;
+
+                String httpStat = "200 OK";
+                String contentLength = "0";
+                String mimeType = "text/plain";
+                String contentSend = "";
+                if ((inputStream = getClass().getResourceAsStream("/web" + fileName)) != null) {
+                    contentLength = (new Integer(inputStream.available()).toString());
+                    mimeType = getMimeType(fileName);
+                } else if (fileName.contains("/ajax/")) {
+                    String[] getResult = ajaxLoader.handleRequest(fileName.substring(6)); // "/axax/backups" -> "backups";
+                    contentSend = getResult[0];
+                    contentLength = (new Integer(contentSend.length()).toString());
+                    httpStat = getResult[1];
+                    mimeType = getResult[2];
+                } else if (fileName.contains("/action/")) {
+                    String[] getResult = runAction.handleRequest(fileName.substring(8)); // "/action/backup" -> "backup";
+                    contentSend = getResult[0];
+                    contentLength = (new Integer(contentSend.length()).toString());
+                    httpStat = getResult[1];
+                    mimeType = getResult[2];
+                } else {
+                    httpStat = "404 Not Found";
+                    contentSend = "Page not found.";
+                    contentLength = (new Integer(contentSend.length()).toString());
+                }
+
+                // Send HTTP Headers.
+                pw.print("HTTP/1.0 " + httpStat + "\r\n");
+                pw.print("Server: Backup Internal HTTP Server\r\n");
+                pw.print("Content-type: " + mimeType + "\r\n");
+                pw.print("Content-Length: " + contentLength + "\r\n");
+                pw.print("\r\n");
+                pw.flush();
+
+
+                if (inputStream != null) {
+                    byte[] buffer = new byte[1024];
+                    int bytes = 0;
+                    while ((bytes = inputStream.read(buffer)) != -1) {
+                        out.write(buffer, 0, bytes);
+                    }
+                    inputStream.close();
+                    out.flush();
+                } else {
+                    out.write(contentSend.getBytes());
+                }
+
+
+                out.close();
+                socket.close();
             }
-
-            // Initalize the filestream.
-            InputStream inputStream = null;
-
-            String httpStat = "200 OK";
-            String contentLength = "0";
-            String mimeType = "text/plain";
-            String contentSend = "";
-            if ((inputStream = getClass().getResourceAsStream("/web" + fileName)) != null) {
-                contentLength = (new Integer(inputStream.available()).toString());
-                mimeType = getMimeType(fileName);
-            } else if (fileName.contains("/ajax/")) {
-                String[] getResult = ajaxHandle(fileName);
-                contentSend = getResult[0];
-                contentLength = (new Integer(contentSend.length()).toString());
-                httpStat = getResult[1];
-                mimeType = getResult[2];
-            } else {
-                httpStat = "404 Not Found";
-                contentSend = "Page not found.";
-                contentLength = (new Integer(contentSend.length()).toString());
-            }
-
+        } catch (Exception e) {
             // Send HTTP Headers.
-            pw.print("HTTP/1.0 " + httpStat + "\r\n");
+  
+            String printErr = "Page not found.";
+            String printErrLen = (new Integer(printErr.length()).toString());
+
+            pw.print("HTTP/1.0 500 Internal Server Error \r\n");
             pw.print("Server: Backup Internal HTTP Server\r\n");
-            pw.print("Content-type: " + mimeType + "\r\n");
-            pw.print("Content-Length: " + contentLength + "\r\n");
+            pw.print("Content-type: text/plain\r\n");
+            pw.print("Content-Length: " + printErrLen + "\r\n");
             pw.print("\r\n");
             pw.flush();
 
-
-            if (inputStream != null) {
-                byte[] buffer = new byte[1024];
-                int bytes = 0;
-                while ((bytes = inputStream.read(buffer)) != -1) {
-                    out.write(buffer, 0, bytes);
-                }
-                inputStream.close();
-                out.flush();
-            } else {
-                out.write(contentSend.getBytes());
-            }
-
-
-            out.close();
-            socket.close();
+            out.write(printErr.getBytes());
+     
+        
         }
     }
-
-    private String[] ajaxHandle(String fileName) {
-        String[] postBack;
-        fileName = fileName.substring(6); // "/axax/backups" -> "backups"
-        
-        if(fileName.equals("main")) {
-            postBack = new String[]{"<p>Please use the tabs above to navigate this page.</p><p>Backup v2.1-dev (Development Build) + &lt; MD5HASH HERE &gt; By Domenic Horner</p>", "200 OK", "text/html"};
-        }
-        
-        else if(fileName.equals("backups")) {
-            postBack = new String[]{"<p>Backups Listing :)</p>", "200 OK", "text/html"};
-        }
-        
-        else if(fileName.equals("settings")) {
-            postBack = new String[]{"<p>Backup Settings :)</p>", "200 OK", "text/html"};
-        }
-        
-        else if(fileName.equals("controls")) {
-            postBack = new String[]{"<p>Backup/Server Control :)</p>", "200 OK", "text/html"};
-        }
-        
-        else if(fileName.equals("stats")) {
-            postBack = new String[]{"<p>Statistics :)</p>", "200 OK", "text/html"};
-        }
-                
-        else if(fileName.equals("logs")) {
-            postBack = new String[]{"<p>Backup/Server Logs :)</p>", "200 OK", "text/html"};
-        }
-        
-        else {
-            postBack = new String[]{"500 - Internal Server Error!", "500 Internal Server Error", "text/plain"};
-        }
-        
-        return postBack;
-    }
-    
-    
-    
     
     /**
      * Hashtable mapping (String)FILENAME_EXTENSION -> (String)MIME_TYPE
@@ -208,4 +196,6 @@ public final class HTTPServer implements Runnable {
         }
         return mime;
     }
+
+
 }

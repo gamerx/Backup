@@ -21,6 +21,7 @@ package com.bukkitbackup.full.utils;
 import com.bukkitbackup.full.threading.BackupTask;
 import java.io.*;
 import java.nio.channels.FileChannel;
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -358,7 +359,7 @@ public class FileUtils {
         if (!directory.exists()) {
             return;
         }
-        
+
         cleanDirectory(directory);
 
         // Attempt deletion.
@@ -651,5 +652,38 @@ public class FileUtils {
             }
         }
         return bytes;
+    }
+
+    public static byte[] createChecksum(String filename) throws Exception {
+        InputStream fis = new FileInputStream(filename);
+
+        byte[] buffer = new byte[1024];
+        MessageDigest complete = MessageDigest.getInstance("MD5");
+        int numRead;
+
+        do {
+            numRead = fis.read(buffer);
+            if (numRead > 0) {
+                complete.update(buffer, 0, numRead);
+            }
+        } while (numRead != -1);
+
+        fis.close();
+        return complete.digest();
+    }
+
+    public static String getMD5Checksum(String filename) {
+
+        String result = "";
+        try {
+            byte[] b;
+            b = createChecksum(filename);
+            for (int i = 0; i < b.length; i++) {
+                result += Integer.toString((b[i] & 0xff) + 0x100, 16).substring(1);
+            }
+        } catch (Exception ex) {
+            LogUtils.exceptionLog(ex);
+        }
+        return result;
     }
 }
