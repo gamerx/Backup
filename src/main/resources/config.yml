@@ -156,11 +156,11 @@ enableversioncheck: true
 
 ## Enable inbuilt management server interface? (Default: false)
 # Defaulted to false as it is not yet complete.
-enabledebugserver: false
+enablewebservice: false
 
 ## Port to run internal web server on. (Default: 8765)
 # You should change this if something is already running on port 8765.
-httpserver-port: 8765
+webserviceport: 8765
 
 ###############################################
 ##   Internal Settings (Read: DO NOT EDIT)   ##
