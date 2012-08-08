@@ -35,6 +35,7 @@ public final class HTTPServer implements Runnable {
 
         // Attempt to bind to port.
         try {
+            LogUtils.sendLog("Started HTTP Server.");
             serverSocket = new ServerSocket(serverPort);
         } catch (Exception ex) {
             LogUtils.exceptionLog(ex, "Exception binding to port.");
@@ -152,6 +153,10 @@ public final class HTTPServer implements Runnable {
         
         return postBack;
     }
+    
+    
+    
+    
     /**
      * Hashtable mapping (String)FILENAME_EXTENSION -> (String)MIME_TYPE
      */
