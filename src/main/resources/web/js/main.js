@@ -1,7 +1,8 @@
 $(function() {
     
-    
-    
+    $("#maintab").load('ajax/main', function() {
+        $("#loading").hide();
+    });
     
     // Bind tabs jQueryUI to the main div.
     $("#main").tabs({

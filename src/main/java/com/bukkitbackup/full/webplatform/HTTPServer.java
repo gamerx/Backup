@@ -132,27 +132,27 @@ public final class HTTPServer implements Runnable {
         }
         
         else if(fileName.equals("backups")) {
-            postBack = new String[]{"Backups Listing :)", "200 OK", "text/html"};
+            postBack = new String[]{"<p>Backups Listing :)</p>", "200 OK", "text/html"};
         }
         
         else if(fileName.equals("settings")) {
-            postBack = new String[]{"Backup Settings :)", "200 OK", "text/html"};
+            postBack = new String[]{"<p>Backup Settings :)</p>", "200 OK", "text/html"};
         }
         
         else if(fileName.equals("controls")) {
-            postBack = new String[]{"Backup/Server Control :)", "200 OK", "text/html"};
+            postBack = new String[]{"<p>Backup/Server Control :)</p>", "200 OK", "text/html"};
         }
         
         else if(fileName.equals("stats")) {
-            postBack = new String[]{"Statistics :)", "200 OK", "text/html"};
+            postBack = new String[]{"<p>Statistics :)</p>", "200 OK", "text/html"};
         }
                 
         else if(fileName.equals("logs")) {
-            postBack = new String[]{"Backup/Server Logs :)", "200 OK", "text/html"};
+            postBack = new String[]{"<p>Backup/Server Logs :)</p>", "200 OK", "text/html"};
         }
         
         else {
-            postBack = new String[]{"Internal Server Error.", "500 Internal Server Error", "text/plain"};
+            postBack = new String[]{"500 - Internal Server Error!", "500 Internal Server Error", "text/plain"};
         }
         
         return postBack;
