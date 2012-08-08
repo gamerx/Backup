@@ -24,7 +24,7 @@ public final class HTTPServer implements Runnable {
         this.strings = strings;
 
         // Port setting.
-        serverPort = settings.getIntProperty("httpserver-port", 8765);
+        serverPort = settings.getIntProperty("webserviceport", 8765);
 
     }
 
