@@ -50,3 +50,7 @@ p, pre{
     padding: 0px;
     text-align: left;
 }
+
+#dialog {
+    display: none;
+}

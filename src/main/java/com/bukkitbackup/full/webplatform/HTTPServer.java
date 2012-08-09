@@ -13,7 +13,7 @@ import org.bukkit.plugin.Plugin;
 public final class HTTPServer implements Runnable {
 
     private int serverPort;
-    private Socket socket;
+    private Socket socket = null;
     private final AjaxLoader ajaxLoader;
     private final RunAction runAction;
 
@@ -195,6 +195,15 @@ public final class HTTPServer implements Runnable {
             mime = "text/plain";
         }
         return mime;
+    }
+    
+    public void shutdownServer() {
+        try {
+            if(socket != null)
+                socket.close();
+        } catch (IOException ex) {
+            LogUtils.exceptionLog(ex);
+        }
     }
 
 

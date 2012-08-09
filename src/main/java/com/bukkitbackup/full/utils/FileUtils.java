@@ -686,4 +686,32 @@ public class FileUtils {
         }
         return result;
     }
+    
+    
+    public static String tail(File src) {
+        String lastOneHundred = "";
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(src));
+            String[] lines = new String[50];
+            int lastNdx = 0;
+
+            for (String line = reader.readLine(); line != null; line = reader.readLine()) {
+                if (lastNdx == lines.length) {
+                    lastNdx = 0;
+                }
+                lines[lastNdx++] = line;
+            }
+
+            for (int ndx = lastNdx; ndx != lastNdx - 1; ndx++) {
+                if (ndx == lines.length) {
+                    ndx = 0;
+                }
+                lastOneHundred = lastOneHundred.concat(lines[ndx] + "\r\n");
+            }
+
+        } catch (Exception e) {
+            //Logger.getLogger(AjaxLoader.class.getName()).log(Level.SEVERE, null, e);
+        }
+        return lastOneHundred;
+    }
 }

@@ -2,7 +2,6 @@ package com.bukkitbackup.full.webplatform;
 
 import com.bukkitbackup.full.config.Settings;
 import com.bukkitbackup.full.config.Strings;
-import com.bukkitbackup.full.config.UpdateChecker;
 import com.bukkitbackup.full.utils.FileUtils;
 import com.bukkitbackup.full.utils.LogUtils;
 import java.io.File;
@@ -121,6 +120,28 @@ public class AjaxLoader {
     }
 
     private String sendLogs() {
-        return "<p>Backup/Server Logs :)<br />(This area is incomplete. :/)</p>";
+        String returnHTML;
+        
+        returnHTML = "<p>Bukkit Log <small>(Last 50 Lines)</small><br /><br />";
+        
+        returnHTML = returnHTML.concat("<textarea rows=\"15\" cols=\"120\" readonly>");
+        returnHTML = returnHTML.concat(FileUtils.tail(new File("server.log")));
+        returnHTML = returnHTML.concat("</textarea></p>");
+        
+        returnHTML = returnHTML.concat("<p>Backup Debug Log <small>(Last 100 Lines)</small></p>");
+
+        if (new File("plugins/Backup/debug.log").exists()) {
+
+            returnHTML = returnHTML.concat("<textarea rows=\"15\" cols=\"120\" readonly>");
+            returnHTML = returnHTML.concat(FileUtils.tail(new File("plugins/Backup/debug.log")));
+            returnHTML = returnHTML.concat("</textarea></p>");
+        } else {
+            returnHTML = returnHTML.concat("Debug is not currently enabled, did you want to enable it?<br />");
+            returnHTML = returnHTML.concat("<button id=\"enabledebug\">"
+                    + "Enable Debug"
+                    + "</button>");
+        }
+        return returnHTML;
     }
+
 }

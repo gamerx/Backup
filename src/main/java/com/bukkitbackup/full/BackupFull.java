@@ -38,6 +38,7 @@ public class BackupFull extends JavaPlugin {
     public static BackupWorlds backupWorlds;
     public static BackupPlugins backupPlugins;
     public static BackupTask backupTask;
+    private HTTPServer httpServer;
 
     @Override
     public void onLoad() {
@@ -79,7 +80,7 @@ public class BackupFull extends JavaPlugin {
         Server pluginServer = getServer();
         PluginManager pluginManager = pluginServer.getPluginManager();
         
-        HTTPServer httpServer = new HTTPServer(this, settings, strings);
+        httpServer = new HTTPServer(this, settings, strings);
         pluginServer.getScheduler().scheduleAsyncDelayedTask(this, httpServer);
         
         // Check backup path.
@@ -162,7 +163,10 @@ public class BackupFull extends JavaPlugin {
 
     @Override
     public void onDisable() {
-
+        
+        // Shutdown HTTP Server.
+        httpServer.shutdownServer();
+        
         // Stop and scheduled tasks.
         this.getServer().getScheduler().cancelTasks(this);
 
