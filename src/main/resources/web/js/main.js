@@ -1,43 +1,58 @@
 $(function() {
     
+    // Load main tab.
     $("#maintab").load('ajax/main', function() {
         $("#loading").hide();
     });
     
-    // Bind tabs jQueryUI to the main div.
+    // Bind tabs to the tab area.
     $("#main").tabs({
         ajaxOptions: {
-            error: function( xhr, status, index, anchor ) { 
-                $( anchor.hash ).html("Couldn't load this resource. There's probably something wrong with the server. ");
+            success: function( data ) {},
+            error: function( xhr, status, index, anchor ) {
+                $( anchor.hash ).html("Couldn't load this resource. There's probably something wrong with the server.");
             }
         }
     });
     
-    // Bind tabs jQueryUI to the main div.
-    $("#enabledebug").click(function() {
-        alert("hey");
-        
-        $.ajax({
-            type: "GET",
-        
-            url: "actions/enabledebug",
-            success : function(data){
-                alert(data);
-            },
-            error : function(httpReq,status,exception){
-                alert(status+" "+exception);
-            }
-        });
-    });
-    
-    function onDebugEnable() {
-            
-            $( "#dialog" ).dialog({
-                
-                buttons: {"Ok": function() {$(this).dialog("close");}, "No!": function() {$(this).dialog("close");}},
-                modal: true
+    // Bind the debug button.
+    $("#enabledebug").live("click", function() {
+        if(showOkDialog("This will generate quite a bit of output, are you sure?")) {
+            $.ajax({
+                type: "GET",
+                url: "actions/enabledebug",
+                success : onDebugEnable(data),
+                error : function(httpReq,status,exception){
+                    alert(status+" "+exception);
+                }
             });
-            
         }
-        
     });
+    
+    // When we show the dialog.
+    function showOkDialog(prompt) {
+        var sure = false;
+        $("#dialog").html("<p>"+prompt+"</p>").dialog({
+            buttons: {
+                "I'm Sure!": function() {
+                    $(this).dialog("close");
+                    sure = true;
+                }, 
+                "Noooooo!": function() {
+                    $(this).dialog("close");
+                    sure = false;
+                }
+            },
+            modal: true,
+            closeOnEscape: false
+        });
+        return sure;
+    }
+    
+    // After enable.
+    function onDebugEnable(data) {
+        alert(data);
+            
+    }
+        
+});

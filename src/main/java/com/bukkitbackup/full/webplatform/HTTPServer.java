@@ -161,7 +161,7 @@ public final class HTTPServer implements Runnable {
                 + "html		text/html "
                 + "xml		text/xml "
                 + "txt		text/plain "
-                + "asc		text/plain "
+                + "ico		image/vnd.microsoft.icon "
                 + "gif		image/gif "
                 + "jpg		image/jpeg "
                 + "jpeg		image/jpeg "
