@@ -10,7 +10,7 @@ body {
 #container {
     width: 800px;
     margin: 0 auto 10px auto;
-    background-color: #fff;
+    background-color: #CCC;
 }
 
 /* ----------banner-------------- */
@@ -61,6 +61,8 @@ body {
 #main {
     background-color: #FFF;
     margin-left: 0px;
+    position: relative;
+    top: -33px;
     margin-right: 0px;
 }
 div#main {
