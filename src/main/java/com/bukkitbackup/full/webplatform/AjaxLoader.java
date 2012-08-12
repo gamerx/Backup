@@ -82,8 +82,8 @@ public class AjaxLoader {
             int amountoffiles = filesList.length;
 
             // Send informal message.
-            returnHTML = returnHTML.concat("<p><i>" + amountoffiles + " items found</i></p><p>");
-
+            returnHTML = returnHTML.concat("<p><i>" + amountoffiles + " items found</i></p><p><table cellspacing=\"0\" width=\"100%\">");
+            returnHTML = returnHTML.concat("<tr><th>Sequence</th><th>Filename</th><th>Actions</th></tr>");
             // Loop through files, and list them.
             for (int i = 0; i < filesList.length; i++) {
 
@@ -92,10 +92,14 @@ public class AjaxLoader {
 
                 // Send messages for each file.
                 int number = i + 1;
-                returnHTML = returnHTML.concat("<b>"+number + ").</b> " + filename+"<br />");
+                String className = "";
+                if (number % 2 == 0) {
+                    className = " class=\"even\"";
+                }
+                returnHTML = returnHTML.concat("<tr" + className + "><th>" + number + "</th><th>" + filename + "</th><th>Download / Delete</th></tr>");
             }
         }
-        returnHTML = returnHTML.concat("</p>");
+        returnHTML = returnHTML.concat("</table></p>");
         return returnHTML;
     }
 

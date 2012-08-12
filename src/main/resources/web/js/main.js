@@ -16,43 +16,47 @@ $(function() {
     });
     
     // Bind the debug button.
-    $("#enabledebug").live("click", function() {
-        if(showOkDialog("This will generate quite a bit of output, are you sure?")) {
-            $.ajax({
-                type: "GET",
-                url: "actions/enabledebug",
-                success : onDebugEnable(data),
-                error : function(httpReq,status,exception){
-                    alert(status+" "+exception);
-                }
-            });
-        }
+    $("#enabledebug").on("click", function() {
+        showOkDialog(
+            "This will generate quite a bit of output, are you sure?",
+            function() {
+                $.ajax({
+                    type: "GET",
+                    dataType: 'json',
+                    url: "action/enabledebug",
+                    success : function(data) {
+                        //$("#id").html(data);
+                        alert(data);
+                        var obj = $.parseJSON(data);
+                        $.each(obj, function() {
+                            lang += this['Language'] + "";
+                        });
+
+                        $('span').html(lang);
+
+                        
+                    },
+                    error : function(httpReq,status,exception){
+                        alert(status+" "+exception);
+                    }
+                });
+            
+            }
+            );
     });
     
-    // When we show the dialog.
-    function showOkDialog(prompt) {
-        var sure = false;
+    // Dialog Generation.
+    function showOkDialog(prompt, doAfter) {
         $("#dialog").html("<p>"+prompt+"</p>").dialog({
             buttons: {
-                "I'm Sure!": function() {
+                "Yes": function() {
                     $(this).dialog("close");
-                    sure = true;
+                    doAfter();
                 }, 
-                "Noooooo!": function() {
+                "Cancel": function() {
                     $(this).dialog("close");
-                    sure = false;
                 }
-            },
-            modal: true,
-            closeOnEscape: false
+            }
         });
-        return sure;
     }
-    
-    // After enable.
-    function onDebugEnable(data) {
-        alert(data);
-            
-    }
-        
 });

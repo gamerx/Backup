@@ -24,10 +24,10 @@ public class RunAction {
         LogUtils.sendDebug("Handling Action request: "+requestParm);
 
         String actionResult = null;
-        String[] returnError = new String[]{"An error occured handling the action request.", "500 Internal Server Error", "text/plain"};
+        String[] returnError = new String[]{"{'error':'true'}", "200 OK", "text/plain"};
 
-        if (requestParm.equals("reload")) {
-            actionResult = "{'error':'true'}";
+        if (requestParm.equals("enabledebug")) {
+            actionResult = "{'error':'false','error':'false'}";
         } else if (requestParm.equals("dobackup")) {
             actionResult = "{'error':'true'}";
         }

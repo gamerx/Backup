@@ -88,7 +88,7 @@ public final class HTTPServer implements Runnable {
                     contentLength = (new Integer(inputStream.available()).toString());
                     mimeType = getMimeType(fileName);
                 } else if (fileName.contains("/ajax/")) {
-                    String[] getResult = ajaxLoader.handleRequest(fileName.substring(6)); // "/axax/backups" -> "backups";
+                    String[] getResult = ajaxLoader.handleRequest(fileName.substring(6)); // "/ajax/backups" -> "backups";
                     contentSend = getResult[0];
                     contentLength = (new Integer(contentSend.length()).toString());
                     httpStat = getResult[1];
@@ -161,7 +161,7 @@ public final class HTTPServer implements Runnable {
                 + "html		text/html "
                 + "xml		text/xml "
                 + "txt		text/plain "
-                + "ico		image/vnd.microsoft.icon "
+                + "ico		image/x-icon "
                 + "gif		image/gif "
                 + "jpg		image/jpeg "
                 + "jpeg		image/jpeg "
