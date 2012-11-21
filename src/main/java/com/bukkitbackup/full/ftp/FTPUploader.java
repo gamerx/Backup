@@ -56,7 +56,8 @@ public class FTPUploader extends FtpClient implements Runnable {
 
             // Start the connection.
             LogUtils.sendLog(strings.getString("ftpconnecting", connAddress + ":" + connPort));
-            ftpClient = new FtpClient(connAddress, connPort);
+            ftpClient = new FtpClient();
+            ftpClient.connect(conAddress);
             LogUtils.sendLog(strings.getString("ftpestablished", connAddress));
 
             // Atempt authentication.
