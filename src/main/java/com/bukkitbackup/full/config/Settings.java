@@ -8,29 +8,59 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 /**
- * Class for loading the configuration file.
+ * Backup - The simple server backup solution.
  *
- * @author Domenic Horner
+ * @author Domenic Horner (gamerx)
  */
 public final class Settings {
 
-    private Strings strings;
-    private File configFile;
-    private FileConfiguration settings;
+    private static Strings strings;
+    private static FileConfiguration settings;
     public boolean useMaxSizeBackup = false;
-    public boolean debugMessages;
 
     public Settings(File configFile, Strings strings) {
-
-        this.strings = strings;
-        this.configFile = configFile;
+        
+        // Populate the strings variable.
+        Settings.strings = strings;
 
         try {
 
             // Checks if configuration file exists, creates it if it does not.
             if (!configFile.exists()) {
                 LogUtils.sendLog(strings.getString("newconfigfile"));
-                createDefaultSettings();
+
+                BufferedReader bReader = null;
+                BufferedWriter bWriter = null;
+                String line;
+
+                try {
+
+                    // Open a stream to the configuration file in the jar, because we can only access over the class loader.
+                    bReader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/resources/config.yml")));
+                    bWriter = new BufferedWriter(new FileWriter(configFile));
+
+                    // Writeout the new configuration file.
+                    while ((line = bReader.readLine()) != null) {
+                        bWriter.write(line);
+                        bWriter.newLine();
+                    }
+
+                } catch (Exception e) {
+                    LogUtils.exceptionLog(e, "Error opening stream.");
+                } finally {
+                    try {
+
+                        // Confirm the streams are closed.
+                        if (bReader != null) {
+                            bReader.close();
+                        }
+                        if (bWriter != null) {
+                            bWriter.close();
+                        }
+                    } catch (Exception e) {
+                        LogUtils.exceptionLog(e, "Error closing configuration stream.");
+                    }
+                }
             }
 
             // Initialize the configuration, and populate with settings.
@@ -39,45 +69,6 @@ public final class Settings {
 
         } catch (Exception e) {
             LogUtils.exceptionLog(e, "Failed to load configuration.");
-        }
-    }
-
-    /**
-     * Load the properties file from the JAR and place it in the backup DIR.
-     */
-    private void createDefaultSettings() {
-
-        BufferedReader bReader = null;
-        BufferedWriter bWriter = null;
-        String line;
-
-        try {
-
-            // Open a stream to the configuration file in the jar, because we can only access over the class loader.
-            bReader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/resources/config.yml")));
-            bWriter = new BufferedWriter(new FileWriter(configFile));
-
-            // Writeout the new configuration file.
-            while ((line = bReader.readLine()) != null) {
-                bWriter.write(line);
-                bWriter.newLine();
-            }
-
-        } catch (Exception e) {
-            LogUtils.exceptionLog(e, "Error opening stream.");
-        } finally {
-            try {
-
-                // Confirm the streams are closed.
-                if (bReader != null) {
-                    bReader.close();
-                }
-                if (bWriter != null) {
-                    bWriter.close();
-                }
-            } catch (Exception e) {
-                LogUtils.exceptionLog(e, "Error closing configuration stream.");
-            }
         }
     }
 
@@ -95,22 +86,11 @@ public final class Settings {
     }
 
     /**
-     * Used to upgrade the configuration file.
-     */
-    public void doConfigurationUpgrade() {
-        LogUtils.sendLog(strings.getString("updatingconf"));
-        if (configFile.exists()) {
-            configFile.delete();
-        }
-        createDefaultSettings();
-        LogUtils.sendLog(strings.getString("updatingconf"));
-    }
-
-    /**
      * Gets the value of a integer property.
      *
      * @param property The name of the property.
-     * @return The value of the property, defaults to -1.
+     * @param defaultInt Set the default value of the integer.
+     * @return The value of the property.
      */
     public int getIntProperty(String property, int defaultInt) {
         return settings.getInt(property, defaultInt);
@@ -120,88 +100,41 @@ public final class Settings {
      * Gets the value of a boolean property.
      *
      * @param property The name of the property.
-     * @return The value of the property, defaults to true.
+     * @param defaultBool Set the default value of the boolean.
+     * @return The value of the property.
      */
     public boolean getBooleanProperty(String property, boolean defaultBool) {
         return settings.getBoolean(property, defaultBool);
     }
 
     /**
-     * Gets a value of the string property and make sure it is not null.
+     * Gets a value of the string property.
      *
      * @param property The name of the property.
+     * @param defaultString Set the default value of the string.
      * @return The value of the property.
      */
     public String getStringProperty(String property, String defaultString) {
         return settings.getString(property, defaultString);
     }
 
-    /**
-     * Method that gets the amount of time between backups. - Checks string for
-     * no automatic backup. - Checks for if only number (as minutes). - Checks
-     * for properly formatted string. - If unknown amount of time, sets as
-     * minutes.
-     *
-     * @return Amount of time between backups. (In minutes)
-     */
-    public int getIntervalInMinutes(String forSetting) {
-        String settingInterval = getStringProperty(forSetting, "15M").trim().toLowerCase();
-        // If it is null or set to disable.
-        if (settingInterval.equals("-1") || settingInterval == null) {
-            return 0;
-        }
-        // If it is just a number, return minutes.
-        if (settingInterval.matches("^[0-9]+$")) {
-            return Integer.parseInt(settingInterval);
-        } else if (settingInterval.matches("[0-9]+[a-z]")) {
-            Pattern timePattern = Pattern.compile("^([0-9]+)[a-z]$");
-            Matcher amountTime = timePattern.matcher(settingInterval);
-            Pattern letterPattern = Pattern.compile("^[0-9]+([a-z])$");
-            Matcher letterTime = letterPattern.matcher(settingInterval);
-            if (letterTime.matches() && amountTime.matches()) {
-                String letter = letterTime.group(1);
-                int time = Integer.parseInt(amountTime.group(1));
-                if (letter.equals("m")) {
-                    return time;
-                } else if (letter.equals("h")) {
-                    return time * 60;
-                } else if (letter.equals("d")) {
-                    return time * 1440;
-                } else if (letter.equals("w")) {
-                    return time * 10080;
-                } else {
-                    LogUtils.sendLog(strings.getString("unknowntimeident"));
-                    return time;
-                }
-            } else {
-                LogUtils.sendLog(strings.getString("checkbackupinterval"));
-                return 0;
-            }
-        } else {
-            LogUtils.sendLog(strings.getString("checkbackupinterval"));
-            return 0;
-        }
-    }
-
-    /**
-     * Method that gets the amount of time between backups. - Checks string for
-     * no automatic backup. - Checks for if only number (as minutes). - Checks
-     * for properly formatted string. - If unknown amount of time, sets as
-     * minutes.
-     *
-     * @return Amount of time between backups. (In minutes)
-     */
     public int getBackupLimits() {
         String limitSetting = getStringProperty("maxbackups", "25").trim().toLowerCase();
 
         // If it is null or set to disable.
-        if (limitSetting.equals("-1") || limitSetting == null) {
+        if (limitSetting.equals("-1")) {
             return 0;
         }
+
         // If it is just a number, return minutes.
         if (limitSetting.matches("^[0-9]+$")) {
+            LogUtils.sendDebug("Max Backups: Amount (M:0011)");
+
             return Integer.parseInt(limitSetting);
-        } else if (limitSetting.matches("[0-9]+[a-z]")) {
+        } else if (limitSetting.matches("^[0-9]+[a-z]$")) {
+            LogUtils.sendDebug("Max Backups: Size (M:0010)");
+
+            useMaxSizeBackup = true;
             Pattern timePattern = Pattern.compile("^([0-9]+)[a-z]$");
             Matcher amountTime = timePattern.matcher(limitSetting);
             Pattern letterPattern = Pattern.compile("^[0-9]+([a-z])$");
@@ -209,7 +142,7 @@ public final class Settings {
             if (letterTime.matches() && amountTime.matches()) {
                 String letter = letterTime.group(1);
                 int bytes = Integer.parseInt(amountTime.group(1));
-                useMaxSizeBackup = true;
+
                 if (letter.equals("k")) {
                     return bytes;
                 } else if (letter.equals("k")) {
@@ -227,6 +160,8 @@ public final class Settings {
                 return 0;
             }
         } else {
+            LogUtils.sendDebug("Max Backups: Unknown (M:0012)");
+
             LogUtils.sendLog(strings.getString("checksizelimit"));
             return 0;
         }

@@ -6,9 +6,9 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 /**
- * Class for loading the strings configuration file.
+ * Backup - The simple server backup solution.
  *
- * @author Domenic Horner
+ * @author Domenic Horner (gamerx)
  */
 public class Strings {
 
@@ -166,7 +166,8 @@ public class Strings {
      * Gets a value of the string property, and replaces options.
      *
      * @param property The identifier for the string.
-     * @param option The variable to replace %%ARG%% with.
+     * @param optionOne The variable to replace %%ARG%% with.
+     * @param optionTwo The variable to replace %%ARG1%% with.
      * @return The string from properties, with colors encoded, and text
      * replaced.
      */
@@ -197,7 +198,7 @@ public class Strings {
 
         // Check we got passed a string.
         if (toColor != null) {
-            return toColor.replaceAll("&([0-9a-f])", "\u00A7$1");
+            return toColor.replaceAll("&([0-9a-fklmnor])", "\u00A7$1");
         } else {
             return "";
         }

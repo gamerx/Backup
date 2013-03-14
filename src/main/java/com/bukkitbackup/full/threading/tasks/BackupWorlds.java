@@ -16,9 +16,9 @@ import org.bukkit.Server;
 import org.bukkit.World;
 
 /**
- * Backup worlds when the function doWorlds() is called.
+ * Backup - The simple server backup solution.
  *
- * @author Domenic Horner
+ * @author Domenic Horner (gamerx)
  */
 public class BackupWorlds {
 
@@ -86,14 +86,12 @@ public class BackupWorlds {
 
         // Loops each world that needs to backed up, and do the required copies.
         while (!worldsToBackup.isEmpty()) {
+            
             String currentWorldName = worldsToBackup.removeFirst();
-            
-            // Save this world.
-            pluginServer.getWorld(currentWorldName).save();
-            
+
             // Get the current worlds seed.
             String worldSeed = String.valueOf(pluginServer.getWorld(currentWorldName).getSeed());
-            
+
             // Check for split backup.
             if (splitBackup) {
 
@@ -122,7 +120,7 @@ public class BackupWorlds {
 
                 // Check this backup folder exists.
                 FileUtils.checkFolderAndCreate(new File(thisWorldBackupFolder));
-                
+
                 // World seed backup.
                 if (backupSeeds) {
                     try {
@@ -135,7 +133,7 @@ public class BackupWorlds {
                         LogUtils.exceptionLog(ex, "Error saving level seed.");
                     }
                 }
-                
+
                 // Copy the current world into it's backup folder.
                 FileUtils.copyDirectory(worldContainer.concat(FILE_SEPARATOR).concat(currentWorldName), thisWorldBackupFolder.concat(FILE_SEPARATOR).concat(currentWorldName));
 
@@ -156,7 +154,7 @@ public class BackupWorlds {
 
                 // Create this folder.
                 FileUtils.checkFolderAndCreate(new File(copyDestination));
-                
+
                 // Bacup level seeds.
                 if (backupSeeds) {
                     try {

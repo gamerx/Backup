@@ -2,20 +2,14 @@ package com.bukkitbackup.full.config;
 
 import com.bukkitbackup.full.utils.LogUtils;
 import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.security.MessageDigest;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.bukkit.plugin.PluginDescriptionFile;
 
 /**
- * Class for checking for the latest version of Backup. It will report to the
- * user depending if it is out of date or not.
+ * Backup - The simple server backup solution.
  *
- * @author Domenic Horner
+ * @author Domenic Horner (gamerx)
  */
 public class UpdateChecker implements Runnable {
 

@@ -21,9 +21,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 /**
- * This is the main backup thread. It handles backing everything up.
+ * Backup - The simple server backup solution.
  *
- * @author Domenic Horner
+ * @author Domenic Horner (gamerx)
  */
 public class BackupTask implements Runnable {
 
@@ -40,11 +40,11 @@ public class BackupTask implements Runnable {
     private final String backupPath;
     private final String tempDestination;
     private String thisBackupName;
+    
     // Threads.
     private final BackupWorlds worldBackupTask;
     private final BackupPlugins pluginBackupTask;
     private final BackupEverything everythingBackupTask;
-    //private SyncSaveAll syncSaveAllUtil;
 
     public BackupTask(Plugin plugin, Settings settings, Strings strings) {
 
@@ -92,11 +92,6 @@ public class BackupTask implements Runnable {
 
         // Check if backupeverything enabled.
         if (backupEverything) {
-
-            // Perform final world save before backup.
-            for (World world : pluginServer.getWorlds()) {
-                world.save();
-            }
 
             // Start the BackupEverything class.
             try {
@@ -175,10 +170,16 @@ public class BackupTask implements Runnable {
 
         File backupDir = new File(backupPath);
 
+        LogUtils.sendDebug("Delete old backups. (M:0013)");
 
         if (splitBackup) { // Look inside the folders.
+
+            LogUtils.sendDebug("Delete old backups. - Split Backup (M:0014)");
+
             // Check if we have a different container for worlds.
             if (!worldContainer.equals(".")) { // Custom.
+
+                LogUtils.sendDebug("Delete old backups. - Custom world container. (M:0015)");
 
                 backupDir = new File(backupPath.concat(FILE_SEPARATOR).concat(worldContainer));
 
@@ -200,8 +201,14 @@ public class BackupTask implements Runnable {
                     }
                 }
             } else {
+
+                LogUtils.sendDebug("Delete old backups. - Split backup. - No custom container. (M:0016)");
+
                 File[] foldersToClean = backupDir.listFiles();
                 for (int l = 0; l < foldersToClean.length; l++) {
+
+
+
                     // Make sure we are cleaning a directory.
                     if (foldersToClean[l].isDirectory()) {
                         cleanFolder(foldersToClean[l]);
@@ -211,53 +218,100 @@ public class BackupTask implements Runnable {
 
 
         } else { // Clean entire directory.
+
+            LogUtils.sendDebug("Delete old backups.- Plain and simple (M:0017)");
+
             cleanFolder(backupDir);
         }
     }
 
     private void cleanFolder(File folderToClean) throws IOException {
+
+        LogUtils.sendDebug("Attempting to clean: " + folderToClean.toString() + " (M:0014)");
+
         try {
 
             // Get total backup limit.
             int backupLimit = settings.getBackupLimits();
+            if (backupLimit != 0) {
 
-            // List all the files inside this folder.
-            File[] filesList = FileUtils.listFilesInDir(folderToClean);
+                // List all the files inside this folder.
+                File[] filesList = FileUtils.listItemsInDir(folderToClean);
 
-            // Check we listed the directory.
-            if (filesList == null) {
-                LogUtils.sendLog(strings.getString("failedlistdir"));
-                return;
-            }
+                LogUtils.sendDebug("Files: (M:0018)");
+                LogUtils.sendDebug(filesList.toString());
 
-            // Using size to limit backups.
-            if (settings.useMaxSizeBackup) {
+                // Check we listed the directory.
+                if (filesList == null) {
+                    LogUtils.sendLog(strings.getString("failedlistdir"));
+                    return;
+                }
 
-                // Get total folder size.
-                int totalFolderSize = FileUtils.getTotalFolderSize(folderToClean);
+                // Using size to limit backups.
+                if (settings.useMaxSizeBackup) {
 
-                // If the amount of files exceeds the max backups to keep.
-                if (totalFolderSize > backupLimit) {
+                    // Get total folder size.
+                    int totalFolderSize = FileUtils.getTotalFolderSize(folderToClean);
 
-                    // Create a list for deleted backups.
-                    ArrayList<File> deletedList = new ArrayList<File>(filesList.length);
+                    // If the amount of files exceeds the max backups to keep.
+                    if (totalFolderSize > backupLimit) {
 
-                    // Inti variables.
-                    int maxModifiedIndex;
-                    long maxModified;
+                        // Create a list for deleted backups.
+                        ArrayList<File> deletedList = new ArrayList<File>(filesList.length);
 
-                    // While the total folder size is bigger than the limit.
-                    while (FileUtils.getTotalFolderSize(folderToClean) > backupLimit) {
+                        // Inti variables.
+                        int maxModifiedIndex;
+                        long maxModified;
 
-                        // Create updated list.
-                        filesList = FileUtils.listFilesInDir(folderToClean);
+                        // While the total folder size is bigger than the limit.
+                        while (FileUtils.getTotalFolderSize(folderToClean) > backupLimit) {
 
-                        // List of all the backups.
+                            // Create updated list.
+                            filesList = FileUtils.listFilesInDir(folderToClean);
+
+                            // List of all the backups.
+                            ArrayList<File> backupList = new ArrayList<File>(filesList.length);
+                            backupList.addAll(Arrays.asList(filesList));
+
+                            // Loop backup list.
+                            for (int i = 0; backupList.size() > 1; i++) {
+                                maxModifiedIndex = 0;
+                                maxModified = backupList.get(0).lastModified();
+                                for (int j = 1; j < backupList.size(); ++j) {
+                                    File currentFile = backupList.get(j);
+                                    if (currentFile.lastModified() > maxModified) {
+                                        maxModified = currentFile.lastModified();
+                                        maxModifiedIndex = j;
+                                    }
+                                }
+                                backupList.remove(maxModifiedIndex);
+                            }
+
+                            FileUtils.deleteDirectory(backupList.get(0));
+                            deletedList.add(backupList.get(0));
+                        }
+
+
+                        // Inform the user what backups are being deleted.
+                        LogUtils.sendLog(strings.getString("removeoldsize"));
+                        LogUtils.sendLog(Arrays.toString(deletedList.toArray()));
+                    }
+
+
+
+
+                } else { // Using amount of backups.
+
+                    // If the amount of files exceeds the max backups to keep.
+                    if (filesList.length > backupLimit) {
                         ArrayList<File> backupList = new ArrayList<File>(filesList.length);
                         backupList.addAll(Arrays.asList(filesList));
 
-                        // Loop backup list,
-                        for (int i = 0; backupList.size() > 1; i++) {
+                        int maxModifiedIndex;
+                        long maxModified;
+
+                        //Remove the newst backups from the list.
+                        for (int i = 0; i < backupLimit; ++i) {
                             maxModifiedIndex = 0;
                             maxModified = backupList.get(0).lastModified();
                             for (int j = 1; j < backupList.size(); ++j) {
@@ -269,55 +323,19 @@ public class BackupTask implements Runnable {
                             }
                             backupList.remove(maxModifiedIndex);
                         }
-                        FileUtils.deleteDir(backupList.get(0));
-                        deletedList.add(backupList.get(0));
-                    }
 
+                        // Inform the user what backups are being deleted.
+                        LogUtils.sendLog(strings.getString("removeoldage"));
+                        LogUtils.sendLog(Arrays.toString(backupList.toArray()));
 
-                    // Inform the user what backups are being deleted.
-                    LogUtils.sendLog(strings.getString("removeoldsize"));
-                    LogUtils.sendLog(Arrays.toString(deletedList.toArray()));
-                }
-
-
-
-
-            } else { // Using amount of backups.
-
-                // If the amount of files exceeds the max backups to keep.
-                if (filesList.length > backupLimit) {
-                    ArrayList<File> backupList = new ArrayList<File>(filesList.length);
-                    backupList.addAll(Arrays.asList(filesList));
-
-                    int maxModifiedIndex;
-                    long maxModified;
-
-                    //Remove the newst backups from the list.
-                    for (int i = 0; i < backupLimit; ++i) {
-                        maxModifiedIndex = 0;
-                        maxModified = backupList.get(0).lastModified();
-                        for (int j = 1; j < backupList.size(); ++j) {
-                            File currentFile = backupList.get(j);
-                            if (currentFile.lastModified() > maxModified) {
-                                maxModified = currentFile.lastModified();
-                                maxModifiedIndex = j;
-                            }
+                        // Finally delete the backups.
+                        for (File backupToDelete : backupList) {
+                            FileUtils.deleteDir(backupToDelete);
                         }
-                        backupList.remove(maxModifiedIndex);
                     }
 
-                    // Inform the user what backups are being deleted.
-                    LogUtils.sendLog(strings.getString("removeoldage"));
-                    LogUtils.sendLog(Arrays.toString(backupList.toArray()));
-
-                    // Finally delete the backups.
-                    for (File backupToDelete : backupList) {
-                        FileUtils.deleteDir(backupToDelete);
-                    }
                 }
-
             }
-
         } catch (SecurityException se) {
             LogUtils.exceptionLog(se, "Failed to clean old backups: Security Exception.");
         }
@@ -328,12 +346,7 @@ public class BackupTask implements Runnable {
      * scheduler to prevent thread problems.
      */
     private void finishBackup() {
-
-        // Do the FTP upload if required.
-        if (shouldZIP && !splitBackup) {
-            doFTPUpload(backupPath.concat(FILE_SEPARATOR).concat(thisBackupName) + ".zip");
-        }
-
+        
         // Create new Runnable instance.
         Runnable run = new Runnable() {
 
@@ -422,13 +435,5 @@ public class BackupTask implements Runnable {
 
         PrepareBackup.backupInProgress = false;
 
-    }
-
-    private void doFTPUpload(String ZIPFile) {
-
-        // This runs in another thread to ensure it does nto affect server performance.
-        if (settings.getBooleanProperty("ftpuploadenable", false)) {
-            pluginServer.getScheduler().scheduleAsyncDelayedTask(plugin, new FTPUploader(settings, strings, ZIPFile));
-        }
     }
 }

@@ -7,9 +7,9 @@ import java.io.File;
 import java.io.FileFilter;
 
 /**
- * Backup all server files when the function doEverything() is called.
+ * Backup - The simple server backup solution.
  *
- * @author Domenic Horner
+ * @author Domenic Horner (gamerx)
  */
 public class BackupEverything {
 
@@ -62,11 +62,11 @@ public class BackupEverything {
 
     // The actual backup should be done here, as it is run in another thread.
     public void doEverything(String backupName) throws Exception {
+            // Copy the directory.
+            FileUtils.copyDirectory(new File(".".concat(FILE_SEPARATOR)), new File(tempDestination.concat(backupName)), fileFilter, true);
 
-        // Copy the directory.
-        FileUtils.copyDirectory(new File(".".concat(FILE_SEPARATOR)), new File(tempDestination), fileFilter, true);
+            // Perform the zipping action.
+            FileUtils.doCopyAndZIP(tempDestination.concat(backupName), backupPath.concat(FILE_SEPARATOR).concat(backupName), shouldZIP, useTemp);
 
-        // Perform the zipping action.
-        FileUtils.doCopyAndZIP(tempDestination, backupPath.concat(FILE_SEPARATOR).concat(backupName), shouldZIP, useTemp);
     }
 }

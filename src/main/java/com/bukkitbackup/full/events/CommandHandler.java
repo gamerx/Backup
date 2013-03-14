@@ -15,6 +15,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 
+/**
+ * Backup - The simple server backup solution.
+ *
+ * @author Domenic Horner (gamerx)
+ */
 public class CommandHandler implements Listener, CommandExecutor {
 
     private PrepareBackup prepareBackup;
@@ -33,13 +38,12 @@ public class CommandHandler implements Listener, CommandExecutor {
      * @param settings Instance of the settings loader.
      * @param strings Instance of the strings loader.
      */
-    public CommandHandler(PrepareBackup prepareBackup, Plugin plugin, Settings settings, Strings strings, UpdateChecker updateChecker) {
+    public CommandHandler(PrepareBackup prepareBackup, Plugin plugin, Settings settings, Strings strings) {
         this.prepareBackup = prepareBackup;
         this.plugin = plugin;
         this.server = plugin.getServer();
         this.settings = settings;
         this.strings = strings;
-        this.updateChecker = updateChecker;
     }
 
     /**
@@ -142,7 +146,7 @@ public class CommandHandler implements Listener, CommandExecutor {
         prepareBackup.isManualBackup = true;
 
         // Schedule an async task to run for the backup.
-        plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, prepareBackup);
+        plugin.getServer().getScheduler().runTask(plugin, prepareBackup);
     }
 
     /**
@@ -169,8 +173,7 @@ public class CommandHandler implements Listener, CommandExecutor {
         messageSender(sender, strings.getString("gettingversions"));
 
         // Start a new asynchronous task to get version and print them.
-        server.getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable() {
-
+        server.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
             @Override
             public void run() {
 
@@ -319,11 +322,11 @@ public class CommandHandler implements Listener, CommandExecutor {
     }
 
     private void toggleEnabled(CommandSender sender) {
-        if (prepareBackup.backupEnabled) {
-            prepareBackup.backupEnabled = false;
+        if (PrepareBackup.backupEnabled) {
+            PrepareBackup.backupEnabled = false;
             messageSender(sender, strings.getString("backuptoggleoff"));
         } else {
-            prepareBackup.backupEnabled = true;
+            PrepareBackup.backupEnabled = true;
             messageSender(sender, strings.getString("backuptoggleon"));
         }
     }

@@ -16,15 +16,14 @@ gettingversions      : '[Backup] Please wait, Retrieving version information...'
 
 #========= Startup Strings ==========#
 
-configupdate         : Your config file is outdated, please regenerate it.
-stringsupdate        : Your strings file is out of date, please regenerate it.
+configupdate         : Your config file is outdated.
+stringsupdate        : Your strings file is outdated.
 failedtogetpropsver  : Failed to obtain version information from config file.
 zipdisabled          : You have disabled backup compression.
 defaultperms         : No permissions plugin detected, defaulting to OP.
 hookedperms          : Found and hooked a permissions plugin.
 newconfigfile        : No config file exists, creating default.
 disbaledauto         : You have disabled scheduled backups!
-norepeatenabled      : Backup will be performed once in %%ARG%% minute(s).
 savealltimeron       : Save-All will be performed every %%ARG%% minute(s).
 
 #========= Notification Strings ==========#
@@ -33,7 +32,7 @@ disabledworlds       : 'Backup is disabled for the following world(s):'
 disabledplugins      : 'Backup is disabled for the following plugin(s):'
 enabledplugins       : 'Backup is enabled for the following plugin(s):'
 allpluginsdisabled   : Plugin backup is on, but no plugins are selected.
-abortedbackup        : Aborted backup as no players online. Next attempt in %%ARG%% minutes.
+abortedbackup        : Aborted backup as no players online. Will re-attempt at next schedule.
 skipworlds           : Skipworlds is enabled.
 skipplugins          : Skipping plugin backup, for all plugins.
 removeoldage         : 'Removing the following backup(s) due to age:'
@@ -67,21 +66,9 @@ checksizelimit       : Error getting maximum allowed backups.
 errorversioncheck    : Failed to retrieve latest version information.
 failedlistdir        : Failed to list backup directory.
 
-#========= FTP Strings ==========#
-
-ftpfailsettings      : 'FTP: Fail - Connection settings incorrect.'
-ftpfailnofile        : 'FTP: Fail - No file to upload.'
-ftpconnecting        : 'FTP: Connecting: %%ARG%%'
-ftpestablished       : 'FTP: Connection Estblished: %%ARG%%'
-ftphellomsg          : 'FTP: Hello Message: %%ARG%%'
-ftpchangedinto       : 'FTP: Changed into: %%ARG%%'
-ftpuploading         : 'FTP: Attempting to upload file...'
-ftpuploadcomplete    : 'FTP: Upload Complete.'
-
 ###############################################
 ##   Internal Settings (Read: DO NOT EDIT)   ##
 ###############################################
 
 stringnotfound       : 'String not found - '
-packagedwith         : 2.1-dev
-version              : str-210
+version              : 2.5-dev
