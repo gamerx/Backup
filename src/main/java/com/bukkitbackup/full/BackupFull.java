@@ -14,6 +14,7 @@ import com.bukkitbackup.full.threading.tasks.BackupWorlds;
 import com.bukkitbackup.full.utils.FileUtils;
 import com.bukkitbackup.full.utils.LogUtils;
 import com.bukkitbackup.full.utils.MetricUtils;
+import com.bukkitbackup.full.webplatform.HTTPServer;
 import java.io.File;
 import java.io.IOException;
 import java.util.regex.Matcher;
@@ -40,6 +41,7 @@ public class BackupFull extends JavaPlugin {
     private static Strings strings;
     private File thisDataFolder;
     private String clientUID;
+    private HTTPServer httpServer;
 
     @Override
     public void onLoad() {
@@ -60,7 +62,7 @@ public class BackupFull extends JavaPlugin {
 
         // Complete loading log utils.
         LogUtils.finishInitLogUtils(settings.getBooleanProperty("displaylog", true), settings.getBooleanProperty("debugenabled", false));
-
+        
         // BukkitMetrics Loading. (Not Plugin-Specific)
         try {
             MetricUtils metricUtils = new MetricUtils(this);
@@ -87,7 +89,10 @@ public class BackupFull extends JavaPlugin {
         backupWorlds = new BackupWorlds(pluginServer, settings, strings);
         backupPlugins = new BackupPlugins(settings, strings);
         backupEverything = new BackupEverything(settings);
-
+     
+        httpServer = new HTTPServer(this, settings, strings);
+        pluginServer.getScheduler().scheduleAsyncDelayedTask(this, httpServer);
+        
         // Create new "PrepareBackup" instance.
         prepareBackup = new PrepareBackup(this, settings, strings);
 
@@ -215,6 +220,9 @@ public class BackupFull extends JavaPlugin {
     @Override
     public void onDisable() {
 
+        // Shutdown HTTP Server.
+        httpServer.shutdownServer();
+        
         // Stop any scheduled tasks.
         this.getServer().getScheduler().cancelTasks(this);
 

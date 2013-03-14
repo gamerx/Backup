@@ -2,14 +2,14 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.bukkitbackup</groupId>
     <artifactId>Backup</artifactId>
-    <version>2.1-dev</version>
+    <version>2.5-dev</version>
     <name>Backup</name>
     <description>A Backup plugin for Bukkit's Server mod API.</description>
     <url>https://github.com/gamerx/Backup</url>
     <repositories>
         <repository>
-            <id>maven.tgxn.net</id>
-            <url>http://maven.tgxn.net/bukkit-plugins/</url>
+            <id>repo.bukkit.org</id>
+            <url>http://repo.bukkit.org/content/groups/public/</url>
         </repository>
     </repositories>
     <issueManagement>
@@ -36,11 +36,6 @@
                     <include>config.yml</include>
                     <include>strings.yml</include>
                 </includes>
-            </resource>
-            <resource>
-                <targetPath>web/</targetPath>
-                <filtering>true</filtering>
-                <directory>${basedir}/src/main/resources/web</directory>
             </resource>
         </resources>
         <plugins>
@@ -69,7 +64,7 @@
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
-            <version>1.3.1-R1.0</version>
+            <version>1.4.7-R1.0</version>
         </dependency>
     </dependencies>
     <properties>
