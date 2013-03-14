@@ -18,10 +18,13 @@
  */
 package com.bukkitbackup.full.utils;
 
+import com.bukkitbackup.full.threading.BackupTask;
 import java.io.*;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -52,15 +55,7 @@ import java.util.zip.ZipOutputStream;
  */
 public class FileUtils {
 
-    /**
-     * Instances should NOT be constructed in standard programming.
-     */
-    public FileUtils() {
-        super();
-    }
-
     public static int BUFFER_SIZE = 10240;
-
     /**
      * The number of bytes in a kilobyte.
      */
@@ -86,7 +81,7 @@ public class FileUtils {
     private static final char WINDOWS_SEPARATOR = '\\';
 
     /**
-     * Copies a whole directory to a new location preserving the file dates. <p>
+     * Copies a whole directory to a new location preserving the file dates.
      * This method copies the specified directory and all its child directories
      * and files to the specified destination. The destination is the new
      * location and name of the directory. <p> The destination directory is
@@ -109,7 +104,6 @@ public class FileUtils {
      * @since Commons IO 1.1
      */
     public static void copyDirectory(String srcDir, String destDir) throws IOException {
-
         copyDirectory(new File(srcDir), new File(destDir), true);
     }
 
@@ -139,8 +133,7 @@ public class FileUtils {
      * @throws IOException if an IO error occurs during copying
      * @since Commons IO 1.1
      */
-    private static void copyDirectory(File srcDir, File destDir,
-            boolean preserveFileDate) throws IOException {
+    private static void copyDirectory(File srcDir, File destDir, boolean preserveFileDate) throws IOException {
         copyDirectory(srcDir, destDir, null, preserveFileDate);
     }
 
@@ -239,8 +232,7 @@ public class FileUtils {
      * @throws IOException if an error occurs
      * @since Commons IO 1.1
      */
-    private static void doCopyDirectory(File srcDir, File destDir, FileFilter filter,
-            boolean preserveFileDate, List<String> exclusionList) throws IOException {
+    private static void doCopyDirectory(File srcDir, File destDir, FileFilter filter, boolean preserveFileDate, List<String> exclusionList) throws IOException {
         // recurse
         File[] files = filter == null ? srcDir.listFiles() : srcDir.listFiles(filter);
         if (files == null) // null if security restricted
@@ -288,8 +280,8 @@ public class FileUtils {
         if (destFile.exists() && destFile.isDirectory()) {
             throw new IOException("Destination '" + destFile + "' exists but is a directory");
         }
-        if(!srcFile.exists()){
-            throw new IOException("Source file '"+srcFile+"' does not exist");
+        if (!srcFile.exists()) {
+            throw new IOException("Source file '" + srcFile + "' does not exist");
         }
         FileInputStream fis = null;
         FileOutputStream fos = null;
@@ -361,14 +353,15 @@ public class FileUtils {
      * @throws IOException in case deletion is unsuccessful
      */
     public static void deleteDirectory(File directory) throws IOException {
+
+        // Check provided file exists.
         if (!directory.exists()) {
             return;
         }
+        
+        cleanDirectory(directory);
 
-        if (!isSymlink(directory)) {
-            cleanDirectory(directory);
-        }
-
+        // Attempt deletion.
         if (!directory.delete()) {
             String message = "Unable to delete directory " + directory + ".";
             throw new IOException(message);
@@ -376,28 +369,32 @@ public class FileUtils {
     }
 
     /**
-     * Cleans a directory without deleting it.
+     * Recursively empties a directory without deleting it.
      *
-     * @param directory directory to clean
+     * @param directory directory to recursively empty
      * @throws IOException in case cleaning is unsuccessful
      */
     private static void cleanDirectory(File directory) throws IOException {
+
+        // Check it exists.
         if (!directory.exists()) {
             String message = directory + " does not exist";
             throw new IllegalArgumentException(message);
         }
 
+        // Check it is a directory.
         if (!directory.isDirectory()) {
             String message = directory + " is not a directory";
             throw new IllegalArgumentException(message);
         }
 
+        // Retrieve contents.
         File[] files = directory.listFiles();
-        if (files == null) // null if security restricted
-        {
-            throw new IOException("Failed to list contents of " + directory);
+        if (files == null) {
+            throw new SecurityException("Failed to list contents of " + directory);
         }
 
+        // Attempt file deletion.
         IOException exception = null;
         for (File file : files) {
             try {
@@ -407,7 +404,8 @@ public class FileUtils {
             }
         }
 
-        if (null != exception) {
+        // Do we need to throw an exception?
+        if (exception != null) {
             throw exception;
         }
     }
@@ -555,10 +553,108 @@ public class FileUtils {
                 if (toCheck.mkdirs()) {
                     return true;
                 }
-            } catch (SecurityException se) {
-                LogUtils.exceptionLog(se);
+            } catch (Exception e) {
+                LogUtils.exceptionLog(e);
             }
         }
         return false;
+    }
+
+    /**
+     * Add the folder specified to a ZIP file.
+     *
+     * @param folderToZIP
+     *
+     * ZIPENABLED
+     *
+     * backups/temp/blah -> backups/blah.zip
+     *
+     * ~~~ OR ~~~
+     *
+     * backups/temp/blah -> ( backups/blah
+     *
+     * sourceDIR finalDIR
+     *
+     */
+    /**
+     * Copies items from the temp DIR to the main DIR after ZIP if needed. After
+     * it has done the required action, it deletes the source folder.
+     *
+     * @param sourceDIR The source directory. (ex: "backups/temp/xxxxxxxx")
+     * @param finalDIR The final destination. (ex: "backups/xxxxxxxx")
+     */
+    public static void doCopyAndZIP(String sourceDIR, String finalDIR, boolean shouldZIP, boolean useTempFolder) {
+
+        if (useTempFolder) {
+            if (shouldZIP) {
+                try {
+                    FileUtils.zipDir(sourceDIR, finalDIR);
+                } catch (IOException ioe) {
+                    LogUtils.exceptionLog(ioe, "Failed to ZIP backup: IO Exception.");
+                }
+            } else {
+                try {
+                    FileUtils.copyDirectory(sourceDIR, finalDIR);
+                } catch (IOException ex) {
+                    Logger.getLogger(BackupTask.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+            }
+            try {
+                // Delete the original doBackup directory.
+                FileUtils.deleteDirectory(new File(sourceDIR));
+                new File(sourceDIR).delete();
+            } catch (IOException ioe) {
+                LogUtils.exceptionLog(ioe, "Failed to delete temp folder: IO Exception.");
+            }
+        } else {
+            if (shouldZIP) {
+                try {
+                    FileUtils.zipDir(sourceDIR, finalDIR);
+                } catch (IOException ioe) {
+                    LogUtils.exceptionLog(ioe, "Failed to ZIP backup: IO Exception.");
+                }
+                try {
+                    // Delete the original doBackup directory.
+                    FileUtils.deleteDirectory(new File(sourceDIR));
+                    new File(sourceDIR).delete();
+                } catch (IOException ioe) {
+                    LogUtils.exceptionLog(ioe, "Failed to delete temp folder: IO Exception.");
+                }
+            }
+
+        }
+
+
+
+    }
+
+    public static File[] listFilesInDir(File directory) {
+        // List all the files inside this folder.
+        File[] filesList = directory.listFiles(new FileFilter() {
+
+            public boolean accept(File file) {
+                return file.isFile();
+            }
+        });
+        return filesList;
+    }
+    
+    
+    public static File[] listItemsInDir(File directory) {
+        return directory.listFiles();
+    }
+
+    public static int getTotalFolderSize(File folder) {
+        int bytes = 0;
+        File[] filelist = folder.listFiles();
+        for (int i = 0; i < filelist.length; i++) {
+            if (filelist[i].isDirectory()) {
+                bytes += getTotalFolderSize(filelist[i]);
+            } else {
+                bytes += filelist[i].length();
+            }
+        }
+        return bytes;
     }
 }

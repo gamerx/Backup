@@ -3,28 +3,27 @@
 #  @author Domenic Horner (gamerx)  #
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-#
 
+# Create seperate lines with ';;' - This will push the rest of the message onto another line.
+# and can be used as many times in a string as you like, Please let me know if you have any issues with this.
+
 #========= In-Game Strings ==========#
 
-norights             : '[Backup] You do not have enough rights to run the backup!'
-confuptodate         : '[Backup] Config file is already Up-To-Date!'
-backupfinished       : '[Backup] Finished Backup!'
 backupstarted        : '[Backup] Started Backup...'
-updateconf           : '[Backup] Config upgrade requested, Upgrading...'
+backupfinished       : '[Backup] Finished Backup!'
+norights             : '[Backup] You do not have enough rights to run the backup!'
 reloadedok           : '[Backup] Reloaded %%ARG%% successfully!'
 gettingversions      : '[Backup] Please wait, Retrieving version information...'
 
 #========= Startup Strings ==========#
 
-stringsupdate        : Your strings file is out of date. It may stop working correctly if you do not update it.
-failedtogetpropsver  : Failed to retrieve version from config file, I suggest upgrading!
-configupdate         : Your configuration is outdated, please upgrade it. (backup upgradeconf)
+configupdate         : Your config file is outdated.
+stringsupdate        : Your strings file is outdated.
+failedtogetpropsver  : Failed to obtain version information from config file.
 zipdisabled          : You have disabled backup compression.
-createbudir          : Created the folder for backups.
 defaultperms         : No permissions plugin detected, defaulting to OP.
 hookedperms          : Found and hooked a permissions plugin.
 newconfigfile        : No config file exists, creating default.
 disbaledauto         : You have disabled scheduled backups!
-norepeatenabled      : Backup will be performed once in %%ARG%% minute(s).
 savealltimeron       : Save-All will be performed every %%ARG%% minute(s).
 
 #========= Notification Strings ==========#
@@ -33,11 +32,13 @@ disabledworlds       : 'Backup is disabled for the following world(s):'
 disabledplugins      : 'Backup is disabled for the following plugin(s):'
 enabledplugins       : 'Backup is enabled for the following plugin(s):'
 allpluginsdisabled   : Plugin backup is on, but no plugins are selected.
-abortedbackup        : Aborted backup as no players online. Next attempt in %%ARG%% minutes.
-skipworlds           : Either skipworlds is enabled or there are no worlds to backup.
+abortedbackup        : Aborted backup as no players online. Will re-attempt at next schedule.
+skipworlds           : Skipworlds is enabled.
 skipplugins          : Skipping plugin backup, for all plugins.
-removeold            : 'Removing the following backup(s) due to age:'
+removeoldage         : 'Removing the following backup(s) due to age:'
+removeoldsize        : 'Removing the following backup(s) due to size:'
 lastbackup           : Last player left, backing up!
+schedlastbackup      : 'Scheduled last backup for %%ARG%% minutes.'
 alwayssaveall        : Forcing /save-all, stand by!
 unknowntimeident     : Failed to detect interval amount. (Please use M, H, D, or W).
 pluginoutdate        : 'Plugin is out of date, this: %%ARG%%, latest: %%ARG1%%.'
@@ -48,6 +49,9 @@ skipbackupbypass     : Skipping backup because all players have bypass node.
 backupoff            : 'Backup is currently disabled, please use "/backup toggle" to re-enable.'
 backuptoggleoff      : 'Backup has been toggled off.'
 backuptoggleon       : 'Backup has been toggled on.'
+noworlds             : There are no worlds to backup.
+stoppedlastjoined    : Stopped last backup, because someone joined.
+backupinprogress     : Only one backup process can be run at once.
 
 #========= Error Strings ==========#
 
@@ -58,22 +62,13 @@ checkbackupinterval  : Please check your backupinterval setting is formatted cor
 unknowncommand       : Unknown command or incorrect syntax.
 unknownfailedversion : Unknown / Failed
 errorfolderempty     : Error listing directory, No entries!
-
-#========= FTP Strings ==========#
-
-ftpfailsettings      : 'FTP: Fail - Connection settings incorrect.'
-ftpfailnofile        : 'FTP: Fail - No file to upload.'
-ftpconnecting        : 'FTP: Connecting: %%ARG%%'
-ftpestablished       : 'FTP: Connection Estblished: %%ARG%%'
-ftphellomsg          : 'FTP: Hello Message: %%ARG%%'
-ftpchangedinto       : 'FTP: Changed into: %%ARG%%'
-ftpuploading         : 'FTP: Attempting to upload file...'
-ftpuploadcomplete    : 'FTP: Upload Complete.'
+checksizelimit       : Error getting maximum allowed backups.
+errorversioncheck    : Failed to retrieve latest version information.
+failedlistdir        : Failed to list backup directory.
 
 ###############################################
 ##   Internal Settings (Read: DO NOT EDIT)   ##
 ###############################################
 
 stringnotfound       : 'String not found - '
-packagedwith         : 2.0-dev
-version              : str-62
+version              : 2.5-dev

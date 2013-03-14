@@ -1,3 +1,6 @@
+/*
+ * Copyright 2011 Tyler Blair. All rights reserved.
+ */
 package com.bukkitbackup.full.utils;
 
 import java.io.*;
@@ -13,28 +16,58 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 
-public class MetricUtils {
+public final class MetricUtils {
 
+    /**
+     * The current revision number
+     */
     private final static int REVISION = 5;
+    /**
+     * The base url of the metrics domain
+     */
     private static final String BASE_URL = "http://mcstats.org";
+    /**
+     * The url used to report a server's status
+     */
     private static final String REPORT_URL = "/report/%s";
-    private static final String CONFIG_FILE = "plugins/Backup/metrics.yml";
+    /**
+     * Interval of time to ping (in minutes)
+     */
     private final static int PING_INTERVAL = 10;
+    /**
+     * The plugin this metrics submits for
+     */
     private final Plugin plugin;
+    /**
+     * The plugin configuration file
+     */
     private final YamlConfiguration configuration;
+    /**
+     * The plugin configuration file
+     */
     private final File configurationFile;
+    /**
+     * Unique server id
+     */
     public final String guid;
+    /**
+     * Lock for synchronization
+     */
     private final Object optOutLock = new Object();
+    /**
+     * Id of the scheduled task
+     */
     private volatile int taskId = -1;
 
     public MetricUtils(Plugin plugin) throws IOException {
         if (plugin == null) {
             throw new IllegalArgumentException("Plugin cannot be null");
         }
+
         this.plugin = plugin;
 
         // load the config
-        configurationFile = new File(CONFIG_FILE);
+        configurationFile = getConfigFile();
         configuration = YamlConfiguration.loadConfiguration(configurationFile);
 
         // add some defaults
@@ -51,11 +84,11 @@ public class MetricUtils {
         guid = configuration.getString("guid");
     }
 
-
     /**
-     * Start measuring statistics. This will immediately create an async repeating task as the plugin and send
-     * the initial data to the metrics backend, and then after that it will post in increments of
-     * PING_INTERVAL * 1200 ticks.
+     * Start measuring statistics. This will immediately create an async
+     * repeating task as the plugin and send the initial data to the metrics
+     * backend, and then after that it will post in increments of PING_INTERVAL
+     * * 1200 ticks.
      *
      * @return True if statistics measuring is running, otherwise false.
      */
@@ -111,15 +144,15 @@ public class MetricUtils {
      * @return
      */
     public boolean isOptOut() {
-        synchronized(optOutLock) {
+        synchronized (optOutLock) {
             try {
                 // Reload the metrics file
-                configuration.load(CONFIG_FILE);
+                configuration.load(getConfigFile());
             } catch (IOException ex) {
-                Bukkit.getLogger().log(Level.INFO, "[ Metrics ] " + ex.getMessage());
+                Bukkit.getLogger().log(Level.INFO, "[Metrics] " + ex.getMessage());
                 return true;
             } catch (InvalidConfigurationException ex) {
-                Bukkit.getLogger().log(Level.INFO, "[ Metrics ] " + ex.getMessage());
+                Bukkit.getLogger().log(Level.INFO, "[Metrics] " + ex.getMessage());
                 return true;
             }
             return configuration.getBoolean("opt-out", false);
@@ -127,7 +160,8 @@ public class MetricUtils {
     }
 
     /**
-     * Enables metrics for the server by setting "opt-out" to false in the config file and starting the metrics task.
+     * Enables metrics for the server by setting "opt-out" to false in the
+     * config file and starting the metrics task.
      *
      * @throws IOException
      */
@@ -148,7 +182,8 @@ public class MetricUtils {
     }
 
     /**
-     * Disables metrics for the server by setting "opt-out" to true in the config file and canceling the metrics task.
+     * Disables metrics for the server by setting "opt-out" to true in the
+     * config file and canceling the metrics task.
      *
      * @throws IOException
      */
@@ -167,6 +202,24 @@ public class MetricUtils {
                 taskId = -1;
             }
         }
+    }
+
+    /**
+     * Gets the File object of the config file that should be used to store data
+     * such as the GUID and opt-out status
+     *
+     * @return the File object for the config file
+     */
+    public File getConfigFile() {
+        // I believe the easiest way to get the base folder (e.g craftbukkit set via -P) for plugins to use
+        // is to abuse the plugin object we already have
+        // plugin.getDataFolder() => base/plugins/PluginA/
+        // pluginsFolder => base/plugins/
+        // The base is not necessarily relative to the startup directory.
+        File pluginsFolder = plugin.getDataFolder().getParentFile();
+
+        // return => base/plugins/PluginMetrics/config.yml
+        return new File(new File(pluginsFolder, "PluginMetrics"), "config.yml");
     }
 
     /**
@@ -225,7 +278,8 @@ public class MetricUtils {
     }
 
     /**
-     * Check if mineshafter is present. If it is, we need to bypass it to send POST requests
+     * Check if mineshafter is present. If it is, we need to bypass it to send
+     * POST requests
      *
      * @return
      */
@@ -239,8 +293,9 @@ public class MetricUtils {
     }
 
     /**
-     * <p>Encode a key/value data pair to be used in a HTTP post request. This INCLUDES a & so the first
-     * key/value pair MUST be included manually, e.g:</p>
+     * <p>Encode a key/value data pair to be used in a HTTP post request. This
+     * INCLUDES a & so the first key/value pair MUST be included manually,
+     * e.g:</p>
      * <code>
      * StringBuffer data = new StringBuffer();
      * data.append(encode("guid")).append('=').append(encode(guid));
@@ -265,5 +320,4 @@ public class MetricUtils {
     private static String encode(String text) throws UnsupportedEncodingException {
         return URLEncoder.encode(text, "UTF-8");
     }
-
 }
