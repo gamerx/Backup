@@ -35,6 +35,7 @@ public class BackupFull extends JavaPlugin {
     public static BackupWorlds backupWorlds;
     public static BackupPlugins backupPlugins;
     public static BackupEverything backupEverything;
+    
     // Private variables for this class.
     private static Settings settings;
     private static Strings strings;

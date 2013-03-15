@@ -109,7 +109,7 @@ public class CommandHandler implements Listener, CommandExecutor {
                     if (checkPerms(sender, "backup.toggle")) {
                         toggleEnabled(sender);
                     }
-                } // Help command - Show help & support info.} // Unknown command.
+                } // Unknown command.
                 else {
                     // Unknown Command Message.
                     messageSender(sender, strings.getString("unknowncommand"));

@@ -116,13 +116,6 @@ public class Strings {
     }
 
     /**
-     * Method used when doing string file updates.
-     */
-    public void doStringsUpdate() {
-        loadStrings();
-    }
-
-    /**
      * Gets a value of the string property.
      *
      * @param sname The identifier for the string.
