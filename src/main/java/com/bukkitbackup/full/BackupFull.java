@@ -32,9 +32,6 @@ public class BackupFull extends JavaPlugin {
     // Public variables for class comms.
     private static PrepareBackup prepareBackup;
     public static BackupTask backupTask;
-    public static BackupWorlds backupWorlds;
-    public static BackupPlugins backupPlugins;
-    public static BackupEverything backupEverything;
     
     // Private variables for this class.
     private static Settings settings;
@@ -85,10 +82,7 @@ public class BackupFull extends JavaPlugin {
 
         // Setup backup tasks.
         backupTask = new BackupTask(this, settings, strings);
-        backupWorlds = new BackupWorlds(pluginServer, settings, strings);
-        backupPlugins = new BackupPlugins(settings, strings);
-        backupEverything = new BackupEverything(settings);
-
+        
         // Create new "PrepareBackup" instance.
         prepareBackup = new PrepareBackup(this, settings, strings);
 
@@ -177,7 +171,7 @@ public class BackupFull extends JavaPlugin {
             int backupIntervalInTicks = (backupMinutes * 1200);
 
             // Schedule a repeating backup task.
-            pluginServer.getScheduler().scheduleAsyncRepeatingTask(this, prepareBackup, backupIntervalInTicks, backupIntervalInTicks);
+            pluginServer.getScheduler().runTaskTimerAsynchronously(this, prepareBackup, backupIntervalInTicks, backupIntervalInTicks);
 
             LogUtils.sendDebug("Doing recurring backup interval code. (M:0005)");
 
@@ -188,7 +182,7 @@ public class BackupFull extends JavaPlugin {
             BackupScheduler backupScheduler = new BackupScheduler(this, prepareBackup, settings, strings, backupSchedArray);
 
             // Start the scheduler as another thread.
-            pluginServer.getScheduler().scheduleAsyncDelayedTask(this, backupScheduler);
+            pluginServer.getScheduler().runTaskAsynchronously(this, backupScheduler);
 
             LogUtils.sendDebug("Doing time array backup code. (M:0006)");
 
@@ -206,7 +200,7 @@ public class BackupFull extends JavaPlugin {
         if (settings.getBooleanProperty("enableversioncheck", true)) {
 
             // Start the update checker in another thread.
-            pluginServer.getScheduler().scheduleAsyncDelayedTask(this, new UpdateChecker(this.getDescription(), strings, clientUID));
+            pluginServer.getScheduler().runTaskAsynchronously(this, new UpdateChecker(this.getDescription(), strings, clientUID));
         }
 
         // Notify loading complete.

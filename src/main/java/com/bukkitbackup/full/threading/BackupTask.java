@@ -1,6 +1,5 @@
 package com.bukkitbackup.full.threading;
 
-import com.bukkitbackup.full.BackupFull;
 import com.bukkitbackup.full.config.Settings;
 import com.bukkitbackup.full.config.Strings;
 import com.bukkitbackup.full.threading.tasks.BackupEverything;
@@ -66,10 +65,10 @@ public class BackupTask implements Runnable {
         dateFormat = settings.getStringProperty("dateformat", "%1$tY-%1$tm-%1$td-%1$tH-%1$tM-%1$tS");
 
         // Import backup tasks.
-        everythingBackupTask = BackupFull.backupEverything;
-        worldBackupTask = BackupFull.backupWorlds;
-        pluginBackupTask = BackupFull.backupPlugins;
-
+        everythingBackupTask = new BackupEverything(settings);
+        worldBackupTask = new BackupWorlds(pluginServer, settings, strings);
+        pluginBackupTask =  new BackupPlugins(settings, strings);
+        
         // Generate the worldStore.
         if (useTemp) {
             String tempFolder = settings.getStringProperty("tempfoldername", "");
