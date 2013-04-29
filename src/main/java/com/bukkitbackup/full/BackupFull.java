@@ -8,9 +8,6 @@ import com.bukkitbackup.full.events.EventListener;
 import com.bukkitbackup.full.threading.BackupScheduler;
 import com.bukkitbackup.full.threading.BackupTask;
 import com.bukkitbackup.full.threading.PrepareBackup;
-import com.bukkitbackup.full.threading.tasks.BackupEverything;
-import com.bukkitbackup.full.threading.tasks.BackupPlugins;
-import com.bukkitbackup.full.threading.tasks.BackupWorlds;
 import com.bukkitbackup.full.utils.FileUtils;
 import com.bukkitbackup.full.utils.LogUtils;
 import com.bukkitbackup.full.utils.MetricUtils;
@@ -26,6 +23,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  * Backup - The simple server backup solution.
  *
  * @author Domenic Horner (gamerx)
+ * @author gamerx@gamerx.me
  */
 public class BackupFull extends JavaPlugin {
 
