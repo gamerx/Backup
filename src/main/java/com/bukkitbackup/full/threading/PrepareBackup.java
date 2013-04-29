@@ -7,27 +7,26 @@ import com.bukkitbackup.full.utils.LogUtils;
 import java.util.Arrays;
 import java.util.List;
 import org.bukkit.Server;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 /**
- * This class determines if we should start a backup, and what settings to use for the backup.
- * Once it has determined to start a backup, it pushes one out to a new thread.
- * 
- * @author Domenic Horner
+ * Backup - The simple server backup solution.
+ *
+ * @author Domenic Horner (gamerx)
  */
 public class PrepareBackup implements Runnable {
 
-    private Plugin plugin;
+    private final Plugin plugin;
     private final Server pluginServer;
     private final Settings settings;
-    private Strings strings;
-    
+    private final Strings strings;
     public static boolean backupInProgress = false;
     public static boolean backupEnabled = true;
     public boolean isLastBackup = false;
     public boolean isManualBackup;
-    
+
     public PrepareBackup(Plugin plugin, Settings settings, Strings strings) {
         this.plugin = plugin;
         this.pluginServer = plugin.getServer();
@@ -72,7 +71,7 @@ public class PrepareBackup implements Runnable {
                         prepareBackup();
                         isLastBackup = false;
                     } else {
-                        LogUtils.sendLog(strings.getString("abortedbackup", Integer.toString(settings.getIntervalInMinutes("backupinterval"))));
+                        LogUtils.sendLog(strings.getString("abortedbackup"));
                     }
                 } else {
 
@@ -103,37 +102,38 @@ public class PrepareBackup implements Runnable {
         } else {
             LogUtils.sendLog(strings.getString("backupoff"));
         }
-
-        // Check we should do a save-all.
-        if (settings.getBooleanProperty("alwayssaveall", false)) {
-            pluginServer.getScheduler().scheduleSyncDelayedTask(plugin, new SyncSaveAll(pluginServer, 0));
-            LogUtils.sendLog(strings.getString("alwayssaveall"));
-        }
     }
 
     /**
      * Prepared for, and starts, a doBackup.
      */
     protected void prepareBackup() {
-        
+
         // Tell the world!
         backupInProgress = true;
-        
+
         // Notify doBackup has started.
         notifyStarted();
 
-        // Perform final world save before backup, then turn off auto-saving.
-        pluginServer.getScheduler().scheduleSyncDelayedTask(plugin, new SyncSaveAll(pluginServer, 1));
-
-        // Save all players.
+        // Save all players to worlds.
         pluginServer.savePlayers();
+
+        // Turn off auto-saving of worlds.
+        for (World world : pluginServer.getWorlds()) {
+            world.setAutoSave(false);
+        }
+
+        // Perform final world save before backup.
+        for (World world : pluginServer.getWorlds()) {
+            world.save();
+        }
 
         // Scedule the doBackup.
         pluginServer.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 
             @Override
             public void run() {
-                pluginServer.getScheduler().scheduleAsyncDelayedTask(plugin, BackupFull.backupTask);
+                pluginServer.getScheduler().runTaskAsynchronously(plugin, BackupFull.backupTask);
             }
         });
         isManualBackup = false;
