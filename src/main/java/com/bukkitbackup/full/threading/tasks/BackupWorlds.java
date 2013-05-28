@@ -169,7 +169,7 @@ public class BackupWorlds {
                 }
 
                 // Copy the current world into it's backup folder.
-                FileUtils.copyDirectory(worldContainer.concat(FILE_SEPARATOR).concat(currentWorldName), copyDestination);
+                FileUtils.copyDirectory(pluginServer.getWorldContainer().getAbsolutePath().concat(FILE_SEPARATOR).concat(currentWorldName), copyDestination);
 
             }
         }
