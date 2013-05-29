@@ -57,6 +57,12 @@ public class BackupFull extends JavaPlugin {
         // Complete loading log utils.
         LogUtils.finishInitLogUtils(settings.getBooleanProperty("displaylog", true), settings.getBooleanProperty("debugenabled", false));
 
+
+    }
+
+    @Override
+    public void onEnable() {
+
         // BukkitMetrics Loading. (Not Plugin-Specific)
         try {
             MetricUtils metricUtils = new MetricUtils(this);
@@ -65,12 +71,7 @@ public class BackupFull extends JavaPlugin {
         } catch (IOException ex) {
             LogUtils.exceptionLog(ex, "Exception loading metrics.");
         }
-
-    }
-
-    @Override
-    public void onEnable() {
-
+        
         // Get server and plugin manager instances.
         Server pluginServer = getServer();
         PluginManager pluginManager = pluginServer.getPluginManager();
