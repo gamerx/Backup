@@ -49,7 +49,7 @@ public class BackupScheduler implements Runnable {
                 
                 // If we want to backup this minute, schedule a backupTask.
                 if(timesArray[j].equals(timeNow)) {
-                    pluginServer.getScheduler().scheduleAsyncDelayedTask(plugin, prepareBackup);
+                    pluginServer.getScheduler().scheduleSyncDelayedTask(plugin, prepareBackup);
                 }
             }
             

@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.bukkitbackup</groupId>
     <artifactId>Backup</artifactId>
-    <version>2.5</version>
+    <version>2.6</version>
     <name>Backup</name>
     <description>A Backup plugin for Bukkit's Server mod API.</description>
     <url>https://github.com/gamerx/Backup</url>
@@ -18,6 +18,7 @@
     </issueManagement>
     <build>
         <finalName>Backup</finalName>
+    	<defaultGoal>install</defaultGoal>
         <sourceDirectory>${basedir}/src/main/java</sourceDirectory>
         <resources>
             <resource>
@@ -64,7 +65,7 @@
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
-            <version>1.4.7-R1.0</version>
+            <version>1.6.2-R0.1</version>
         </dependency>
     </dependencies>
     <properties>

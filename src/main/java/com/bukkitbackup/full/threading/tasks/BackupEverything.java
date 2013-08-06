@@ -31,7 +31,6 @@ public class BackupEverything {
         // Filefiler for excludes.
         fileFilter = new FileFilter() {
 
-            @Override
             public boolean accept(File f) {
 
                 // Disallow server.log and the backuppath.
