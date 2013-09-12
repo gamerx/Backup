@@ -4,12 +4,18 @@ import com.bukkitbackup.full.config.Settings;
 import com.bukkitbackup.full.config.Strings;
 import com.bukkitbackup.full.threading.PrepareBackup;
 import com.bukkitbackup.full.utils.LogUtils;
+
+import org.bukkit.Bukkit;
+import org.bukkit.conversations.ConversationAbandonedEvent;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 
@@ -44,6 +50,13 @@ public class EventListener implements Listener {
     public void onPlayerQuit(PlayerQuitEvent event) {
         playerPart(event);
     }
+    
+    @EventHandler(priority = EventPriority.LOW)
+    public void onPLayerAFK(ConversationAbandonedEvent event){
+    	if(event.getCanceller() instanceof Player){
+    		playerPart(event);
+    	}
+    }
 
     @EventHandler(priority = EventPriority.LOW)
     public void onPlayerKick(PlayerKickEvent event) {
@@ -54,6 +67,16 @@ public class EventListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         playerJoin(event);
     }
+    
+    @EventHandler(priority = EventPriority.LOW)
+    public void onPlayerNotAFK(PlayerMoveEvent event){
+    	playerJoin(event);
+    }
+    
+    @EventHandler(priority = EventPriority.LOW)
+    public void onPlayerNotAFK(PlayerChatEvent event){
+    	playerJoin(event);
+    }
 
     /**
      * Called when a player leaves the server.
@@ -62,6 +85,23 @@ public class EventListener implements Listener {
     // @TODO determine how we should handle this if backups are at specific times.
     // for now, i set it to 15 mins.
     private void playerPart(PlayerEvent event) {
+        int onlinePlayers = plugin.getServer().getOnlinePlayers().length;
+        // Check if it was the last player, and we need to stop backups after this last player leaves.
+        if (onlinePlayers == 1 && !settings.getBooleanProperty("backupemptyserver", false)) {
+            prepareBackup.isLastBackup = true;
+            //int intervalInMinutes = settings.getBackupInterval();
+            int intervalInMinutes = 15;
+            if (intervalInMinutes != 0) {
+                int interval = intervalInMinutes * 1200;
+                lastBackupID = plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, prepareBackup, interval);
+                LogUtils.sendLog(strings.getString("schedlastbackup", Integer.toString(intervalInMinutes)));
+            } else {
+                LogUtils.sendLog(strings.getString("disbaledauto"));
+            }
+        }
+    }
+    
+    private void playerPart(ConversationAbandonedEvent event) {
         int onlinePlayers = plugin.getServer().getOnlinePlayers().length;
         // Check if it was the last player, and we need to stop backups after this last player leaves.
         if (onlinePlayers == 1 && !settings.getBooleanProperty("backupemptyserver", false)) {
