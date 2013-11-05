@@ -9,16 +9,18 @@ commands:
   backup:
     description: Manually starts a backup of the server.
     usage: "Usage: /backup [args]"
+    permission: backup.backup
   bu:
     description: Manually starts a backup of the server.
     usage: "Usage: /bu [args]"
+    permission: backup.backup
 permissions:
   backup.*:
     description: Permission to perform all commands.
     default: op
   backup.backup:
     description: Permission to perform a manual backup.
-    default: false
+    default: op
   backup.notify:
     description: Permission to see when backups are started and completed.
     default: false
