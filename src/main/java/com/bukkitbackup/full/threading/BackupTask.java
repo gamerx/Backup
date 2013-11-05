@@ -22,7 +22,8 @@ import org.bukkit.plugin.Plugin;
 /**
  * Backup - The simple server backup solution.
  *
- * @author Domenic Horner (gamerx)
+ * @author gamerx
+ * @author me@gamerx.me
  */
 public class BackupTask implements Runnable {
 

@@ -10,7 +10,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 /**
  * Backup - The simple server backup solution.
  *
- * @author Domenic Horner (gamerx)
+ * @author gamerx
+ * @author me@gamerx.me
  */
 public final class Settings {
 

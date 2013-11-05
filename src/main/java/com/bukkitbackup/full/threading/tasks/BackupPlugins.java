@@ -14,7 +14,8 @@ import java.util.List;
 /**
  * Backup - The simple server backup solution.
  *
- * @author Domenic Horner (gamerx)
+ * @author gamerx
+ * @author me@gamerx.me
  */
 public class BackupPlugins {
 

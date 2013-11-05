@@ -22,8 +22,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 /**
  * Backup - The simple server backup solution.
  *
- * @author Domenic Horner (gamerx)
- * @author gamerx@gamerx.me
+ * @author gamerx
+ * @author me@gamerx.me
  */
 public class BackupFull extends JavaPlugin {
 
