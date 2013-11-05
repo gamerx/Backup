@@ -30,7 +30,6 @@ public class BackupFull extends JavaPlugin {
     // Public variables for class comms.
     private static PrepareBackup prepareBackup;
     public static BackupTask backupTask;
-    
     // Private variables for this class.
     private static Settings settings;
     private static Strings strings;
@@ -57,15 +56,6 @@ public class BackupFull extends JavaPlugin {
         // Complete loading log utils.
         LogUtils.finishInitLogUtils(settings.getBooleanProperty("displaylog", true), settings.getBooleanProperty("debugenabled", false));
 
-        // BukkitMetrics Loading. (Not Plugin-Specific)
-        try {
-            MetricUtils metricUtils = new MetricUtils(this);
-            metricUtils.start();
-            clientUID = metricUtils.guid;
-        } catch (IOException ex) {
-            LogUtils.exceptionLog(ex, "Exception loading metrics.");
-        }
-
     }
 
     @Override
@@ -80,7 +70,7 @@ public class BackupFull extends JavaPlugin {
 
         // Setup backup tasks.
         backupTask = new BackupTask(this, settings, strings);
-        
+
         // Create new "PrepareBackup" instance.
         prepareBackup = new PrepareBackup(this, settings, strings);
 
@@ -192,6 +182,15 @@ public class BackupFull extends JavaPlugin {
 
             LogUtils.sendDebug("Disabled automatic backup. (M:0007)");
 
+        }
+        
+        // BukkitMetrics Loading. (Not Plugin-Specific)
+        try {
+            MetricUtils metricUtils = new MetricUtils(this);
+            metricUtils.start();
+            clientUID = metricUtils.guid;
+        } catch (IOException ex) {
+            LogUtils.exceptionLog(ex, "Exception loading metrics.");
         }
 
         // If the update check is enabled.
