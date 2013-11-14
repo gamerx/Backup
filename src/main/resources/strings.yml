@@ -1,70 +1,71 @@
-#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-#
-#    Strings file for "Backup".     #
-#  @author Domenic Horner (gamerx)  #
-#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-#
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-#
+#    Russian Strings file for "Backup".     #
+#     @author Domenic Horner (gamerx)       #
+#      Translate author - AlexMerser        #
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-#
 
 # Create seperate lines with ';;' - This will push the rest of the message onto another line.
 # and can be used as many times in a string as you like, Please let me know if you have any issues with this.
 
 #========= In-Game Strings ==========#
 
-backupstarted        : '[Backup] Started Backup...'
-backupfinished       : '[Backup] Finished Backup!'
-norights             : '[Backup] You do not have enough rights to run the backup!'
-reloadedok           : '[Backup] Reloaded %%ARG%% successfully!'
-gettingversions      : '[Backup] Please wait, Retrieving version information...'
+backupstarted        : '[Backup] Бэкапим...'
+backupfinished       : '[Backup] Бэкап завершен!'
+norights             : '[Backup] У Вас не хватает прав для выполнения этой комманды!'
+reloadedok           : '[Backup] Успешно перезагружено %%ARG%%!'
+gettingversions      : '[Backup] Пожалуйста подождите, идет проверка версии...'
 
 #========= Startup Strings ==========#
 
-configupdate         : Your config file is outdated.
-stringsupdate        : Your strings file is outdated.
-failedtogetpropsver  : Failed to obtain version information from config file.
-zipdisabled          : You have disabled backup compression.
-defaultperms         : No permissions plugin detected, defaulting to OP.
-hookedperms          : Found and hooked a permissions plugin.
-newconfigfile        : No config file exists, creating default.
-disbaledauto         : You have disabled scheduled backups!
-savealltimeron       : Save-All will be performed every %%ARG%% minute(s).
+configupdate         : Конфиг плагина устарел.
+stringsupdate        : Сообщения плагина устарели.
+failedtogetpropsver  : Невозможно получить информация из конфига.
+zipdisabled          : Вы отключили архивация бэкапа.
+defaultperms         : Права плагина не найдены. Все команды доступны только OP.
+hookedperms          : Плагин прав найден.
+newconfigfile        : Конфиг не найден, создаем новый...
+disbaledauto         : Вы отключили автоматический бэкап!
+savealltimeron       : Автосохранение будет выполняться каждые %%ARG%% мин.
 
 #========= Notification Strings ==========#
 
-disabledworlds       : 'Backup is disabled for the following world(s):'
-disabledplugins      : 'Backup is disabled for the following plugin(s):'
-enabledplugins       : 'Backup is enabled for the following plugin(s):'
-allpluginsdisabled   : Plugin backup is on, but no plugins are selected.
-abortedbackup        : Aborted backup as no players online. Will re-attempt at next schedule.
-skipworlds           : Skipworlds is enabled.
-skipplugins          : Skipping plugin backup, for all plugins.
-removeoldage         : 'Removing the following backup(s) due to age:'
-removeoldsize        : 'Removing the following backup(s) due to size:'
-lastbackup           : Last player left, backing up!
+disabledworlds       : 'Бэкап отключен для следующих миров:'
+disabledplugins      : 'Бэкап отключен для следующих плагинов:'
+enabledplugins       : 'Бэкап включен для следующих плагинов:'
+allpluginsdisabled   : Бэкап плагинов включен, но они не выбраны.
+abortedbackup        : Бэкап отменен из-за отсутствия игроков. Он будет проведен повторно в следующий раз.
+skipworlds           : Миры теперь будут пропускаться.
+skipplugins          : Отключен бэкап для плагинов.
+removeoldage         : 'Удаление бэкапов датой:'
+removeoldsize        : 'Удаление бэкапов размером:'
+lastbackup           : Вышел последний игрок, начинаем бэкапить!
 schedlastbackup      : 'Scheduled last backup for %%ARG%% minutes.'
-alwayssaveall        : Forcing /save-all, stand by!
-unknowntimeident     : Failed to detect interval amount. (Please use M, H, D, or W).
-pluginoutdate        : 'Plugin is out of date, this: %%ARG%%, latest: %%ARG1%%.'
-outofdate            : Out of Date
-pluginupdate         : 'Plugin is up to date, at version: %%ARG%%.'
-atlatestversion      : At latest version!
-skipbackupbypass     : Skipping backup because all players have bypass node.
-backupoff            : 'Backup is currently disabled, please use "/backup toggle" to re-enable.'
-backuptoggleoff      : 'Backup has been toggled off.'
-backuptoggleon       : 'Backup has been toggled on.'
-noworlds             : There are no worlds to backup.
-stoppedlastjoined    : Stopped last backup, because someone joined.
-backupinprogress     : Only one backup process can be run at once.
+alwayssaveall        : /save-all отключен, выполните!
+unknowntimeident     : Неправильный формат интервала. (Используйте M, H, D, или W).
+pluginoutdate        : 'Плагин устарел, текущая версия: %%ARG%%, последняя: %%ARG1%%.'
+outofdate            : Устарела
+pluginupdate         : 'Плагин имеет актуальную версию: %%ARG%%.'
+atlatestversion      : Актуальная!
+skipbackupbypass     : Бэкап отменен, потому-что все игроки имеют bypass право.
+backupoff            : 'Бэкап отключенd, используйте "/backup toggle" для включения.'
+backuptoggleoff      : 'Бэкап включен.'
+backuptoggleon       : 'Бэкап выключен.'
+noworlds             : Миры для бэкапа не найдены.
+stoppedlastjoined    : Последний бэкап отменен, потому-что кто-то зашел в игру.
+backupinprogress     : Только один бэкап-процесс можно выполнять одновременно.
 
 #========= Error Strings ==========#
 
-errordateformat      : Date format incorrect Check configuration!
-errorcreatetemp      : Error occurred when trying to backup %%ARG%%.  Backup is possibly incomplete.
-backupfailed         : An error occured during backup. Please report to an admin!
-checkbackupinterval  : Please check your backupinterval setting is formatted correctly.
-unknowncommand       : Unknown command or incorrect syntax.
-unknownfailedversion : Unknown / Failed
-errorfolderempty     : Error listing directory, No entries!
-checksizelimit       : Error getting maximum allowed backups.
-errorversioncheck    : Failed to retrieve latest version information.
-failedlistdir        : Failed to list backup directory.
+errordateformat      : Формат даты некорректный!Проверьте конфиг
+errorcreatetemp      : Произашла ошибка при бэкапе %%ARG%%. Возможно бэкап неполный.
+backupfailed         : Произошла ошибка при бэкапе. Сообщите админу!
+checkbackupinterval  : Проверьте, установлен ли Ваш интервал бэкапа правильно.
+unknowncommand       : Неизвестная команда.
+unknownfailedversion : Неизвестный \ не удался
+errorfolderempty     : Ошибка загрузки папки, файлы не найдены!
+checksizelimit       : Ошибка при получения максимального количества бэкапов.
+errorversioncheck    : Невозможно загрузить информацию о версии.
+failedlistdir        : Невозможно загрузить бэкап папку.
 
 ###############################################
 ##   Internal Settings (Read: DO NOT EDIT)   ##
