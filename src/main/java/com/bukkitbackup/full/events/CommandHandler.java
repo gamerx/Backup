@@ -55,7 +55,6 @@ public class CommandHandler implements Listener, CommandExecutor {
      * @param args
      * @return
      */
-    @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
         // Perform the command procesing.
@@ -174,7 +173,6 @@ public class CommandHandler implements Listener, CommandExecutor {
 
         // Start a new asynchronous task to get version and print them.
         server.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-            @Override
             public void run() {
 
                 // Attempt to retrieve latest version.

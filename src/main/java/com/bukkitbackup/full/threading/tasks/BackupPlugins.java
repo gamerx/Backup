@@ -45,7 +45,6 @@ public class BackupPlugins {
         // The FileFilter instance for skipped/enabled plugins.
         pluginsFileFilter = new FileFilter() {
 
-            @Override
             public boolean accept(File name) {
 
                 // Check if there are plugins listed.

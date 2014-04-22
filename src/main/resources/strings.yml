@@ -71,4 +71,4 @@ failedlistdir        : Failed to list backup directory.
 ###############################################
 
 stringnotfound       : 'String not found - '
-version              : 2.5
+version              : 2.6

@@ -34,7 +34,6 @@ public class PrepareBackup implements Runnable {
         this.strings = strings;
     }
 
-    @Override
     public synchronized void run() {
         if (backupInProgress) {
             LogUtils.sendLog(strings.getString("backupinprogress"));
@@ -131,7 +130,6 @@ public class PrepareBackup implements Runnable {
         // Scedule the doBackup.
         pluginServer.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 
-            @Override
             public void run() {
                 pluginServer.getScheduler().runTaskAsynchronously(plugin, BackupFull.backupTask);
             }

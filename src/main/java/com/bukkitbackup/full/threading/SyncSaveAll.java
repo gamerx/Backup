@@ -23,7 +23,6 @@ public class SyncSaveAll implements Runnable {
     /**
      * The run method gets the sender, and dispatches commands.
      */
-    @Override
     public void run() {
 
         // Get the ConsoleCommandSender instance for use.

@@ -83,7 +83,6 @@ public class BackupTask implements Runnable {
 
     }
 
-    @Override
     public void run() {
 
         // Get this instances folder name, set variables.
@@ -349,7 +348,6 @@ public class BackupTask implements Runnable {
         // Create new Runnable instance.
         Runnable run = new Runnable() {
 
-            @Override
             public void run() {
 
                 // Should we enable auto-save again?
