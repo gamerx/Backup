@@ -4,6 +4,7 @@ import com.bukkitbackup.full.utils.LogUtils;
 import java.io.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -20,7 +21,7 @@ public final class Settings {
     public boolean useMaxSizeBackup = false;
 
     public Settings(File configFile, Strings strings) {
-        
+
         // Populate the strings variable.
         Settings.strings = strings;
 
@@ -46,7 +47,7 @@ public final class Settings {
                         bWriter.newLine();
                     }
 
-                } catch (Exception e) {
+                } catch (IOException e) {
                     LogUtils.exceptionLog(e, "Error opening stream.");
                 } finally {
                     try {
@@ -58,7 +59,7 @@ public final class Settings {
                         if (bWriter != null) {
                             bWriter.close();
                         }
-                    } catch (Exception e) {
+                    } catch (IOException e) {
                         LogUtils.exceptionLog(e, "Error closing configuration stream.");
                     }
                 }
@@ -68,7 +69,9 @@ public final class Settings {
             settings = new YamlConfiguration();
             settings.load(configFile);
 
-        } catch (Exception e) {
+        } catch (IOException e) {
+            LogUtils.exceptionLog(e, "Failed to load configuration.");
+        } catch (InvalidConfigurationException e) {
             LogUtils.exceptionLog(e, "Failed to load configuration.");
         }
     }

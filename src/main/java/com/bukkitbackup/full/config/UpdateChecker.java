@@ -2,6 +2,7 @@ package com.bukkitbackup.full.config;
 
 import com.bukkitbackup.full.utils.LogUtils;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -14,9 +15,9 @@ import org.bukkit.plugin.PluginDescriptionFile;
  */
 public class UpdateChecker implements Runnable {
 
-    private PluginDescriptionFile descriptionFile;
-    private Strings strings;
-    private String clientID;
+    private final PluginDescriptionFile descriptionFile;
+    private final Strings strings;
+    private final String clientID;
 
     public UpdateChecker(PluginDescriptionFile descriptionFile, Strings strings, String clientID) {
         this.descriptionFile = descriptionFile;
@@ -67,7 +68,8 @@ public class UpdateChecker implements Runnable {
 
             // Return the version.
             return webVersion;
-        } catch (Exception e) {
+        } catch (IOException e) {
+            LogUtils.exceptionLog(e, "Error checking for strings file.");
             return null;
         }
     }

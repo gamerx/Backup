@@ -40,7 +40,7 @@ public class BackupTask implements Runnable {
     private final String backupPath;
     private final String tempDestination;
     private String thisBackupName;
-    
+
     // Threads.
     private final BackupWorlds worldBackupTask;
     private final BackupPlugins pluginBackupTask;
@@ -68,8 +68,8 @@ public class BackupTask implements Runnable {
         // Import backup tasks.
         everythingBackupTask = new BackupEverything(settings);
         worldBackupTask = new BackupWorlds(pluginServer, settings, strings);
-        pluginBackupTask =  new BackupPlugins(settings, strings);
-        
+        pluginBackupTask = new BackupPlugins(settings, strings);
+
         // Generate the worldStore.
         if (useTemp) {
             String tempFolder = settings.getStringProperty("tempfoldername", "");
@@ -120,7 +120,7 @@ public class BackupTask implements Runnable {
                 // Attempt to backup plugins.
                 try {
                     pluginBackupTask.doPlugins(thisBackupName);
-                } catch (Exception e) {
+                } catch (IOException e) {
                     LogUtils.exceptionLog(e, "Failed to backup plugins: Exception in BackupPlugins.");
                 }
             } else {
@@ -184,20 +184,22 @@ public class BackupTask implements Runnable {
                 backupDir = new File(backupPath.concat(FILE_SEPARATOR).concat(worldContainer));
 
                 File[] worldFoldersToClean = backupDir.listFiles();
-                for (int l = 0; l < worldFoldersToClean.length; l++) {
+
+                for (File worldFoldersToClean1 : worldFoldersToClean) {
                     // Make sure we are cleaning a directory.
-                    if (worldFoldersToClean[l].isDirectory()) {
-                        cleanFolder(worldFoldersToClean[l]);
+                    if (worldFoldersToClean1.isDirectory()) {
+                        cleanFolder(worldFoldersToClean1);
                     }
                 }
 
                 backupDir = new File(backupPath.concat(FILE_SEPARATOR).concat("plugins"));
 
                 File[] pluginFolderToClean = backupDir.listFiles();
-                for (int l = 0; l < pluginFolderToClean.length; l++) {
+
+                for (File pluginFolderToClean1 : pluginFolderToClean) {
                     // Make sure we are cleaning a directory.
-                    if (pluginFolderToClean[l].isDirectory()) {
-                        cleanFolder(pluginFolderToClean[l]);
+                    if (pluginFolderToClean1.isDirectory()) {
+                        cleanFolder(pluginFolderToClean1);
                     }
                 }
             } else {
@@ -205,17 +207,14 @@ public class BackupTask implements Runnable {
                 LogUtils.sendDebug("Delete old backups. - Split backup. - No custom container. (M:0016)");
 
                 File[] foldersToClean = backupDir.listFiles();
-                for (int l = 0; l < foldersToClean.length; l++) {
 
-
-
+                for (File foldersToClean1 : foldersToClean) {
                     // Make sure we are cleaning a directory.
-                    if (foldersToClean[l].isDirectory()) {
-                        cleanFolder(foldersToClean[l]);
+                    if (foldersToClean1.isDirectory()) {
+                        cleanFolder(foldersToClean1);
                     }
                 }
             }
-
 
         } else { // Clean entire directory.
 
@@ -291,14 +290,10 @@ public class BackupTask implements Runnable {
                             deletedList.add(backupList.get(0));
                         }
 
-
                         // Inform the user what backups are being deleted.
                         LogUtils.sendLog(strings.getString("removeoldsize"));
                         LogUtils.sendLog(Arrays.toString(deletedList.toArray()));
                     }
-
-
-
 
                 } else { // Using amount of backups.
 
@@ -346,7 +341,7 @@ public class BackupTask implements Runnable {
      * scheduler to prevent thread problems.
      */
     private void finishBackup() {
-        
+
         // Create new Runnable instance.
         Runnable run = new Runnable() {
 
@@ -396,9 +391,7 @@ public class BackupTask implements Runnable {
                                 Player[] players = pluginServer.getOnlinePlayers();
 
                                 // Loop through all online players.
-                                for (int pos = 0; pos < players.length; pos++) {
-                                    Player currentplayer = players[pos];
-
+                                for (Player currentplayer : players) {
                                     // If the current player has the right permissions, notify them.
                                     if (currentplayer.hasPermission("backup.notify")) {
                                         currentplayer.sendMessage(thisMessage);
@@ -418,8 +411,7 @@ public class BackupTask implements Runnable {
                             Player[] players = pluginServer.getOnlinePlayers();
 
                             // Loop through all online players.
-                            for (int pos = 0; pos < players.length; pos++) {
-                                Player currentplayer = players[pos];
+                            for (Player currentplayer : players) {
 
                                 // If the current player has the right permissions, notify them.
                                 if (currentplayer.hasPermission("backup.notify")) {

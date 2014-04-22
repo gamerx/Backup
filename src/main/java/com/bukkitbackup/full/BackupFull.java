@@ -183,7 +183,7 @@ public class BackupFull extends JavaPlugin {
             LogUtils.sendDebug("Disabled automatic backup. (M:0007)");
 
         }
-        
+
         // BukkitMetrics Loading. (Not Plugin-Specific)
         try {
             MetricUtils metricUtils = new MetricUtils(this);

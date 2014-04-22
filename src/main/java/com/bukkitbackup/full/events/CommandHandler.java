@@ -17,17 +17,17 @@ import org.bukkit.plugin.Plugin;
 
 /**
  * Backup - The simple server backup solution.
- * 
+ *
  * @author gamerx
  * @author me@gamerx.me
  */
 public class CommandHandler implements Listener, CommandExecutor {
 
-    private PrepareBackup prepareBackup;
-    private Plugin plugin;
-    private Server server;
-    private Settings settings;
-    private Strings strings;
+    private final PrepareBackup prepareBackup;
+    private final Plugin plugin;
+    private final Server server;
+    private final Settings settings;
+    private final Strings strings;
     private UpdateChecker updateChecker;
 
     /**
@@ -66,9 +66,10 @@ public class CommandHandler implements Listener, CommandExecutor {
     /**
      * Method to process every command.
      *
+     * @param sender The command sender
      * @param command The command (Usually "backup")
+     * @param label The commands label
      * @param args Arguments passed along with the command.
-     * @param player The player that requested the command.
      * @return True is success, False if fail.
      */
     public boolean processCommand(CommandSender sender, Command command, String label, String[] args) {

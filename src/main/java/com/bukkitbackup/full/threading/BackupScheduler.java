@@ -33,35 +33,35 @@ public class BackupScheduler implements Runnable {
     }
 
     public void run() {
-        
+
         // Loop to check if we need to backup.
-        while(true) {
-            
+        while (true) {
+
             LogUtils.sendDebug("Checking if we should backup. (M:0008)");
-            
+
             // Get current time, and format it to our requirements.
             Calendar calendarInstance = Calendar.getInstance();
             String timeNow = new SimpleDateFormat("HH:mm").format(calendarInstance.getTime());
-            
-            LogUtils.sendDebug("Time is: "+ timeNow + " (M:0009)");
-            
+
+            LogUtils.sendDebug("Time is: " + timeNow + " (M:0009)");
+
             // Loop the array of times we want to backup at.
-            for (int j = 0; j < timesArray.length; j++) {
-                
+            for (String timesArray1 : timesArray) {
+
                 // If we want to backup this minute, schedule a backupTask.
-                if(timesArray[j].equals(timeNow)) {
+                if (timesArray1.equals(timeNow)) {
                     pluginServer.getScheduler().scheduleAsyncDelayedTask(plugin, prepareBackup);
                 }
             }
-            
+
             // This sleeps the thread for 30 seconds in order to do another check.
             try {
                 Thread.sleep(30000);
             } catch (InterruptedException ex) {
                 LogUtils.exceptionLog(ex);
             }
-            
+
         }
-        
+
     }
 }

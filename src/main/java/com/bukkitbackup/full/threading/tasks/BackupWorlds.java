@@ -39,7 +39,7 @@ public class BackupWorlds {
      * This should be the place where all the settings and paths for the backup
      * are defined.
      *
-     * @param plugin
+     * @param server
      * @param settings
      * @param strings
      */
@@ -87,7 +87,7 @@ public class BackupWorlds {
 
         // Loops each world that needs to backed up, and do the required copies.
         while (!worldsToBackup.isEmpty()) {
-            
+
             String currentWorldName = worldsToBackup.removeFirst();
 
             // Get the current worlds seed.

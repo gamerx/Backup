@@ -22,9 +22,9 @@ import org.bukkit.plugin.Plugin;
 public class EventListener implements Listener {
 
     private PrepareBackup prepareBackup = null;
-    private Plugin plugin;
-    private Settings settings;
-    private Strings strings;
+    private final Plugin plugin;
+    private final Settings settings;
+    private final Strings strings;
     private int lastBackupID;
 
     /**
@@ -32,6 +32,8 @@ public class EventListener implements Listener {
      *
      * @param backupTask The BackupTast to call.
      * @param plugin Plugin to link this class too.
+     * @param settings
+     * @param strings
      */
     public EventListener(PrepareBackup backupTask, Plugin plugin, Settings settings, Strings strings) {
         this.prepareBackup = backupTask;

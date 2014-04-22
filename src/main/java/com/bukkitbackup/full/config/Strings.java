@@ -2,6 +2,7 @@ package com.bukkitbackup.full.config;
 
 import com.bukkitbackup.full.utils.LogUtils;
 import java.io.*;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -13,7 +14,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
  */
 public class Strings {
 
-    private File stringsFile;
+    private final File stringsFile;
     private FileConfiguration strings;
 
     /**
@@ -68,7 +69,9 @@ public class Strings {
         strings = new YamlConfiguration();
         try {
             strings.load(stringsFile);
-        } catch (Exception e) {
+        } catch (IOException e) {
+            LogUtils.exceptionLog(e, "Error loading strings file.");
+        } catch (InvalidConfigurationException e) {
             LogUtils.exceptionLog(e, "Error loading strings file.");
         }
     }
@@ -119,7 +122,7 @@ public class Strings {
     /**
      * Gets a value of the string property.
      *
-     * @param sname The identifier for the string.
+     * @param property The identifier for the string.
      * @return The string from properties, with colors encoded.
      */
     public String getString(String property) {

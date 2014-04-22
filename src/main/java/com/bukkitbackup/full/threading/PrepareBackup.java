@@ -83,9 +83,7 @@ public class PrepareBackup implements Runnable {
                     Player[] players = pluginServer.getOnlinePlayers();
 
                     // Loop players.
-                    for (int player = 0; player < players.length; player++) {
-                        Player currentplayer = players[player];
-
+                    for (Player currentplayer : players) {
                         // If any players do not have the node, do the doBackup.
                         if (!currentplayer.hasPermission("backup.bypass")) {
                             doBackup = true;
@@ -173,9 +171,7 @@ public class PrepareBackup implements Runnable {
                         Player[] players = pluginServer.getOnlinePlayers();
 
                         // Loop through all online players.
-                        for (int pos = 0; pos < players.length; pos++) {
-                            Player currentplayer = players[pos];
-
+                        for (Player currentplayer : players) {
                             // If the current player has the right permissions, notify them.
                             if (currentplayer.hasPermission("backup.notify")) {
                                 currentplayer.sendMessage(thisMessage);
@@ -195,9 +191,7 @@ public class PrepareBackup implements Runnable {
                     Player[] players = pluginServer.getOnlinePlayers();
 
                     // Loop through all online players.
-                    for (int pos = 0; pos < players.length; pos++) {
-                        Player currentplayer = players[pos];
-
+                    for (Player currentplayer : players) {
                         // If the current player has the right permissions, notify them.
                         if (currentplayer.hasPermission("backup.notify")) {
                             currentplayer.sendMessage(startBackupMessage);

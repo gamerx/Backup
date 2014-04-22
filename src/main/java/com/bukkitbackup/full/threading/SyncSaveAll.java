@@ -6,11 +6,11 @@ import org.bukkit.command.ConsoleCommandSender;
 public class SyncSaveAll implements Runnable {
 
     private final Server server;
-    private int mode;
+    private final int mode;
 
     /**
-     * This class is used for synchronizing the save-all task.
-     * It is started as a new thread.
+     * This class is used for synchronizing the save-all task. It is started as
+     * a new thread.
      *
      * @param server The server object for this plugin.
      * @param mode The type of save-all we are performing.

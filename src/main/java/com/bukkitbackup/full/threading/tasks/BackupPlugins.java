@@ -102,7 +102,6 @@ public class BackupPlugins {
         // Touch the folder to update the modified date.
         pluginsFolder.setLastModified(System.currentTimeMillis());
 
-
         String thisTempDestination;
         if (splitBackup) {
             thisTempDestination = backupPath.concat(FILE_SEPARATOR).concat("plugins").concat(FILE_SEPARATOR).concat(backupName);
@@ -131,7 +130,7 @@ public class BackupPlugins {
                     FileUtils.deleteDirectory(new File(thisTempDestination));
                     new File(thisTempDestination).delete();
                 }
-            } catch (Exception e) {
+            } catch (IOException e) {
                 LogUtils.exceptionLog(e);
             }
         }
