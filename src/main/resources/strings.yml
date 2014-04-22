@@ -1,6 +1,6 @@
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-#
 #    Strings file for "Backup".     #
-#  @author gamerx                   #
+#         @author gamerx            #
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-#
 
 # Create seperate lines with ';;' - This will push the rest of the message onto another line.
@@ -71,4 +71,4 @@ failedlistdir        : Failed to list backup directory.
 ###############################################
 
 stringnotfound       : 'String not found - '
-version              : 2.6-dev
+version              : 3.0-dev
